@@ -103,14 +103,17 @@ def productdetail(request,categoryID):
 def singleproduct(request, id):
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
-
+    relatedproduct = Product.objects.all()
     products = Product.objects.get(id=id)
+    product = get_object_or_404(Product, pk=id)
+    reviews = Rating.objects.filter(product=product)
+
     wishlist = WishList.objects.filter(Q(product=products) & Q(user=request.user.pk))
     totalitem = 0
     wishitem = 0
     if request.user.is_authenticated:
         totalitem = len(Cart.objects.filter(user=request.user))
-        wishitem=len(WishList.objects.filter(user=request.user))
+        wishitem=len(WishList.objects.filter(user=request.user))   
 
     context = {
         'wishlist' : wishlist,
@@ -119,13 +122,46 @@ def singleproduct(request, id):
         'Category': parent_categories,
         'totalitem':totalitem,
         'wishitem':wishitem,
+        'relatedproducts': relatedproduct,
+        'reviews': reviews,
 
     }
     
     return render(request, 'singleproduct.html', context)
 
 
+def review(request, product_pk):
+    user_id = request.user.id
+    product_id = product_pk
+    
+    if request.method == 'POST':
+        rating = request.POST['items']
+        comment = request.POST['your-commemt']
+        
+        product = get_object_or_404(Product, pk=product_id)
+        
+        data = Rating.objects.create(
+            user_id=user_id,
+            product=product,
+            rating=rating,
+            description=comment
+        )
 
+        print("Review saved successfully!")
+
+        return redirect(singleproduct, product_id)
+    
+    # product = get_object_or_404(Product, pk=product_id)
+    
+    # reviews = Rating.objects.filter(product=product)
+
+    context = {
+        'user_id': user_id,
+        'product_id': product_id,
+        # 'reviews': reviews,
+        # 'products': Product.objects.get(id=product_id)
+    }
+    return render(request, 'singleproduct.html', context)
 
 
 
@@ -157,6 +193,8 @@ def show_cart(request):
     for p in cart:
         value = p.quantity*p.product.price
         amount= amount + value
+        amount2=amount
+        
     totalamount=amount+40
     totalitem = 0
     wishitem = 0
@@ -190,14 +228,18 @@ def plus_cart(request):
         user=request.user
         cart=Cart.objects.filter(user=user)
         amount=0
+        amount2=0
         for p in cart:
             value = p.quantity*p.product.price
             amount= amount + value
+            amount2=amount
+
         totalamount=amount+40
         #print(prod_id)
         data={
               'quantity':c.quantity,
               'amount':amount,
+              'amount2': amount2,
               'totalamount':totalamount
         }
         return JsonResponse(data)
@@ -214,14 +256,19 @@ def minus_cart(request):
         user=request.user
         cart=Cart.objects.filter(user=user)
         amount=0
+        amount2=0
+
         for p in cart:
             value = p.quantity*p.product.price
             amount= amount + value
+            amount2=amount
+
         totalamount=amount+40
         #print(prod_id)
         data={
               'quantity':c.quantity,
               'amount':amount,
+              'amount2': amount2,
               'totalamount':totalamount
         }
         return JsonResponse(data)
@@ -236,14 +283,17 @@ def remove_cart(request):
         user=request.user
         cart=Cart.objects.filter(user=user)
         amount=0
+        amount2=0
         for p in cart:
             value = p.quantity * p.product.price
             amount= amount + value
+            amount2=amount
         totalamount=amount+40
        
         data={
               'quantity':c.quantity,
               'amount':amount,
+              'amount2': amount2,
               'totalamount':totalamount,
             
         }
@@ -274,6 +324,7 @@ def show_wishlist(request):
         'Category': parent_categories,
         'totalitem':totalitem,
         'wishitem':wishitem,
+        'products': product,
 
     }
     return render(request,'wishlist.html',context)

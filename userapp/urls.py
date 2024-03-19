@@ -23,6 +23,8 @@ urlpatterns = [
     path('minuswishlist/<int:id>/',views.minus_wishlist,name="minus_wishlist"),
     # path('update_wishlist/<int:product_id>/', views.update_wishlist, name='update_wishlist'),
 
+    path('review/<int:product_pk>/',views.review,name='review'),
+
 
   
 ]

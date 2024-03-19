@@ -263,7 +263,7 @@
                                                             <a class="plus-cart btn" pid={{item.product.id}}><i class="fas fa-plus-square fa-lg"></i></a>
                                                           </div>
                                                      </td>
-                                                     <td data-label="Total" class="e c-cart-pro-subtotal">${{item.product.price}}</td>
+                                                     <td data-label="Total" class="e c-cart-pro-subtotal" id="amount2">${{amount2}}</td>
                                                      <td data-label="Remove" class="ec-cart-pro-remove">
                                                         <a href="#" class="remove-cart btn  mr-3" pid={{item.product.id}}><i class="ecicon eci-trash-o"></i></a>
                                                      </td>
@@ -675,7 +675,6 @@
     
 <script>
     $('.plus-cart').click(function(){
-        window.alert("inside the function")
         var id=$(this).attr("pid").toString();
         var eml=this.parentNode.children[2]
         console.log("pid=",id)
@@ -687,11 +686,12 @@
             },
              
             success:function(data){
-            window.alert(id)
             console.log("data=",data);
             eml.innerText=data.quantity
             document.getElementById("amount").innerText=data.amount
             document.getElementById("totalamount").innerText=data.totalamount
+            document.getElementById("amount2").innerText = data.amount2;
+
             }
         })
     })
@@ -712,6 +712,8 @@
                 eml.innerText=data.quantity
                 document.getElementById("amount").innerText=data.amount
                 document.getElementById("totalamount").innerText=data.totalamount
+                document.getElementById("amount2").innerText = data.amount2;
+
             }
         })
     })
@@ -750,6 +752,8 @@
                 // Update the UI
                 document.getElementById("amount").innerText = data.amount;
                 document.getElementById("totalamount").innerText = data.totalamount;
+                document.getElementById("amount2").innerText = data.amount2;
+
 
                
                 var parentRow = $(eml).closest("tr");

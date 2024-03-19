@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import *
 from django.views import View
 from django.http import JsonResponse
-from apiapp . models import Rating
+from userapp . models import Rating
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.

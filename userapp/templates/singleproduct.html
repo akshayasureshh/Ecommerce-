@@ -138,15 +138,15 @@
                                             </div>
                                             <div class="single-slide zoom-image-hover">
                                                 <img class="img-responsive" src="{{products.product_image1.url}}"
-                                                    alt="">
+                                                    alt="" style="width: 465px; height: 630px;">
                                             </div>
                                             <div class="single-slide zoom-image-hover">
                                                 <img class="img-responsive" src="{{products.product_image2.url}}"
-                                                    alt="">
+                                                    alt="" style="width: 465px; height: 630px;">
                                             </div>
                                             <div class="single-slide zoom-image-hover">
                                                 <img class="img-responsive" src="{{products.product_image3.url}}"
-                                                    alt="">
+                                                    alt="" style="width: 465px; height: 630px;">
                                             </div>
                                             <div class="single-slide zoom-image-hover">
                                                 <img class="img-responsive" src="{{products.product_image4.url}}"
@@ -172,7 +172,7 @@
                                             </div>
                                             <div class="single-slide">
                                                 <img class="img-responsive" src="{{products.product_image4.url}}"
-                                                    alt="">
+                                                    alt="" >
                                             </div>
                                         </div>
                                     </div>
@@ -195,7 +195,7 @@
                                             typesetting industry. Lorem Ipsum has been the industry's standard dummy
                                             text ever since the 1990</div>
 
-                                        <div class="ec-single-sales">
+                                        <!-- <div class="ec-single-sales">
                                             <div class="ec-single-sales-inner">
                                                 <div class="ec-single-sales-title">sales accelerators</div>
                                                 <div class="ec-single-sales-visitor">real time <span>24</span> visitor
@@ -211,15 +211,15 @@
                                                     <div class="ec-single-count-desc">Time is Running Out!</div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <div class="ec-single-price-stoke">
                                             <div class="ec-single-price">
                                                 <span class="ec-single-ps-title">As low as</span>
-                                                <span class="new-price">$97.00</span>
+                                                <span class="new-price">{{products.price}}</span>
                                             </div>
                                             <div class="ec-single-stoke">
-                                                <span class="ec-single-ps-title">IN STOCK</span>
-                                                <span class="ec-single-sku">SKU#: WH12</span>
+                                                <span class="ec-single-ps-title">{{products.availability}}</span>
+                                                <!-- <span class="ec-single-sku">SKU#: WH12</span> -->
                                             </div>
                                         </div>
 
@@ -321,59 +321,106 @@
                             <div class="tab-content  ec-single-pro-tab-content">
                                 <div id="ec-spt-nav-details" class="tab-pane fade show active">
                                     <div class="ec-single-pro-tab-desc">
-                                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                                            Lorem Ipsum has been the industry's standard dummy text ever since the
-                                            1500s, when an unknown printer took a galley of type and scrambled it to
-                                            make a type specimen book. It has survived not only five centuries, but also
-                                            the leap into electronic typesetting, remaining essentially unchanged.
-                                        </p>
-                                        <ul>
-                                            <li>Any Product types that You want - Simple, Configurable</li>
-                                            <li>Downloadable/Digital Products, Virtual Products</li>
+                                        <p>{{products.description}}</p>
+                                        
+                                        
+                                         <ul> 
+                                            <li>{{products.product_type}}</li>
+                                            <!-- <li>Downloadable/Digital Products, Virtual Products</li>
                                             <li>Inventory Management with Backordered items</li>
-                                            <li>Flatlock seams throughout.</li>
-                                        </ul>
+                                            <li>Flatlock seams throughout.</li> -->
+                                        </ul> 
                                     </div>
                                 </div>
                                 <div id="ec-spt-nav-info" class="tab-pane fade">
                                     <div class="ec-single-pro-tab-moreinfo">
-                                        <ul>
-                                            <li><span>Weight</span> 1000 g</li>
+                                        <!-- <ul> -->
+                                            <!-- <li><span></span> 1000 g</li>
                                             <li><span>Dimensions</span> 35 × 30 × 7 cm</li>
-                                            <li><span>Color</span> Black, Pink, Red, White</li>
+                                            <li><span>Color</span> Black, Pink, Red, White</li> -->
+                                            <ul>
+                                                {% for key, value in product.size.items %}
+                                                <li>
+                                                    <span>{{ key }}</span>
+                                                    {% if value is list %}
+                                                        {% for item in value %}
+                                                            {{ item }},
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {{ value }}
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+
+                                            <!-- </ul> -->
                                         </ul>
                                     </div>
                                 </div>
 
                                 <div id="ec-spt-nav-review" class="tab-pane fade">
                                     <div class="row">
+                                        {% for review in reviews|slice:":2" %}
                                         <div class="ec-t-review-wrapper">
                                             <div class="ec-t-review-item">
                                                 <div class="ec-t-review-avtar">
-                                                    <img src="assets/images/review-image/1.jpg" alt="" />
+                                                    <i
+                                        class="fi-rr-user"></i>
+                                                    
                                                 </div>
                                                 <div class="ec-t-review-content">
                                                     <div class="ec-t-review-top">
-                                                        <div class="ec-t-review-name">Jeny Doe</div>
+                                                        <div class="ec-t-review-name">{{review.user.username}}</div>
                                                         <div class="ec-t-review-rating">
-                                                            <i class="ecicon eci-star fill"></i>
-                                                            <i class="ecicon eci-star fill"></i>
-                                                            <i class="ecicon eci-star fill"></i>
-                                                            <i class="ecicon eci-star fill"></i>
-                                                            <i class="ecicon eci-star-o"></i>
+                                                        {% if review.rating == 0 %}
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                              
+                                                        {% elif review.rating == 1 %}
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                        {% elif review.rating == 2 %}                                                            
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+                                                           <i class="ecicon eci-star-o"></i>
+
+
+                                                        {% elif review.rating == 3 %}
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star fill"></i>
+
+                                                        {% elif review.rating == 4 %}
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star fill"></i>
+                                                           <i class="ecicon eci-star fill"></i>
+
+                                                        {% elif review.rating == 5 %}
+                                                        <i class="ecicon eci-star fill"></i>
+                                                        <i class="ecicon eci-star fill"></i>
+                                                        <i class="ecicon eci-star fill"></i>
+                                                        <i class="ecicon eci-star fill"></i>
+                                                        <i class="ecicon eci-star fill"></i>
+                                                        
+                                                        {% endif %}
                                                         </div>
                                                     </div>
                                                     <div class="ec-t-review-bottom">
-                                                        <p>Lorem Ipsum is simply dummy text of the printing and
-                                                            typesetting industry. Lorem Ipsum has been the industry's
-                                                            standard dummy text ever since the 1500s, when an unknown
-                                                            printer took a galley of type and scrambled it to make a
-                                                            type specimen.
+                                                        <p>{{review.description}}
                                                         </p>
+                                                        <p>{{review.created_at}}</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="ec-t-review-item">
+                                            <!-- <div class="ec-t-review-item">
                                                 <div class="ec-t-review-avtar">
                                                     <img src="assets/images/review-image/2.jpg" alt="" />
                                                 </div>
@@ -397,30 +444,36 @@
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                         </div>
+                                        {% endfor %}
                                         <div class="ec-ratting-content">
                                             <h3>Add a Review</h3>
                                             <div class="ec-ratting-form">
-                                                <form action="#">
+                                                <form action="{% url 'review' products.id %}" method="post">
+                                                    {% csrf_token %}
                                                     <div class="ec-ratting-star">
                                                         <span>Your rating:</span>
                                                         <div class="ec-t-review-rating">
-                                                            <i class="ecicon eci-star fill"></i>
-                                                            <i class="ecicon eci-star fill"></i>
-                                                            <i class="ecicon eci-star-o"></i>
-                                                            <i class="ecicon eci-star-o"></i>
-                                                            <i class="ecicon eci-star-o"></i>
+                                                             <select id="items" name="items">
+                                                                <option value=1>1 star</option>
+                                                                <option value=2>2 stars</option>
+                                                                <option value=3>3 stars</option>
+                                                                <option value=4>4 stars</option>
+                                                                <option value=5>5 stars</option>
+
+                                                                
+                                                            </select>
                                                         </div>
                                                     </div>
-                                                    <div class="ec-ratting-input">
+                                                    <!-- <div class="ec-ratting-input">
                                                         <input name="your-name" placeholder="Name" type="text" />
                                                     </div>
                                                     <div class="ec-ratting-input">
                                                         <input name="your-email" placeholder="Email*" type="email"
                                                             required />
-                                                    </div>
+                                                    </div> -->
                                                     <div class="ec-ratting-input form-submit">
                                                         <textarea name="your-commemt"
                                                             placeholder="Enter Your Comment"></textarea>
@@ -432,6 +485,7 @@
                                         </div>
                                     </div>
                                 </div>
+                               
                             </div>
                         </div>
                     </div>
@@ -809,39 +863,40 @@
             </div>
             <div class="row margin-minus-b-30">
                 <!-- Related Product Content -->
-                
+                {% for product in relatedproducts|slice:":4" %}
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 mb-6 pro-gl-content">
                     <div class="ec-product-inner">
                         <div class="ec-pro-image-outer">
                             <div class="ec-pro-image">
                                 <a href="product-left-sidebar.html" class="image">
                                     <img class="main-image"
-                                        src="{{i.product_image.url}}" alt="Product" />
+                                        src="{{product.product_image.url}}" alt="Product" style="width: 365px; height: 410px;" />
                                     <img class="hover-image"
-                                        src="{{i.product_image.url}}" alt="Product" />
+                                        src="{{product.product_image.url}}" alt="Product" style="width: 365px; height: 410px;" />
                                 </a>
                                 <span class="percentage">20%</span>
-                                <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
-                                    data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a>
+                                <!-- <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
+                                    data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a> -->
                                 <div class="ec-pro-actions">
-                                    <form action="/add-to-cart" class="d-inline" style="width: 150px;height: 40px;font-family:Georgia, 'Times New Roman', Times, serif;">
+                                    <!-- <form action="/add-to-cart" class="d-inline" style="width: 150px;height: 40px;font-family:Georgia, 'Times New Roman', Times, serif;">
                                         <input type="hidden" name="prod_id" value="{{ products.id }}">
-                                        <button type="submit" class=" gap-2 btn btn-dark p-1 m-1 btn-lg text-decoration-none text-white">Add to Cart</button>
-                                    </form>
+                                        <button type="submit" class=" gap-2 btn btn-dark p-1 m-1 btn-lg text-decoration-none text-white"><i
+                                            class="fi-rr-shopping-basket"></i></button>
+                                    </form> -->
                                     <!-- <a class="ec-btn-group wishlist" title="Wishlist"><i class="fi-rr-heart"></i></a> -->
                                     <div class="wishlist-button" style="margin-left: 120px;">
-                                        {% if wishlist %}
-                                            <a href="{% url 'minus_wishlist' products.id %}" class="plus-wishlist btn btn-danger shadow  " style="width: 50px;"><i class="fas fa-heart fa-lg"></i></a>
-                                        <!-- {% else %}
-                                            <a href="{% url 'plus_wishlist' products.id %}" class="minus-wishlist btn btn-dark shadow " style="width: 50px;"><i class="fas fa-heart fa-lg"></i></a> -->
-                                        {% endif %}
+                                    {% if wishlist %}
+                                        <a href="{% url 'minus_wishlist' products.id %}" class="plus-wishlist btn  shadow  " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
+                                    {% else %}
+                                        <a href="{% url 'plus_wishlist' products.id %}" class="minus-wishlist btn  shadow " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
+                                    {% endif %}
                                     </div>
                                    
                                 </div>
                             </div>
                         </div>
                         <div class="ec-pro-content">
-                            <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Round Neck T-Shirt</a></h5>
+                            <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{product.title}}</a></h5>
                             <div class="ec-pro-rating">
                                 <i class="ecicon eci-star fill"></i>
                                 <i class="ecicon eci-star fill"></i>
@@ -849,10 +904,10 @@
                                 <i class="ecicon eci-star fill"></i>
                                 <i class="ecicon eci-star"></i>
                             </div>
-                            <div class="ec-pro-list-desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dutmmy text ever since the 1500s, when an unknown printer took a galley.</div>
+                            <!-- <div class="ec-pro-list-desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dutmmy text ever since the 1500s, when an unknown printer took a galley.</div> -->
                             <span class="ec-price">
-                                <span class="old-price">$27.00</span>
-                                <span class="new-price">$22.00</span>
+                                <!-- <span class="old-price">${{product.price}}</span> -->
+                                <span class="new-price">${{product.price}}</span>
                             </span>
                             <div class="ec-pro-option">
                                 <!-- <div class="ec-pro-color">
@@ -886,6 +941,7 @@
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             
              
             </div>
@@ -899,7 +955,6 @@
 
 
  $('.plus-wishlist').click(function(){
-     window.alert("inside plus")
      var id=$(this).attr("pid").toString();
      console.log(id);
      $.ajax({
@@ -909,7 +964,6 @@
              prod_id:id
          },
          success:function(data){
-             window.alert(prod_id)
              //alert(data.message)
              window.location.href = '//http:localhost:8000/singleproduct/' + id;
          }

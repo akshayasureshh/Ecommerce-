@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 import uuid
 from django.db.models import JSONField
+import json
 # Create your models here.
 
 
@@ -129,6 +130,11 @@ class Product(models.Model):
     def __str__(self):
         return self.title
     
+
+    def get_json_data(self):
+        return json.dumps(self.size)
+
+
     
     def save(self, *args, **kwargs):
         # If title is empty, generate a unique identifier as a fallback
