@@ -105,8 +105,10 @@ def singleproduct(request, id):
     parent_categories = Category.objects.all()
     relatedproduct = Product.objects.all()
     products = Product.objects.get(id=id)
-    product = get_object_or_404(Product, pk=id)
-    reviews = Rating.objects.filter(product=product)
+    size_list = json.loads(products.size[0])
+    reviews = Rating.objects.filter(product=products)
+    colors = [products.color1, products.color2, products.color3, products.color4]
+    colors = [color for color in colors if color]
 
     wishlist = WishList.objects.filter(Q(product=products) & Q(user=request.user.pk))
     totalitem = 0
@@ -124,6 +126,8 @@ def singleproduct(request, id):
         'wishitem':wishitem,
         'relatedproducts': relatedproduct,
         'reviews': reviews,
+        'sizes': size_list,
+        'colors': colors,
 
     }
     

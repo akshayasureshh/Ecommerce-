@@ -228,10 +228,10 @@
                                                 <span>SIZE</span>
                                                 <div class="ec-pro-variation-content">
                                                     <ul>
-                                                        <li class="active"><span>S</span></li>
-                                                        <li><span>M</span></li>
-                                                        <li><span>L</span></li>
-                                                        <li><span>XL</span></li>
+                                                        {% for size in sizes %}
+                                                             <li>{{ size }}</li>
+                                                        {% endfor %}
+                                                        {{products.custom_size}}
                                                     </ul>
                                                 </div>
                                             </div>
@@ -239,11 +239,11 @@
                                                 <span>Color</span>
                                                 <div class="ec-pro-variation-content">
                                                     <ul>
-                                                        <li class="active"><span
-                                                                style="background-color:#1b4a87"></span></li>
-                                                        <li><span style="background-color:#5f94d6"></span></li>
-                                                        <li><span style="background-color:#72aea2"></span></li>
-                                                        <li><span style="background-color:#c79782"></span></li>
+                                                        {% for color in colors %}
+                                                        <li{% if forloop.first %} class="active"{% endif %}>
+                                                            <span style="background-color: {{color}}"></span>
+                                                        </li>
+                                                    {% endfor %}
                                                     </ul>
                                                 </div>
                                             </div>
@@ -339,18 +339,11 @@
                                             <li><span>Dimensions</span> 35 × 30 × 7 cm</li>
                                             <li><span>Color</span> Black, Pink, Red, White</li> -->
                                             <ul>
-                                                {% for key, value in product.size.items %}
-                                                <li>
-                                                    <span>{{ key }}</span>
-                                                    {% if value is list %}
-                                                        {% for item in value %}
-                                                            {{ item }},
-                                                        {% endfor %}
-                                                    {% else %}
-                                                        {{ value }}
-                                                    {% endif %}
-                                                </li>
-                                            {% endfor %}
+                                                {% for size_option in product.size %}
+                                                    {% with size_option|slice:"1:-1" as trimmed_size %}
+                                                        <li>{{ trimmed_size }}</li>
+                                                    {% endwith %}
+                                                {% endfor %}
 
                                             <!-- </ul> -->
                                         </ul>
