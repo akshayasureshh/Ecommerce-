@@ -108,7 +108,7 @@ def singleproduct(request, id):
     size_list = json.loads(products.size[0])
     reviews = Rating.objects.filter(product=products)
     colors = [products.color1, products.color2, products.color3, products.color4]
-    colors = [color for color in colors if color]
+    colors = [color.replace("('", "") for color in colors if color]
     print("lala colors",colors)
 
     wishlist = WishList.objects.filter(Q(product=products) & Q(user=request.user.pk))
@@ -192,6 +192,8 @@ def add_to_cart(request):
 
 # @login_required
 def show_cart(request):
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
     user=request.user
     cart=Cart.objects.filter(user=user)
     amount=0
@@ -220,6 +222,8 @@ def show_cart(request):
     }
 
     return render(request,'cart.html',locals())
+
+
 
 
 # @login_required

@@ -387,14 +387,14 @@
 
         <div class="row">
             {% if cart %}
-              <h1 class="text-center mb-5">Shopping Cart</h1>
+              <!-- <h1 class="text-center mb-5">Shopping Cart</h1> -->
               <div class="col-sm-8">
                 <div class="card">
                     <div class="card-body">
-                        <h3>Cart</h3>
+                        
                         {% for item in cart %}
                            <div class="row">
-                             <div class="col-sm-3 text-center align-self-center"><img src="{{item.product.product_image.url}}" alt="" srcset="" class="img-fluid img-thumbnail shadow-sm" height="150" width="150"></div>
+                             <div class="col-sm-3 text-center align-self-center"><img src="{{item.product.product_image.url}}" alt="" srcset="" class="img-fluid img-thumbnail shadow-sm" height="80" width="80"></div>
                               <div class="col-sm-9">
                                 <div>
                                   <h5>{{item.product.title}}</h5>
@@ -760,7 +760,7 @@
             eml.innerText=data.quantity
             document.getElementById("amount").innerText=data.amount
             document.getElementById("totalamount").innerText=data.totalamount
-            document.getElementById("amount2").innerText = data.amount2;
+            // document.getElementById("amount2").innerText = data.amount2;
 
             }
         })
@@ -782,35 +782,84 @@
                 eml.innerText=data.quantity
                 document.getElementById("amount").innerText=data.amount
                 document.getElementById("totalamount").innerText=data.totalamount
-                document.getElementById("amount2").innerText = data.amount2;
+                // document.getElementById("amount2").innerText = data.amount2;
 
             }
         })
     })
     
-    $(document).ready(function() {
-    // Check if the cart is empty initially
-    checkCartEmpty();
+    // $(document).ready(function() {
+    // // Check if the cart is empty initially
+    // checkCartEmpty();
 
-    // Function to check if the cart is empty
-    function checkCartEmpty() {
-        // Get the container element
-        var cartContainer = $('#cart-container');
+    // // Function to check if the cart is empty
+    // function checkCartEmpty() {
+    //     // Get the container element
+    //     var cartContainer = $('#cart-container');
 
-        // Check if it has any child elements (cart items)
-        if (cartContainer.children().length === 0) {
-            // If cart is empty, show the "Cart is Empty" message
-            $('#empty-cart-message').show();
-        } else {
-            // If cart is not empty, hide the message
-            $('#empty-cart-message').hide();
-        }
-    }
+    //     // Check if it has any child elements (cart items)
+    //     if (cartContainer.children().length === 0) {
+    //         // If cart is empty, show the "Cart is Empty" message
+    //         $('#empty-cart-message').show();
+    //     } else {
+    //         // If cart is not empty, hide the message
+    //         $('#empty-cart-message').hide();
+    //     }
+    // }
 
+
+    // $('.remove-cart').click(function(){
+    //     var id = $(this).attr("pid").toString();
+    //     var eml = this;
+
+    //     $.ajax({
+    //         type: "GET",
+    //         url: "{% url 'remove_cart' %}",
+    //         data: {
+    //             prod_id: id
+    //         },
+    //         success: function(data){
+    //             // Update the UI
+    //             document.getElementById("amount").innerText = data.amount;
+    //             document.getElementById("totalamount").innerText = data.totalamount;
+    //             // document.getElementById("amount2").innerText = data.amount2;
+
+
+               
+    //             var parentRow = $(eml).closest("tr");
+    //             $(parentRow).remove();
+
+                
+    //             checkCartEmpty();
+    //         }
+    //     });
+    // });
+
+    // });
+
+//     $('.remove-cart').click(function(){
+//     var id=$(this).attr("pid").toString();
+//     var eml=this
+  
+//     $.ajax({
+//         type :"GET",
+//         url:"/removecart",
+//         data:{
+//             prod_id:id
+//         },
+//         success:function(data){
+           
+          
+//             document.getElementById("amount").innerText=data.amount
+//             document.getElementById("totalamount").innerText=data.totalamount
+//             eml.parentNode.parentNode.parentNode.parentNode.remove()
+//         }
+//     })
+// })
 
     $('.remove-cart').click(function(){
         var id = $(this).attr("pid").toString();
-        var eml = this;
+        var eml = $(this); // Use jQuery object for consistency
 
         $.ajax({
             type: "GET",
@@ -820,21 +869,25 @@
             },
             success: function(data){
                 // Update the UI
-                document.getElementById("amount").innerText = data.amount;
-                document.getElementById("totalamount").innerText = data.totalamount;
-                document.getElementById("amount2").innerText = data.amount2;
+                $("#amount").text(data.amount);
+                $("#totalamount").text(data.totalamount);
 
+                // Remove the item from the cart
+                var parentRow = eml.closest(".row");
+                parentRow.remove();
 
-               
-                var parentRow = $(eml).closest("tr");
-                $(parentRow).remove();
-
-                
-                checkCartEmpty();
+                // Check if cart is empty
+                // checkCartEmpty();
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error:', errorThrown);
+                // Handle error here, e.g., show an error message to the user
             }
         });
     });
-});
+
+
+
 
 
 
