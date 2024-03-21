@@ -240,8 +240,8 @@
                                                 <div class="ec-pro-variation-content">
                                                     <ul>
                                                         {% for color in colors %}
-                                                        <li{% if forloop.first %} class="active"{% endif %}>
-                                                            <span style="background-color: {{color}}"></span>
+                                                        <li >
+                                                            <span style="background-color: {{ color|safe }}"></span>
                                                         </li>
                                                     {% endfor %}
                                                     </ul>

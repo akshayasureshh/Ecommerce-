@@ -109,6 +109,7 @@ def singleproduct(request, id):
     reviews = Rating.objects.filter(product=products)
     colors = [products.color1, products.color2, products.color3, products.color4]
     colors = [color for color in colors if color]
+    print("lala colors",colors)
 
     wishlist = WishList.objects.filter(Q(product=products) & Q(user=request.user.pk))
     totalitem = 0
@@ -232,19 +233,19 @@ def plus_cart(request):
         user=request.user
         cart=Cart.objects.filter(user=user)
         amount=0
-        amount2=0
+        # amount2=0
         for p in cart:
             value = p.quantity*p.product.price
             amount= amount + value
-            amount2=amount
+            # amount2=amount
 
         totalamount=amount+40
         #print(prod_id)
         data={
               'quantity':c.quantity,
               'amount':amount,
-              'amount2': amount2,
-              'totalamount':totalamount
+            #   'amount2': amount2,
+              'totalamount':totalamount,
         }
         return JsonResponse(data)
 
@@ -260,20 +261,20 @@ def minus_cart(request):
         user=request.user
         cart=Cart.objects.filter(user=user)
         amount=0
-        amount2=0
+        # amount2=0
 
         for p in cart:
             value = p.quantity*p.product.price
             amount= amount + value
-            amount2=amount
+            # amount2=amount
 
         totalamount=amount+40
         #print(prod_id)
         data={
               'quantity':c.quantity,
               'amount':amount,
-              'amount2': amount2,
-              'totalamount':totalamount
+            #   'amount2': amount2,
+              'totalamount':totalamount,
         }
         return JsonResponse(data)
 
@@ -287,17 +288,17 @@ def remove_cart(request):
         user=request.user
         cart=Cart.objects.filter(user=user)
         amount=0
-        amount2=0
+        # amount2=0
         for p in cart:
             value = p.quantity * p.product.price
             amount= amount + value
-            amount2=amount
+            # amount2=amount
         totalamount=amount+40
        
         data={
               'quantity':c.quantity,
               'amount':amount,
-              'amount2': amount2,
+            #   'amount2': amount2,
               'totalamount':totalamount,
             
         }
