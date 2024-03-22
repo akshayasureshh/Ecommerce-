@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Q
 from django.http import HttpResponseBadRequest
+import razorpay
+from django.conf import settings
+from django.views import View
 # Create your views here.
 
 def  home(request):
@@ -363,3 +366,69 @@ def minus_wishlist(request,id):
     
     return redirect(singleproduct, id)
 
+
+
+
+# @method_decorator(login_required,name='dispatch')
+class checkout(View):
+    def get(self,request):
+        totalitem = 0
+        wishitem = 0
+        if request.user.is_authenticated:
+          totalitem = len(Cart.objects.filter(user=request.user))
+          wishitem=len(WishList.objects.filter(user=request.user))
+
+        user=request.user
+        add=User.objects.filter(user=user)
+        cart_items=Cart.objects.filter(user=user)
+
+        famount = 0
+        for p in cart_items:
+            value=p.quantity * p.product.discounted_price
+            famount=famount + value
+        totalamount=famount+40
+        razoramount=int(totalamount * 100)
+        client=razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+        data={"amount":razoramount,"currency":"INR","receipt":"order_rcptid_12"}
+        payment_response=client.order.create(data=data)
+        print(payment_response)
+        #{'id': 'order_MxHMDkdiLLJyd7', 'entity': 'order', 'amount': 28739, 'amount_paid': 0, 'amount_due': 28739, 'currency': 'INR', 'receipt': 'order_rcptid_11', 'offer_id': None, 'status': 'created', 'attempts': 0, 'notes': [], 'created_at': 1699293499}
+        order_id=payment_response['id']
+        order_status=payment_response['status']
+        if order_status == 'created' :
+            payment = Payment(
+                user=user,
+                amount=totalamount,
+                razorpay_order_id=order_id,
+                razorpay_payment_status=order_status
+            )
+            payment.save()
+        return render(request,'app/checkout.html',locals())  
+    
+
+
+
+# @login_required
+def payment_done(request):
+    user = request.user
+    if user.is_authenticated:
+        
+     order_id=request.GET.get('order_id')
+    payment_id=request.GET.get('payment_id')
+    cust_id=request.GET.get('cust_id')
+    #print("payment_done :oid=",order_id,"pid=",payment_id,"cid=",cust_id)
+    user=request.user
+    #return redirect("orders")
+    customer=User.objects.get(id=cust_id)
+    payment=Payment.objects.get(razorpay_order_id=order_id)
+    payment.paid=True
+    payment.razorpay_payment_id=payment_id
+    payment.save()
+    cart=Cart.objects.filter(user=user)
+    cart.save()
+    for c in cart:
+        print(c)
+    OrderPlaced(user=user,customer=customer,product=c.product,quantity=c.quantity,payment=payment).save()
+    #c.delete()
+    Cart.objects.filter(user=request.user).delete()
+    return redirect("orders")

@@ -25,6 +25,10 @@ urlpatterns = [
 
     path('review/<int:product_pk>/',views.review,name='review'),
 
+    path('checkout/',views.checkout.as_view(),name='checkout'),
+
+    path('paymentdone/',views.payment_done,name='paymentdone'),
+
 
   
 ]

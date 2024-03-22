@@ -182,3 +182,38 @@
   <script src="https//checkout.razorpay.com/v1/checkout.js"></script>
 
 {% endblock main-content %}
+
+
+
+{% block payment-gateway %}
+<script>
+  var options = {
+    "key": "rzp_test_irzkM69wb6LWZl",
+    "amount": "{{razoramount}}",
+    "currency": "INR",
+    "name": "KAARLAH clothing store",
+    "description": "Purchase Product",
+    "order_id": "{{order_id}}",
+    "handler": function (response) {
+        console.log("success");
+        var form = document.getElementById("myform");
+        var custidValue = form.elements["custid"].value;
+        var redirectTo = 'http://localhost:8000/paymentdone?order_id=' + response.razorpay_order_id + '&payment_id=' + response.razorpay_payment_id + '&cust_id=' + custidValue;
+        window.location.href = redirectTo;
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response) {
+    alert(response.error.description);
+});
+document.getElementById('rzp-button1').onclick = function (e) {
+    rzp1.open();
+    e.preventDefault();
+}
+
+</script>
+
+{% endblock payment-gateway %}
