@@ -214,16 +214,13 @@ def show_cart(request):
     
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
-
     context = {
         
         'SubCate': data,
         'Category': parent_categories,
         'totalitem':totalitem,
         'wishitem':wishitem,
-
     }
-
     return render(request,'cart.html',locals())
 
 
@@ -325,12 +322,8 @@ def show_wishlist(request):
         totalitem = len(Cart.objects.filter(user=request.user))
         wishitem = len(WishList.objects.filter(user=request.user))
     product = WishList.objects.filter(user=user)
-
-
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
-
-
     context = {
         'SubCate': data,
         'Category': parent_categories,
@@ -345,7 +338,6 @@ def show_wishlist(request):
 
 
 def plus_wishlist(request,id):
-    
     products=Product.objects.get(id=id)
     print(request.user)
     user=request.user

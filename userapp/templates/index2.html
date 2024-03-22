@@ -583,30 +583,17 @@
             <!--Category Nav Start -->
             <div class="col-lg-3">
                 <ul class="ec-cat-tab-nav nav">
-                    <li class="cat-item"><a class="cat-link active" data-bs-toggle="tab" href="#tab-cat-1">
-                            <div class="cat-icons"><img class="cat-icon" src="assets/images/icons/cat_1.png"
-                                    alt="cat-icon"><img class="cat-icon-hover" src="assets/images/icons/cat_1_1.png"
-                                    alt="cat-icon"></div>
-                            <div class="cat-desc"><span>Clothes</span><span>440 Products</span></div>
-                        </a></li>
+                   
+                    {% for i in SubCate|slice:":4" %}
                     <li class="cat-item"><a class="cat-link" data-bs-toggle="tab" href="#tab-cat-2">
-                            <div class="cat-icons"><img class="cat-icon" src="assets/images/icons/cat_2.png"
-                                    alt="cat-icon"><img class="cat-icon-hover" src="assets/images/icons/cat_2_1.png"
+                            {% for j in products %}
+                            <div class="cat-icons"><img class="cat-icon" src="{% static 'assets/images/icons/cat_2.png' %}"
+                                    alt="cat-icon"><img class="cat-icon-hover" src="{% static 'assets/images/icons/cat_2_1.png' %}"
                                     alt="cat-icon"></div>
-                            <div class="cat-desc"><span>Watches</span><span>510 Products</span></div>
+                            <div class="cat-desc"><span>{{i.name}}</span><span>510 Products</span></div>
                         </a></li>
-                    <li class="cat-item"><a class="cat-link" data-bs-toggle="tab" href="#tab-cat-3">
-                            <div class="cat-icons"><img class="cat-icon" src="assets/images/icons/cat_3.png"
-                                    alt="cat-icon"><img class="cat-icon-hover" src="assets/images/icons/cat_3_1.png"
-                                    alt="cat-icon"></div>
-                            <div class="cat-desc"><span>Bags</span><span>620 Products</span></div>
-                        </a></li>
-                    <li class="cat-item"><a class="cat-link" data-bs-toggle="tab" href="#tab-cat-4">
-                            <div class="cat-icons"><img class="cat-icon" src="assets/images/icons/cat_4.png"
-                                    alt="cat-icon"><img class="cat-icon-hover" src="assets/images/icons/cat_4_1.png"
-                                    alt="cat-icon"></div>
-                            <div class="cat-desc"><span>Shoes</span><span>320 Products</span></div>
-                        </a></li>
+                    {% endfor %}
+                    
                 </ul>
 
             </div>
