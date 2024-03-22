@@ -214,3 +214,8 @@ CORS_ALLOWED_ORIGINS = [
     
 # }
 # }
+
+
+
+RAZOR_KEY_ID="rzp_test_fPnfxTSseKH8jZ"
+RAZOR_KEY_SECRET="kFmDCBwh2GsBHmmLnxHHc224"
