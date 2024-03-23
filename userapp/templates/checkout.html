@@ -265,6 +265,11 @@ var options = {
         alert(response.razorpay_payment_id);
         alert(response.razorpay_order_id);
         alert(response.razorpay_signature)
+        console.log("success");
+        var form = document.getElementById("myform");
+        var custidValue = form.elements["custid"].value;
+        var redirectTo = 'http://localhost:8000/paymentdone?order_id=' + response.razorpay_order_id + '&payment_id=' + response.razorpay_payment_id + '&cust_id=' + custidValue;
+        
     },
     "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
         "name": "Gaurav Kumar", //your customer's name
