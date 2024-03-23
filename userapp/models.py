@@ -4,6 +4,18 @@ from adminapp .models import Product
 
 # Create your models here.
 
+class Customer(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='customers')
+    name=models.CharField(max_length=200)
+    locality=models.CharField(max_length=200)
+    city=models.CharField(max_length=50)
+    mobile=models.IntegerField(default=0)
+    zipcode=models.IntegerField()
+    state=models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+
+
 
 
 class Cart(models.Model):
@@ -31,7 +43,8 @@ class Payment(models.Model):
     paid=models.BooleanField(default=False)
 
 class OrderPlaced(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    # user=models.ForeignKey(User,on_delete=models.CASCADE)
+    customer=models.ForeignKey(Customer,on_delete=models.CASCADE,null=True)
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity=models.PositiveIntegerField(default=1)
     ordered_date=models.DateField(auto_now_add=True)

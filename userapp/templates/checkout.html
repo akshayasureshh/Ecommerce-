@@ -137,7 +137,7 @@
                 <div class="card-body">
                     <h5>Product:{{item.product.title}}</h5>
                     <p>Quantity:{{item.quantity}}</p>
-                    <p class="fw-bold">Price:{{item.product.discounted_price}}</p>
+                    <p class="fw-bold">Price:{{item.product.price}}</p>
                 </div>
                </div>
             {% endfor %}
@@ -186,9 +186,9 @@
 
 
 {% block payment-gateway %}
-<script>
+<!-- <script>
   var options = {
-    "key": "rzp_test_fPnfxTSseKH8jZ",
+    "key": "rzp_test_QOX3KP4iASs3Ve",
     "amount": "{{razoramount}}",
     "currency": "INR",
     "name": "Razid ecommerce site",
@@ -214,6 +214,40 @@ document.getElementById('rzp-button1').onclick = function (e) {
     e.preventDefault();
 }
 
-</script>
+</script> -->
 
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "rzp_test_QOX3KP4iASs3Ve", // Enter the Key ID generated from the Dashboard
+    "amount": "{{razoramount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Razid ecommerce sitep", //your business name
+    "description": "purchase",
+    "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "callback_url": "http://localhost:8000/paymentdone?order_id=' + response.razorpay_order_id + '&payment_id=' + response.razorpay_payment_id + '&cust_id=' + custidValue/",
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"     
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response) {
+    alert(response.error.description);
+});
+
+var rzp1 = new Razorpay(options);
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script>
 {% endblock payment-gateway %}

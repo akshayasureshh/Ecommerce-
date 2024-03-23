@@ -371,12 +371,13 @@ class checkout(View):
           wishitem=len(WishList.objects.filter(user=request.user))
 
         user=request.user
-        add=User.objects.filter(user=user)
+        print(request.user)
+        # add=User.objects.filter(user=user)
         cart_items=Cart.objects.filter(user=user)
 
         famount = 0
         for p in cart_items:
-            value=p.quantity * p.product.discounted_price
+            value=p.quantity * p.product.price
             famount=famount + value
         totalamount=famount+40
         razoramount=int(totalamount * 100)
@@ -395,7 +396,7 @@ class checkout(View):
                 razorpay_payment_status=order_status
             )
             payment.save()
-        return render(request,'app/checkout.html',locals())  
+        return render(request,'checkout.html',locals())  
     
 
 
@@ -403,6 +404,7 @@ class checkout(View):
 # @login_required
 def payment_done(request):
     user = request.user
+    # print(request.user)
     if user.is_authenticated:
         
      order_id=request.GET.get('order_id')
