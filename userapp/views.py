@@ -425,13 +425,13 @@ def payment_done(request):
     OrderPlaced(user=user,customer=customer,product=c.product,quantity=c.quantity,payment=payment).save()
     #c.delete()
     Cart.objects.filter(user=request.user).delete()
-    return redirect("orders")
+    return redirect("home")
 
 
 
 def search_view(request):
     if request.method == 'GET':
         search_query = request.GET.get('search_query', '')
-        product = Product.objects.filter(slug__icontains=search_query)
+        product = Product.objects.filter(slug__icontains=search_query) | Product.objects.filter(product_tag__icontains=search_query)
         return render(request, 'search.html', {'product': product})
     return render(request, 'index2.html')

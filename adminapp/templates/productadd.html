@@ -71,7 +71,7 @@
 															</div>
 														</div>
 													</div>
-													<div class="thumb-upload-set colo-md-12">
+													<div class="thumb-upload-set col-md-12">
 														<div class="thumb-upload">
 															<div class="thumb-edit">
 																<input type='file' id="thumbUpload01" name="image1"
@@ -291,37 +291,43 @@
 																		<label class="form-check-label" for="sizeXXL">XXL</label>
 																	</div>
 																	
-																	<div class="form-check">
+																	<!-- <div class="form-check">
 																		<input class="form-check-input" type="checkbox" name="size" value="mm" id="sizeMM">
 																		<label class="form-check-label" for="sizeMM">Select custom size in mm</label>
-																	</div>
+																	</div> -->
 																</div>
 															</div>
 															<!-- Hidden input field to store selected sizes -->
 															<input type="hidden" name="selectedSizes" id="selectedSizes" />
+															<div class="col-md-6 mt-3">
+																	
+																<div id="customSizeField">
+																	
+																	<label for="customSizeInput">Custom Size:</label>
+																	<input type="text" class="form-control" id="customSizeInput" name="customsize">
+																</div>
+															</div>
+														
+
+															<div class="col-md-6">
+																<label class="form-label">Price <span>( In USD
+																		)</span></label>
+																<input type="text" class="form-control" id="price1" name="price">
+															</div>
+															<div class="col-md-6">
+																<label class="form-label">Quantity</label>
+																<input type="number" class="form-control" id="quantity1" name="quantity">
+															</div>
+
+
 														</div>
+														
 													<!-- </div> -->
 													
 
-        <div class="col-md-6 mt-3">
-			
-            <div id="customSizeField">
-				
-                <label for="customSizeInput">Custom Size:</label>
-                <input type="text" class="form-control" id="customSizeInput" name="customsize">
-            </div>
-        </div>
-    </div>
-</div>
-													<div class="col-md-6">
-														<label class="form-label">Price <span>( In USD
-																)</span></label>
-														<input type="text" class="form-control" id="price1" name="price">
-													</div>
-													<div class="col-md-6">
-														<label class="form-label">Quantity</label>
-														<input type="number" class="form-control" id="quantity1" name="quantity">
-													</div>
+															
+													
+													
 													<div class="col-md-12">
 														<label class="form-label">Ful Detail</label>
 														<textarea name="fulldetail" class="form-control" rows="4"></textarea>

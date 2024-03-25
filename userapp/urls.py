@@ -29,7 +29,7 @@ urlpatterns = [
 
     path('paymentdone/',views.payment_done,name='paymentdone'),
 
-
+    path('search/',views.search_view,name="search"),
   
 ]
 if settings.DEBUG:

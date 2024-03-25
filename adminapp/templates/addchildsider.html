@@ -29,35 +29,45 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-
-{% endblock %}
-
-
-{% block main-content %}
-
-<div class="container mt-5">
-    <h2 class="mb-4">Upload Images</h2>
-
-    <!-- Image Upload Form -->
-    <form action="{% url 'childslider' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        <!-- File Input -->
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" class="form-control-text" id="name" name="name"  required>
-        </div>
-        <div class="form-group">
-            <label for="image">Choose Image</label>
-            <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
-</div>
-
-
-
-
-{% endblock main-content %}
+<style>
+    /* Custom CSS styles */
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    
+    
+    /* Add any additional custom styles as needed */
+    </style>
+    {% endblock %}
+    
+    {% block main-content %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Upload Images</h2>
+    
+        <!-- Image Upload Form -->
+        <form action="{% url 'childslider' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Name Input -->
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control-text" id="name" name="name"  required>
+            </div>
+            
+            <!-- File Input -->
+            <div class="form-group">
+                <label for="image">Choose Image</label>
+                <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
+            </div>
+    
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+    </div>
+    {% endblock %}
