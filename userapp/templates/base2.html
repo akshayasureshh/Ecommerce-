@@ -256,9 +256,9 @@
                         <!-- Ec Header Search Start -->
                         <div class="align-self-center">
                             <div class="header-search">
-                                <form class="ec-btn-group-form" action="#">
+                                <form class="ec-btn-group-form" action="{% url 'search' %}">
                                     <input class="form-control ec-search-bar" placeholder="Search products..."
-                                        type="text">
+                                        type="text" name="search_query">
                                     <button class="submit" type="submit"><i class="fi-rr-search"></i></button>
                                 </form>
                             </div>
