@@ -11,32 +11,45 @@ from django.http import HttpResponseBadRequest
 import razorpay
 from django.conf import settings
 from django.views import View
+from django.db.models import Sum
 # Create your views here.
 
-def  home(request):
-     data = SubCategory.objects.all()
-     parent_categories = Category.objects.all()
-     parent_slider =  BackgroundSliders.objects.all()
-     child_slider = ChildSliders.objects.all()
-     product = Product.objects.all()
-     totalitem = 0
-     wishitem = 0
-     if request.user.is_authenticated:
-        totalitem = len(Cart.objects.filter(user=request.user))
-        wishitem=len(WishList.objects.filter(user=request.user))
+def home(request):
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    parent_slider = BackgroundSliders.objects.all()
+    child_slider = ChildSliders.objects.all()
+    products = Product.objects.all()
 
-     context ={
-          'SubCate':data,
-          'Category' : parent_categories,
-          'parent_slider':parent_slider,
-          'child_slider':child_slider,
-          'products':product,
-          'totalitem':totalitem,
-          'wishitem':wishitem,
+    newarrival = Product.objects.latest('id')
+    latest_products = Product.objects.order_by('-id')[:4]
+    totalitem = 0
+    wishitem = 0
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+    
+    # Calculate total quantity count for each category
+    category_quantities = {}
+    for category in parent_categories:
+        category_products = products.filter(categories__parent_category=category)
+        category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+        category_quantities[category.name] = category_total_quantity
 
-     }
+    context = {
+        'SubCate': data,
+        'Category': parent_categories,
+        'parent_slider': parent_slider,
+        'child_slider': child_slider,
+        'products': products,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'newarrival': newarrival,
+        'category_quantities': category_quantities,  
+        'latest_products': latest_products,
+    }
 
-     return render(request, 'index2.html',context)
+    return render(request, 'index2.html', context)
 
 
 

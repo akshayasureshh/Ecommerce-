@@ -308,52 +308,15 @@ body {
 .ec_cat_inner .ec-category-image img {
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  width: 50px;
+  
   max-width: unset;
-  height: 42px;
+  
 }
 .ec_cat_inner svg {
   min-width: 50px;
   fill: #444;
 }
 
-/* chlid carousal fix */
-.ec_cat_content_1 {
-    width: 200px; /* Set the width as needed */
-    height: 300px; /* Set a fixed height for each carousel item */
-    margin: 0 10px; /* Add margins as needed */
-    overflow: hidden; /* Hide overflowing content */
-}
-
-.ec_cat_inner_1 {
-    height: 100%; /* Ensure inner container fills the parent */
-    display: flex;
-    flex-direction: column;
-}
-
-.ec-category-image {
-    flex: 1; /* Allow the image to expand vertically */
-}
-
-.ec-category-image img {
-    width: 100%; /* Ensure images fill their container */
-    height: 100%; /* Ensure images fill their container */
-    object-fit: cover; /* Maintain aspect ratio and cover container */
-}
-
-.ec-category-desc {
-    flex-shrink: 0; /* Prevent the description from shrinking */
-    padding: 10px; /* Add padding as needed */
-}
-
-h3 {
-    margin: 0; /* Remove default margins */
-    overflow: hidden; /* Hide overflowing content */
-    text-overflow: ellipsis; /* Add ellipsis for long headings */
-    white-space: nowrap; /* Prevent wrapping */
-}
-
-/* end */
 
 
 
@@ -18407,7 +18370,7 @@ button.btn-close.qty_close {
 .ec-product-inner .ec-pro-content .ec-price span.old-price {
   font-size: 15px;
   margin-right: 15px;
-  text-decoration: line-through;
+  /* text-decoration: line-through; */
   color: #777777;
 }
 .ec-product-inner .ec-pro-content .btn {
@@ -19502,7 +19465,7 @@ div#ec_news_signup {
 .quickview-pro-content .ec-quickview-price span.old-price {
   font-size: 18px;
   margin-right: 10px;
-  text-decoration: line-through;
+  /* text-decoration: line-through; */
   color: #444444;
 }
 .quickview-pro-content .ec-quickview-price span.new-price {
@@ -21277,7 +21240,7 @@ h4.ec-faq-title::after {
 .product_page .ec-sidebar-slider .ec-sb-pro-sl .ec-sb-pro-sl-item .ec-pro-content .ec-price span.old-price {
   font-size: 13px;
   margin-right: 15px;
-  text-decoration: line-through;
+  /* text-decoration: line-through; */
   color: #777777;
   line-height: 14px;
 }
