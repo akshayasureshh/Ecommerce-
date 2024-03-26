@@ -289,7 +289,7 @@ body {
 .ec_cat_inner .ec-category-image {
   width: 50px;
   min-width: 50px;
-  height: 50px;
+  height: 100px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -303,19 +303,61 @@ body {
 }
 .ec_cat_inner .ec-category-image svg {
   width: 30px;
-  height: 30px;
+  height: 42px;
 }
 .ec_cat_inner .ec-category-image img {
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  width: 30px;
+  width: 50px;
   max-width: unset;
-  height: 30px;
+  height: 42px;
 }
 .ec_cat_inner svg {
   min-width: 50px;
   fill: #444;
 }
+
+/* chlid carousal fix */
+.ec_cat_content_1 {
+    width: 200px; /* Set the width as needed */
+    height: 300px; /* Set a fixed height for each carousel item */
+    margin: 0 10px; /* Add margins as needed */
+    overflow: hidden; /* Hide overflowing content */
+}
+
+.ec_cat_inner_1 {
+    height: 100%; /* Ensure inner container fills the parent */
+    display: flex;
+    flex-direction: column;
+}
+
+.ec-category-image {
+    flex: 1; /* Allow the image to expand vertically */
+}
+
+.ec-category-image img {
+    width: 100%; /* Ensure images fill their container */
+    height: 100%; /* Ensure images fill their container */
+    object-fit: cover; /* Maintain aspect ratio and cover container */
+}
+
+.ec-category-desc {
+    flex-shrink: 0; /* Prevent the description from shrinking */
+    padding: 10px; /* Add padding as needed */
+}
+
+h3 {
+    margin: 0; /* Remove default margins */
+    overflow: hidden; /* Hide overflowing content */
+    text-overflow: ellipsis; /* Add ellipsis for long headings */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+/* end */
+
+
+
+
 
 .ec-category-desc {
   width: 100%;
