@@ -21,6 +21,7 @@
 <!-- FAVICON -->
 <link href="{% static 'img/favicon.png' %}" rel="shortcut icon" />
 
+<link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet">
 {% endblock %}
 
 
@@ -57,20 +58,24 @@
 												<div class="ec-vendor-main-img">
 													<div class="avatar-upload">
 														<div class="avatar-edit">
-															<input type='file' id="imageUpload" class="ec-image-upload" name="product_image"
-																accept=".png, .jpg, .jpeg" />
-															<label for="imageUpload"><img
-																	src="{% static 'images/icons/edit.svg' %}"
-																	class="svg_img header_svg" alt="edit" /></label>
+															<input type='file' id="imageUpload" class="ec-image-upload" name="product_image" accept=".png, .jpg, .jpeg" />
+															<label for="imageUpload">
+																<img src="{% static 'images/icons/edit.svg' %}" class="svg_img header_svg" alt="edit" />
+															</label>
 														</div>
 														<div class="avatar-preview ec-preview">
 															<div class="imagePreview ec-div-preview">
-																<img class="ec-image-preview" name="product_image"
-																	src="{% static 'images/products/vender-upload-preview.jpg' %}"
-																	alt="edit" />
+																<img class="ec-image-preview" src="{% static 'images/products/vender-upload-preview.jpg' %}" alt="edit" />
 															</div>
 														</div>
+														<!-- Cropper container -->
+														<div class="cropper-container" style="display: none;">
+															<canvas id="cropperCanvas"></canvas>
+															<button class="cropButton">Crop Image</button>
+														</div>
 													</div>
+													
+													
 													<div class="thumb-upload-set col-md-12">
 														<div class="thumb-upload">
 															<div class="thumb-edit">
@@ -91,6 +96,7 @@
 														</div>
 														<div class="thumb-upload">
 															<div class="thumb-edit">
+																
 																<input type='file' id="thumbUpload02" name="image2"
 																	class="ec-image-upload"
 																	accept=".png, .jpg, .jpeg" />
@@ -338,7 +344,18 @@
 														<input type="text" class="form-control" id="group_tag"
 															name="group_tag" value="" placeholder=""
 															data-role="tagsinput" />
-													</div>
+													
+														</div>
+
+														<div class="col-md-12">
+															<label for="admin_choice">Does customer need to upload picture here?</label>
+															<select id="admin_choice" name="admin_choice">
+																<option value="yes">Yes</option>
+																<option value="no">No</option>
+															</select>
+														</div>
+
+
 													<div class="col-md-12">
 														<button type="submit" class="btn btn-primary">Submit</button>
 													</div>
@@ -402,7 +419,7 @@
         });
     
 </script> -->
-
+<script src="https://unpkg.com/cropperjs"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -541,4 +558,51 @@
 		}
 	});
 </script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.querySelector('.ec-image-preview');
+        const cropperContainer = document.querySelector('.cropper-container');
+        const cropperCanvas = document.getElementById('cropperCanvas'); // Cropper container for main image
+
+        // Check if Cropper library is loaded
+        if (typeof Cropper === 'undefined') {
+            console.error('Cropper library not loaded');
+            return;
+        }
+
+        const cropper = new Cropper(cropperCanvas, {
+            aspectRatio: 1,
+            viewMode: 2,
+        });
+
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                console.error('No file selected');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                cropper.replace(e.target.result);
+                cropperContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.querySelector('.cropButton').addEventListener('click', () => {
+            const croppedDataUrl = cropper.getCroppedCanvas().toDataURL();
+            // Now you can send the cropped image data to the server
+        });
+
+        // Show crop button when cropper is ready
+        cropper.on('ready', function() {
+            console.log('Cropper is ready');
+            document.querySelector('.cropButton').style.display = 'block';
+        });
+    });
+</script>
+
 {% endblock main-content %}

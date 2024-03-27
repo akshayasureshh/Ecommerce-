@@ -133,45 +133,45 @@
                                     <div class="single-product-scroll">
                                         <div class="single-product-cover">
                                             <div class="single-slide zoom-image-hover">
-                                                <img class="img-responsive" src="{{products.product_image.url}}"
+                                                <img class="img-responsive" src="{{product.product_image.url}}"
                                                     alt="" style="width: 465px; height: 630px;">
                                             </div>
                                             <div class="single-slide zoom-image-hover">
-                                                <img class="img-responsive" src="{{products.product_image1.url}}"
+                                                <img class="img-responsive" src="{{product.product_image1.url}}"
                                                     alt="" style="width: 465px; height: 630px;">
                                             </div>
                                             <div class="single-slide zoom-image-hover">
-                                                <img class="img-responsive" src="{{products.product_image2.url}}"
+                                                <img class="img-responsive" src="{{product.product_image2.url}}"
                                                     alt="" style="width: 465px; height: 630px;">
                                             </div>
                                             <div class="single-slide zoom-image-hover">
-                                                <img class="img-responsive" src="{{products.product_image3.url}}"
+                                                <img class="img-responsive" src="{{product.product_image3.url}}"
                                                     alt="" style="width: 465px; height: 630px;">
                                             </div>
                                             <div class="single-slide zoom-image-hover">
-                                                <img class="img-responsive" src="{{products.product_image4.url}}"
-                                                    alt="">
+                                                <img class="img-responsive" src="{{product.product_image4.url}}"
+                                                    alt="" style="width: 465px; height: 630px;">
                                             </div>
                                         </div>
                                         <div class="single-nav-thumb">
                                             <div class="single-slide">
-                                                <img class="img-responsive" src="{{products.product_image.url}}"
+                                                <img class="img-responsive" src="{{product.product_image.url}}"
                                                     alt="">
                                             </div>
                                             <div class="single-slide">
-                                                <img class="img-responsive" src="{{products.product_image1.url}}"
+                                                <img class="img-responsive" src="{{product.product_image1.url}}"
                                                     alt="">
                                             </div>
                                             <div class="single-slide">
-                                                <img class="img-responsive" src="{{products.product_image2.url}}"
+                                                <img class="img-responsive" src="{{product.product_image2.url}}"
                                                     alt="">
                                             </div>
                                             <div class="single-slide">
-                                                <img class="img-responsive" src="{{products.product_image3.url}}"
+                                                <img class="img-responsive" src="{{product.product_image3.url}}"
                                                     alt="">
                                             </div>
                                             <div class="single-slide">
-                                                <img class="img-responsive" src="{{products.product_image4.url}}"
+                                                <img class="img-responsive" src="{{product.product_image4.url}}"
                                                     alt="" >
                                             </div>
                                         </div>
@@ -179,7 +179,7 @@
                                 </div>
                                 <div class="single-pro-desc">
                                     <div class="single-pro-content">
-                                        <h5 class="ec-single-title">Unisex Cotton Neck Hoodie</h5>
+                                        <h5 class="ec-single-title">{{product.title}}</h5>
                                         <div class="ec-single-rating-wrap">
                                             <div class="ec-single-rating">
                                                 <i class="ecicon eci-star fill"></i>
@@ -191,9 +191,7 @@
                                             <span class="ec-read-review"><a href="#ec-spt-nav-review">Be the first to
                                                     review this product</a></span>
                                         </div>
-                                        <div class="ec-single-desc">Lorem Ipsum is simply dummy text of the printing and
-                                            typesetting industry. Lorem Ipsum has been the industry's standard dummy
-                                            text ever since the 1990</div>
+                                        <div class="ec-single-desc">{{product.description}}</div>
 
                                         <!-- <div class="ec-single-sales">
                                             <div class="ec-single-sales-inner">
@@ -215,10 +213,10 @@
                                         <div class="ec-single-price-stoke">
                                             <div class="ec-single-price">
                                                 <span class="ec-single-ps-title">As low as</span>
-                                                <span class="new-price">{{products.price}}</span>
+                                                <span class="new-price">{{product.price}}</span>
                                             </div>
                                             <div class="ec-single-stoke">
-                                                <span class="ec-single-ps-title">{{products.availability}}</span>
+                                                <span class="ec-single-ps-title">{{product.availability}}</span>
                                                 <!-- <span class="ec-single-sku">SKU#: WH12</span> -->
                                             </div>
                                         </div>
@@ -231,7 +229,7 @@
                                                         {% for size in sizes %}
                                                              <li>{{ size }}</li>
                                                         {% endfor %}
-                                                        {{products.custom_size}}
+                                                        {{product.custom_size}}
                                                     </ul>
                                                 </div>
                                             </div>
@@ -254,7 +252,7 @@
                                             </div> -->
                                             <div class="ec-single-cart ">
                                                 <form action="{% url 'add_to_cart' %}" class="d-inline" style="width: 150px;height: 40px;font-family:Georgia, 'Times New Roman', Times, serif;">
-                                                    <input type="hidden" name="prod_id" value="{{ products.id }}">
+                                                    <input type="hidden" name="prod_id" value="{{ product.id }}">
                                                     <button type="submit" class=" gap-2 btn btn-dark p-1 m-1 btn-lg text-decoration-none text-white">Add to Cart</button>
                                                 </form>                                           
                                              </div>
@@ -263,9 +261,9 @@
                                             </div> -->
                                             <div class="wishlist-button" style="margin-top: 4px; margin-left: 16px;">
                                                 {% if wishlist %}
-                                                    <a href="{% url 'minus_wishlist' products.id %}" class="plus-wishlist btn  shadow  " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
+                                                    <a href="{% url 'minus_wishlist' product.id %}" class="plus-wishlist btn  shadow  " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
                                                 {% else %}
-                                                    <a href="{% url 'plus_wishlist' products.id %}" class="minus-wishlist btn  shadow " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
+                                                    <a href="{% url 'plus_wishlist' product.id %}" class="minus-wishlist btn  shadow " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
                                                 {% endif %}
                                             </div>
                                             <!-- <div class="ec-single-quickview">
@@ -292,6 +290,32 @@
                                                             class="ecicon eci-plus"></i></a></li>
                                             </ul>
                                         </div>
+                                        &nbsp;<br/>&nbsp;
+                                        {% if admin_choice == "yes" %}
+                                        <div  class="ec-upload-form">
+                                            <form action="{% url 'imageupload' product.id %}" method="post" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                
+                                                <div class="ec-ratting-input ">
+                                                    <h4>Enter your text here:</h4> 
+                                                    <textarea name="your-text"
+                                                        placeholder="Enter Your Text"></textarea>
+                                                    
+                                                    <h4>Select Image:</h4>
+                                                    <input type="file" id="image" name="upload-image" accept="image/*">
+                                                     &nbsp;<br/>&nbsp;
+                                                    <button class="btn btn-primary" type="submit"
+                                                    value="Submit">Submit</button>
+                                                    
+                                                </div>
+                                                <div class="ec-upload-form form-submit">
+                                                    
+                                                </div>
+                                            </form>
+                                        </div>
+                                        {% endif %}
+
+
                                     </div>
                                 </div>
                             </div>
@@ -321,11 +345,13 @@
                             <div class="tab-content  ec-single-pro-tab-content">
                                 <div id="ec-spt-nav-details" class="tab-pane fade show active">
                                     <div class="ec-single-pro-tab-desc">
-                                        <p>{{products.description}}</p>
+                                        <p>{{product.full_detail}}</p>
                                         
                                         
                                          <ul> 
-                                            <li>{{products.product_type}}</li>
+                                            <li>{{product.product_type}}</li>
+                                            <li>{{product.description}}</li>
+
                                             <!-- <li>Downloadable/Digital Products, Virtual Products</li>
                                             <li>Inventory Management with Backordered items</li>
                                             <li>Flatlock seams throughout.</li> -->
@@ -339,11 +365,10 @@
                                             <li><span>Dimensions</span> 35 × 30 × 7 cm</li>
                                             <li><span>Color</span> Black, Pink, Red, White</li> -->
                                             <ul>
-                                                {% for size_option in product.size %}
-                                                    {% with size_option|slice:"1:-1" as trimmed_size %}
-                                                        <li>{{ trimmed_size }}</li>
-                                                    {% endwith %}
-                                                {% endfor %}
+                                                {% for size in sizes %}
+                                                             <li> {{ size }}</li>
+                                                        {% endfor %}
+                                                <li>{{product.custom_size}}</li>
 
                                             <!-- </ul> -->
                                         </ul>
@@ -444,7 +469,7 @@
                                         <div class="ec-ratting-content">
                                             <h3>Add a Review</h3>
                                             <div class="ec-ratting-form">
-                                                <form action="{% url 'review' products.id %}" method="post">
+                                                <form action="{% url 'review' product.id %}" method="post">
                                                     {% csrf_token %}
                                                     <div class="ec-ratting-star">
                                                         <span>Your rating:</span>
@@ -492,181 +517,40 @@
                             <div class="ec-sb-title">
                                 <h3 class="ec-sidebar-title">Category</h3>
                             </div>
+                            {% for i in Category %}
+
                             <div class="ec-sb-block-content">
                                 <ul>
                                     <li>
-                                        <div class="ec-sidebar-block-item">clothes</div>
+                                        <div class="ec-sidebar-block-item">{{i.name}}</div>
                                         <ul style="display: block;">
+                                            {% for j in SubCate %}
+                                            {% if j.parent_category.name == i.name %}
                                             <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Men <span>-25</span></a>
+                                                <div class="ec-sidebar-sub-item"><a href="{% url 'product-detail' j.id %}">{{j.name}} 
+                                                    {% for pro in products %}
+                                                {% if pro.data.name == j.name %}<span
+                                                    title="Available Stock">- {{pro.quantity}}</span> 
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    <!-- <span>-25</span> -->
+                                                </a>
                                                 </div>
                                             </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Women <span>-52</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Boy <span>-40</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Girl <span>-35</span></a>
-                                                </div>
-                                            </li>
+                                            {% endif %}
+                                            {% endfor %}
+                                            
+                                           
+                                        
                                         </ul>
                                     </li>
                                 </ul>
                             </div>
-                            <div class="ec-sb-block-content">
-                                <ul>
-                                    <li>
-                                        <div class="ec-sidebar-block-item">shoes</div>
-                                        <ul>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Men <span>-25</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Women <span>-52</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Boy <span>-40</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Girl <span>-35</span></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="ec-sb-block-content">
-                                <ul>
-                                    <li>
-                                        <div class="ec-sidebar-block-item">bag</div>
-                                        <ul>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Men <span>-25</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Women <span>-52</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Boy <span>-40</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Girl <span>-35</span></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="ec-sb-block-content">
-                                <ul>
-                                    <li>
-                                        <div class="ec-sidebar-block-item">cosmetics</div>
-                                        <ul>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Men <span>-25</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Women <span>-52</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Boy <span>-40</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Girl <span>-35</span></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="ec-sb-block-content">
-                                <ul>
-                                    <li>
-                                        <div class="ec-sidebar-block-item">electronics</div>
-                                        <ul>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Men <span>-25</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Women <span>-52</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Boy <span>-40</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Girl <span>-35</span></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="ec-sb-block-content">
-                                <ul>
-                                    <li>
-                                        <div class="ec-sidebar-block-item">phone</div>
-                                        <ul>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Men <span>-25</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Women <span>-52</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Boy <span>-40</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Girl <span>-35</span></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="ec-sb-block-content">
-                                <ul>
-                                    <li>
-                                        <div class="ec-sidebar-block-item">accessories</div>
-                                        <ul>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Men <span>-25</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Women <span>-52</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Boy <span>-40</span></a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="ec-sidebar-sub-item"><a href="#">Girl <span>-35</span></a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
+                            {% endfor %}
+                         
+                            
+                            
+                            
                         </div>
                         <!-- Sidebar Category Block -->
                     </div>
@@ -848,8 +732,8 @@
             <div class="row">
                 <div class="col-md-12 text-center">
                     <div class="section-title">
-                        <h2 class="ec-bg-title">Related products</h2>
-                        <h2 class="ec-title">Related products</h2>
+                        <h2 class="ec-bg-title">Related product</h2>
+                        <h2 class="ec-title">Related product</h2>
                         <p class="sub-title">Browse The Collection of Top Products</p>
                     </div>
                 </div>
@@ -872,16 +756,16 @@
                                     data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a> -->
                                 <div class="ec-pro-actions">
                                     <!-- <form action="/add-to-cart" class="d-inline" style="width: 150px;height: 40px;font-family:Georgia, 'Times New Roman', Times, serif;">
-                                        <input type="hidden" name="prod_id" value="{{ products.id }}">
+                                        <input type="hidden" name="prod_id" value="{{ product.id }}">
                                         <button type="submit" class=" gap-2 btn btn-dark p-1 m-1 btn-lg text-decoration-none text-white"><i
                                             class="fi-rr-shopping-basket"></i></button>
                                     </form> -->
                                     <!-- <a class="ec-btn-group wishlist" title="Wishlist"><i class="fi-rr-heart"></i></a> -->
                                     <div class="wishlist-button" style="margin-left: 120px;">
                                     {% if wishlist %}
-                                        <a href="{% url 'minus_wishlist' products.id %}" class="plus-wishlist btn  shadow  " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
+                                        <a href="{% url 'minus_wishlist' product.id %}" class="plus-wishlist btn  shadow  " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
                                     {% else %}
-                                        <a href="{% url 'plus_wishlist' products.id %}" class="minus-wishlist btn  shadow " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
+                                        <a href="{% url 'plus_wishlist' product.id %}" class="minus-wishlist btn  shadow " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
                                     {% endif %}
                                     </div>
                                    
@@ -941,7 +825,7 @@
         </div>
     </section>
     <!-- Related Product end -->
-
+    
 
 
     <script>

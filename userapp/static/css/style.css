@@ -21381,18 +21381,23 @@ h4.ec-faq-title::after {
 .single-nav-thumb .single-slide {
   padding: 11px 11px 0 11px;
   display: block !important;
+  width: 465px;
+  height: 169px;
+
 }
 .single-nav-thumb .slick-slide img {
   border: 1px solid #eeeeee;
   -webkit-transition: all 0.3s ease 0s;
   transition: all 0.3s ease 0s;
   cursor: pointer;
+  
 }
 .single-nav-thumb .slick-slide:hover img {
   border-color: #d02a47;
 }
 .single-nav-thumb .slick-slide.slick-current.slick-active img {
   border-color: #d02a47;
+  
 }
 .single-nav-thumb .slick-arrow {
   top: 42%;
@@ -32093,4 +32098,6 @@ input[type=email]:focus::-webkit-input-placeholder {
   font-size: 16px;
   color: #777;
 }
+
+
 /*# sourceMappingURL=style.css.map */

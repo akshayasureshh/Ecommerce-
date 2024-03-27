@@ -125,6 +125,7 @@ class Product(models.Model):
     color4 = models.CharField(max_length=7, default='#009688') 
     colors = JSONField(default=list,blank=True, null=True)
     custom_size = models.TextField(null = True,blank = True)
+    admin_choice = models.CharField(max_length=3, choices=[('yes', 'Yes'), ('no', 'No')],null=True)
 
 
     def __str__(self):

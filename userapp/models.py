@@ -85,3 +85,11 @@ class Rating(models.Model):
                 self.product_id = product_id
 
         super().save(*args, **kwargs)
+
+
+
+class ImageUpload(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_imageupload',null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_imageuplaod',null=True)
+    text = models.TextField(max_length=1000)
+    image =  models.ImageField(upload_to="user-images/")

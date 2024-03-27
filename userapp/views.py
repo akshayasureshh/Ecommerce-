@@ -20,7 +20,7 @@ def home(request):
     parent_slider = BackgroundSliders.objects.all()
     child_slider = ChildSliders.objects.all()
     products = Product.objects.all()
-
+    print("iteration problem:",products)
     newarrival = Product.objects.latest('id')
     latest_products = Product.objects.order_by('-id')[:4]
     totalitem = 0
@@ -35,7 +35,7 @@ def home(request):
         category_products = products.filter(categories__parent_category=category)
         category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
         category_quantities[category.name] = category_total_quantity
-
+    
     context = {
         'SubCate': data,
         'Category': parent_categories,
@@ -100,6 +100,10 @@ def productdetail(request,categoryID):
         totalitem = len(Cart.objects.filter(user=request.user))
         wishitem=len(WishList.objects.filter(user=request.user))
 
+    else:
+        totalitem = 0
+        wishitem = 0
+
     context = {
         'products': products,
         'SubCate':data,
@@ -117,38 +121,60 @@ def productdetail(request,categoryID):
 
 
 def singleproduct(request, id):
+    context = {}
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
     relatedproduct = Product.objects.all()
-    products = Product.objects.get(id=id)
-    size_list = json.loads(products.size[0])
-    reviews = Rating.objects.filter(product=products)
-    colors = [products.color1, products.color2, products.color3, products.color4]
+    product = Product.objects.get(id=id)
+    admin_choice = product.admin_choice
+    if product.size[0] != '':        
+        size_list = json.loads(product.size[0])        
+        context['sizes'] = size_list
+    reviews = Rating.objects.filter(product=product)
+    colors = [product.color1, product.color2, product.color3, product.color4]
     colors = [color.replace("('", "") for color in colors if color]
     print("lala colors",colors)
 
-    wishlist = WishList.objects.filter(Q(product=products) & Q(user=request.user.pk))
+    wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
     totalitem = 0
     wishitem = 0
     if request.user.is_authenticated:
         totalitem = len(Cart.objects.filter(user=request.user))
         wishitem=len(WishList.objects.filter(user=request.user))   
 
-    context = {
+    context.update({
         'wishlist' : wishlist,
-        'products': products,
+        'product': product,
         'SubCate': data,
         'Category': parent_categories,
         'totalitem':totalitem,
         'wishitem':wishitem,
         'relatedproducts': relatedproduct,
         'reviews': reviews,
-        'sizes': size_list,
+        'admin_choice': admin_choice,
         'colors': colors,
 
-    }
+    })
     
+
     return render(request, 'singleproduct.html', context)
+
+def imageupload(request,product_pk):
+    user_id = request.user.id
+    product_id = product_pk
+    if request.method=='POST':
+        text=request.POST['your-text']
+        image = request.FILES['upload-image']
+        product = get_object_or_404(Product, pk=product_id)
+        data = ImageUpload.objects.create(
+            user_id=user_id,
+            product=product,
+            text=text,
+            image=image,
+        )
+
+    return redirect(singleproduct, product_id)
+
 
 
 def review(request, product_pk):
@@ -446,5 +472,23 @@ def search_view(request):
     if request.method == 'GET':
         search_query = request.GET.get('search_query', '')
         product = Product.objects.filter(slug__icontains=search_query) | Product.objects.filter(product_tag__icontains=search_query)
-        return render(request, 'search.html', {'product': product})
+
+        data = SubCategory.objects.all()
+        parent_categories = Category.objects.all()
+        totalitem = 0
+        wishitem = 0
+        if request.user.is_authenticated:
+            totalitem = Cart.objects.filter(user=request.user).count()
+            wishitem = WishList.objects.filter(user=request.user).count()
+        
+        context = {
+        
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem':totalitem,
+        'wishitem':wishitem,
+        'product': product,
+    }
+
+        return render(request, 'search.html', context)
     return render(request, 'index2.html')
