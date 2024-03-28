@@ -12,6 +12,7 @@ import razorpay
 from django.conf import settings
 from django.views import View
 from django.db.models import Sum
+from . forms import CustomerProfileForm
 # Create your views here.
 
 def home(request):
@@ -28,6 +29,8 @@ def home(request):
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
         wishitem = WishList.objects.filter(user=request.user).count()
+
+    
     
     # Calculate total quantity count for each category
     category_quantities = {}
@@ -61,6 +64,24 @@ def register(request):
           'Category' : parent_categories,
           
     }
+     
+     if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+
+        # Perform basic form validation
+        if password1 != password2:
+            error_message = "Passwords do not match."
+            return render(request, 'register.html', {'error_message': error_message})
+
+        # Create the user
+        user = User.objects.create_user(username=name, email=email, password=password1)
+        # Optionally, you can log the user in after registration
+        # login(request, user)
+        return redirect('login')  # Redirect to the login page after successful registration
+
      return render(request,'register.html',context)
 
 
@@ -492,3 +513,117 @@ def search_view(request):
 
         return render(request, 'search.html', context)
     return render(request, 'index2.html')
+
+
+
+
+# @method_decorator(login_required,name='dispatch')
+class ProfileView(View):
+    def get(self,request):
+        form=CustomerProfileForm()
+        totalitem = 0
+        wishitem=0
+
+        if request.user.is_authenticated:
+           totalitem = len(Cart.objects.filter(user=request.user))
+           wishitem=len(WishList.objects.filter(user=request.user))
+
+        data = SubCategory.objects.all()
+        parent_categories = Category.objects.all()
+        context = {
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'form' : form,
+    }
+
+        return render(request,'user-profile.html',context)
+    def post(self,request):
+        form=CustomerProfileForm(request.POST)
+        if form.is_valid():
+            user=request.user
+            name=form.cleaned_data['name']
+            locality=form.cleaned_data['locality']
+            city=form.cleaned_data['city']
+            mobile=form.cleaned_data['mobile']
+            state=form.cleaned_data['state']
+            zipcode=form.cleaned_data['zipcode']
+
+
+            reg=Customer(user=user,name=name,locality=locality,mobile=mobile,city=city,state=state,zipcode=zipcode)
+            reg.save()
+            messages.success(request,"Congratulations ! Profile saved successfully")
+        else:
+            messages.success(request,"Invalid input data")
+
+        return render(request,'user-profile.html',locals())
+            
+
+@login_required        
+def address(request):
+    add = Customer.objects.filter(user=request.user)
+    totalitem = 0
+    wishitem = 0
+
+    if request.user.is_authenticated:
+        totalitem = len(Cart.objects.filter(user=request.user)) 
+        wishitem = len(WishList.objects.filter(user=request.user))
+
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    context = {
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'add' : add,
+    }
+
+    return render(request, 'address.html', context)
+
+
+# @method_decorator(login_required,name='dispatch')
+class updateAddress(View):
+    def get(self,request,pk):
+        add=Customer.objects.get(pk=pk)
+        form=CustomerProfileForm(instance=add)
+        totalitem = 0
+        wishitem = 0
+        if request.user.is_authenticated:
+           totalitem = len(Cart.objects.filter(user=request.user))
+           wishitem=len(WishList.objects.filter(user=request.user))
+
+        data = SubCategory.objects.all()
+        parent_categories = Category.objects.all()
+        
+        
+        context = {
+            'SubCate': data,
+            'Category': parent_categories,
+            'totalitem': totalitem,
+            'wishitem': wishitem,
+            'form': form,
+     }
+
+    
+
+        return render(request,'updateaddress.html',context)
+
+    def post(self,request,pk):
+        form=CustomerProfileForm(request.POST)
+        if form.is_valid():
+            add=Customer.objects.get(pk=pk)
+            add.name=form.cleaned_data['name']
+            add.locality=form.cleaned_data['locality']
+            add.city=form.cleaned_data['city']
+            add.mobile=form.cleaned_data['mobile']
+            add.state=form.cleaned_data['state']
+            add.zipcode=form.cleaned_data['zipcode']
+            add.save()
+            messages.success(request,"Congratulations! Profile Updated Successfully")
+        else:
+            messages.warning(request,"Invalid Input Data")
+            
+        return redirect("address")
+

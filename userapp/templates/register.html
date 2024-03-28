@@ -132,28 +132,32 @@
                 <div class="ec-register-container">
                     <div class="ec-register-form">
                         <form action="#" method="post">
-                            <span class="ec-register-wrap ec-register-half">
-                                <label>First Name*</label>
-                                <input type="text" name="firstname" placeholder="Enter your first name" required />
+                            {% csrf_token %}
+                            {% if error_message %}
+                        <p>{{ error_message }}</p>
+                         {% endif %}
+                            <span class="ec-register-wrap ">
+                                <label>Name</label>
+                                <input type="text" name="name" placeholder="Enter your first name" required />
                             </span>
                             <!-- <span class="ec-register-wrap ec-register-half">
                                 <label>Last Name*</label>
                                 <input type="text" name="lastname" placeholder="Enter your last name" required />
                             </span> -->
-                            <span class="ec-register-wrap ec-register-half">
-                                <label>Email*</label>
+                            <span class="ec-register-wrap">
+                                <label>Email</label>
                                 <input type="email" name="email" placeholder="Enter your email add..." required />
                             </span>
-                            <span class="ec-register-wrap ec-register-half">
-                                <label>Phone Number*</label>
-                                <input type="text" name="phonenumber" placeholder="Enter your phone number"
+                            <span class="ec-register-wrap ">
+                                <label>Password </label>
+                                <input type="password" name="password1" placeholder="Type your password here"
                                     required />
                             </span>
                             <span class="ec-register-wrap">
-                                <label>Address</label>
-                                <input type="text" name="address" placeholder="Address Line 1" />
+                                <label>Confirm Password</label>
+                                <input type="password" name="password2" placeholder="Confirm password" />
                             </span>
-                            <span class="ec-register-wrap ec-register-half">
+                            <!-- <span class="ec-register-wrap ec-register-half">
                                 <label>City *</label>
                                 <span class="ec-rg-select-inner">
                                     <select name="ec_select_city" id="ec-select-city" class="ec-register-select">
@@ -204,7 +208,7 @@
                                 <input class="form-control d-none" data-recaptcha="true" required
                                     data-error="Please complete the Captcha">
                                 <span class="help-block with-errors"></span>
-                            </span>
+                            </span> -->
                             <span class="ec-register-wrap ec-register-btn">
                                 <button class="btn btn-primary" type="submit">Register</button>
                             </span>

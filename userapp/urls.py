@@ -33,6 +33,12 @@ urlpatterns = [
 
     path('search/',views.search_view,name="search"),
   
+   path('profile/',views.ProfileView.as_view(),name='profile'),
+
+   path('address/',views.address,name='address'),
+
+    path('updateAddress/<int:pk>',views.updateAddress.as_view(),name='updateAddress'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
