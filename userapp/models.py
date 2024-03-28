@@ -86,7 +86,7 @@ class Payment(models.Model):
     paid=models.BooleanField(default=False)
 
 class OrderPlaced(models.Model):
-    # user=models.ForeignKey(User,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     customer=models.ForeignKey(Customer,on_delete=models.CASCADE,null=True)
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity=models.PositiveIntegerField(default=1)

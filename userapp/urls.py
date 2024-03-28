@@ -39,6 +39,8 @@ urlpatterns = [
 
     path('updateAddress/<int:pk>',views.updateAddress.as_view(),name='updateAddress'),
 
+    path('orders/',views.orders,name='orders'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

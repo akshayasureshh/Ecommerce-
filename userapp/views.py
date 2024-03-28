@@ -627,3 +627,24 @@ class updateAddress(View):
             
         return redirect("address")
 
+
+# @login_required
+def orders(request):
+    totalitem = 0
+    wishitem = 0
+    order_placed = []
+
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+        
+       
+        order_placed = OrderPlaced.objects.filter(user=request.user)
+        print(order_placed)  
+
+    context = {
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'order_placed': order_placed,
+    }
+    return render(request, 'order.html', context)
