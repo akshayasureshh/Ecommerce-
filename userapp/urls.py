@@ -41,6 +41,8 @@ urlpatterns = [
 
     path('orders/',views.orders,name='orders'),
 
+    
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

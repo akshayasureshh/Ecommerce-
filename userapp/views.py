@@ -431,8 +431,8 @@ class checkout(View):
           wishitem=len(WishList.objects.filter(user=request.user))
 
         user=request.user
-        print(request.user)
-        # add=User.objects.filter(user=user)
+        # print(request.user)
+        add=Customer.objects.filter(user=user)
         cart_items=Cart.objects.filter(user=user)
 
         famount = 0
@@ -444,7 +444,7 @@ class checkout(View):
         client=razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
         data={"amount":razoramount,"currency":"INR","receipt":"order_rcptid_12"}
         payment_response=client.order.create(data=data)
-        print(payment_response)
+        # print(payment_response)
         #{'id': 'order_MxHMDkdiLLJyd7', 'entity': 'order', 'amount': 28739, 'amount_paid': 0, 'amount_due': 28739, 'currency': 'INR', 'receipt': 'order_rcptid_11', 'offer_id': None, 'status': 'created', 'attempts': 0, 'notes': [], 'created_at': 1699293499}
         order_id=payment_response['id']
         order_status=payment_response['status']
@@ -458,6 +458,7 @@ class checkout(View):
             payment.save()
         return render(request,'checkout.html',locals())  
     
+
 
 
 
@@ -636,15 +637,19 @@ def orders(request):
 
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
-        wishitem = WishList.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()   
         
-       
-        order_placed = OrderPlaced.objects.filter(user=request.user)
-        print(order_placed)  
+    order_placed = OrderPlaced.objects.filter(user=request.user)
+    
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+         
 
     context = {
         'totalitem': totalitem,
         'wishitem': wishitem,
         'order_placed': order_placed,
+        'SubCate': data,
+        'Category': parent_categories,
     }
     return render(request, 'order.html', context)

@@ -3,6 +3,7 @@ from django.utils.text import slugify
 import uuid
 from django.db.models import JSONField
 import json
+from PIL import Image
 # Create your models here.
 
 
@@ -134,7 +135,17 @@ class Product(models.Model):
 
     def get_json_data(self):
         return json.dumps(self.size)
+    
+    # def  save(self, *args,**kwargs):
+    #     super().save(*args,**kwargs)
+    #     img=Image.open(self.product_image.path)
 
+
+    #     if img.height>100 or img.width>100:
+    #         output_size = (100,100)
+    #         img.thumbnail(output_size)
+    #         img.save(self.product_image.path)
+     
 
     
     def save(self, *args, **kwargs):
