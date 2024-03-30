@@ -15,6 +15,8 @@ urlpatterns = [
     path('backgroundslider/',views.Backgroundslider,name='backgroundslider'),
     path('childslider/',views.Childslider,name='childslider'),
     path('review/',views.Review,name='review'),
+     
+    path('crop-image/', views.upload_and_crop, name='upload_and_crop'),
     
 ] 
 

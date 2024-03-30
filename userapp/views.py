@@ -373,7 +373,7 @@ def remove_cart(request):
 
 
 
-@login_required
+# @login_required
 def show_wishlist(request):
     user=request.user
     totalitem = 0
@@ -561,7 +561,7 @@ class ProfileView(View):
         return render(request,'user-profile.html',locals())
             
 
-@login_required        
+# @login_required        
 def address(request):
     add = Customer.objects.filter(user=request.user)
     totalitem = 0
@@ -653,3 +653,49 @@ def orders(request):
         'Category': parent_categories,
     }
     return render(request, 'order.html', context)
+
+
+
+
+from django.db.models import Avg
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+def shopall(request):
+    print("inside  shop all")
+    products = Product.objects.all()
+
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count() 
+
+    for product in products:
+        print("product id : ", product.id)
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        print(product.avg_rating)
+   
+    # Paginate the products
+    paginator = Paginator(products, 12)  # Show 12 products per page
+    page_number = request.GET.get('page')
+    try:
+        products = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        products = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        products = paginator.page(paginator.num_pages)
+
+
+    context = {
+        'products': products,
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+    }
+    return render(request, 'shopall.html', context)

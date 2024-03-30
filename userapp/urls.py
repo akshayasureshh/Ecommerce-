@@ -41,6 +41,8 @@ urlpatterns = [
 
     path('orders/',views.orders,name='orders'),
 
+    path('shopall/',views.shopall,name='shopall'),
+
     
 
 ]

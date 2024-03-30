@@ -136,15 +136,15 @@ class Product(models.Model):
     def get_json_data(self):
         return json.dumps(self.size)
     
-    # def  save(self, *args,**kwargs):
-    #     super().save(*args,**kwargs)
-    #     img=Image.open(self.product_image.path)
+    def  save(self, *args,**kwargs):
+        super().save(*args,**kwargs)
+        img=Image.open(self.product_image.path)
 
 
-    #     if img.height>100 or img.width>100:
-    #         output_size = (100,100)
-    #         img.thumbnail(output_size)
-    #         img.save(self.product_image.path)
+        if img.height!=850 or img.width!=765:
+            output_size = (850,765)
+            img.thumbnail(output_size)
+            img.save(self.product_image.path)
      
 
     
@@ -187,3 +187,22 @@ class ChildSliders(models.Model):
         upload_to='child_slider_images/'
     )
     
+
+
+
+class CroppedImage(models.Model):
+    file = models.ImageField(upload_to='images')
+    uploaded = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.pk)
+    
+    def  save(self, *args,**kwargs):
+        super().save(*args,**kwargs)
+        img=Image.open(self.file.path)
+
+
+        if img.height>850 or img.width>765:
+            output_size = (850,765)
+            img.thumbnail(output_size)
+            img.save(self.file.path)

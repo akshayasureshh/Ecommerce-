@@ -135,7 +135,7 @@
                           
                             <li>
                                 <div class="ec-sidebar-block-item">{{i.name}}</div>
-                                <ul style="display: block;">
+                                <ul >
                                   {% for j in SubCate %}
                                   {% if j.parent_category.name == i.name %}
                                   <li>
@@ -515,7 +515,7 @@
         </div>
         {% endfor %}
 
-        <div class="col-sm-12 shop-all-btn"><a href="shop-left-sidebar-col-3.html">Shop All
+        <div class="col-sm-12 shop-all-btn"><a href="{% url 'shopall' %}">Shop All
           Collection</a></div>
         
 <!-- ec 4th Product tab end -->
@@ -604,7 +604,7 @@
         {% endfor %}
 
 
-            <div class="col-sm-12 shop-all-btn"><a href="shop-left-sidebar-col-3.html">Shop All
+            <div class="col-sm-12 shop-all-btn"><a href="{% url 'shopall' %}">Shop All
             Collection</a></div>
             </div>
             </div>
@@ -1010,13 +1010,13 @@
     <div class="container">
         <div class="row justify-content-end">
             <div class="col-xl-6 col-lg-7 col-md-7 col-sm-7 align-self-center ec-offer-content">
-                <h2 class="ec-offer-title">Sunglasses</h2>
+                <h2 class="ec-offer-title">{{newarrival.title}}</h2>
                 <h3 class="ec-offer-stitle" data-animation="slideInDown">Super Offer</h3>
-                <span class="ec-offer-img" data-animation="zoomIn"><img src="assets/images/offer-image/1.png"
-                        alt="offer image" /></span>
-                <span class="ec-offer-desc">Acetate Frame Sunglasses</span>
-                <span class="ec-offer-price">$40.00 Only</span>
-                <a class="btn btn-primary" href="shop-left-sidebar-col-3.html" data-animation="zoomIn">Shop Now</a>
+                <span class="ec-offer-img" data-animation="zoomIn"><img src="{{newarrival.product_image.url}}"
+                        alt="offer image" style="width: 430px; height: 150px;"/></span>
+                <span class="ec-offer-desc">{{newarrival.description}}</span>
+                <span class="ec-offer-price">{{newarrival.price}}</span>
+                <a class="btn btn-primary" href="{% url 'shopall' %}" data-animation="zoomIn">Shop Now</a>
             </div>
         </div>
     </div>
@@ -1115,7 +1115,7 @@
             </div>
             {% endfor %}
             
-            <div class="col-sm-12 shop-all-btn"><a href="shop-left-sidebar-col-3.html">Shop All Collection</a>
+            <div class="col-sm-12 shop-all-btn"><a href="{% url 'shopall' %}">Shop All Collection</a>
             </div>
         </div>
     </div>
