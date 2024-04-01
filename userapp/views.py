@@ -13,6 +13,9 @@ from django.conf import settings
 from django.views import View
 from django.db.models import Sum
 from . forms import CustomerProfileForm
+from django.urls import reverse
+import random
+from django.core.mail import send_mail
 # Create your views here.
 
 def home(request):
@@ -24,12 +27,15 @@ def home(request):
     print("iteration problem:",products)
     newarrival = Product.objects.latest('id')
     latest_products = Product.objects.order_by('-id')[:4]
+    # product = Product.objects.get(id=id)
+    # wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
     totalitem = 0
     wishitem = 0
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
         wishitem = WishList.objects.filter(user=request.user).count()
-
+    
+    
     
     
     # Calculate total quantity count for each category
@@ -38,6 +44,7 @@ def home(request):
         category_products = products.filter(categories__parent_category=category)
         category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
         category_quantities[category.name] = category_total_quantity
+    
     
     context = {
         'SubCate': data,
@@ -50,10 +57,82 @@ def home(request):
         'newarrival': newarrival,
         'category_quantities': category_quantities,  
         'latest_products': latest_products,
+        # 'wishlist' : wishlist,
     }
-
     return render(request, 'index2.html', context)
 
+
+
+# def home(request):
+#     data = SubCategory.objects.all()
+#     parent_categories = Category.objects.all()
+#     parent_slider = BackgroundSliders.objects.all()
+#     child_slider = ChildSliders.objects.all()
+#     products = Product.objects.all()
+#     print("iteration problem:",products)
+#     newarrival = Product.objects.latest('id')
+#     latest_products = Product.objects.order_by('-id')[:4]
+
+#     # id = request.GET.get('id')
+#     # product = Product.objects.get(id=id)  # Fetch the product using the retrieved id
+
+#     #         # Check wishlist only if the user is authenticated
+#     # if request.user.is_authenticated:
+#     #     wishlist = WishList.objects.filter(product=product, user=request.user.pk)
+
+  
+
+
+#     # Calculate total item count for cart and wishlist
+#     totalitem = Cart.objects.filter(user=request.user).count() if request.user.is_authenticated else 0
+#     wishitem = WishList.objects.filter(user=request.user).count() if request.user.is_authenticated else 0
+    
+#     # Calculate total quantity count for each category
+#     category_quantities = {}
+#     for category in parent_categories:
+#         category_products = products.filter(categories__parent_category=category)
+#         category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+#         category_quantities[category.name] = category_total_quantity
+    
+#     context = {
+#         'SubCate': data,
+#         'Category': parent_categories,
+#         'parent_slider': parent_slider,
+#         'child_slider': child_slider,
+#         'products': products,
+#         'totalitem': totalitem,
+#         'wishitem': wishitem,
+#         'newarrival': newarrival,
+#         'category_quantities': category_quantities,  
+#         'latest_products': latest_products,
+#         # 'wishlist' : wishlist,
+#         # 'product': product,
+        
+#     }
+#     return render(request, 'index2.html', context)
+
+
+
+def pluswish(request, id):
+    products = Product.objects.get(id=id)
+    user = request.user
+    WishList.objects.create(user=user, product=products)
+    product = Product.objects.get(id=id)
+    
+    return redirect(reverse('home'))
+
+
+
+def minuswish(request,id):
+    print("inside minus")
+   
+    try:
+        product=Product.objects.get(id=id)
+    except Product.DoesNotExist:
+        print("Not exists")
+    user=request.user
+    WishList.objects.filter(user=user,product=product).delete()
+    return redirect(home,id)
 
 
 def register(request):
@@ -156,15 +235,27 @@ def singleproduct(request, id):
     colors = [color.replace("('", "") for color in colors if color]
     print("lala colors",colors)
 
-    wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
+    # wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
     totalitem = 0
     wishitem = 0
     if request.user.is_authenticated:
         totalitem = len(Cart.objects.filter(user=request.user))
         wishitem=len(WishList.objects.filter(user=request.user))   
 
+    if product:
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        print(product.avg_rating)
+
+    # for product in relatedproduct:
+    #     print("product id : ", product.id)
+    #     avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+    #     product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+    #     print(product.avg_rating)
+       
     context.update({
-        'wishlist' : wishlist,
+        # 'wishlist' : wishlist,
         'product': product,
         'SubCate': data,
         'Category': parent_categories,
@@ -174,6 +265,7 @@ def singleproduct(request, id):
         'reviews': reviews,
         'admin_choice': admin_choice,
         'colors': colors,
+        'avg_rating': avg_rating,
 
     })
     
@@ -699,3 +791,72 @@ def shopall(request):
         'wishitem': wishitem,
     }
     return render(request, 'shopall.html', context)
+
+
+
+
+# Generate and send OTP via email
+#@login_required
+def send_otp_email(user_email):
+    otp = str(random.randint(100000, 999999))
+    send_mail(
+       'Password Reset OTP',
+        f'Your OTP for password reset is: {otp}',
+        'your_email@example.com',  # Replace with your email
+        [user_email],
+        fail_silently=False,
+    )
+    return otp
+
+# View for sending OTP
+#@login_required
+def send_otp(request):
+    if request.method == 'POST':
+        user_email = request.POST.get('email')
+        
+        if user_email:
+            otp = send_otp_email(user_email)
+            request.session['otp'] = otp  # Store OTP in the session
+            return redirect('otp_verification')  # Redirect to OTP verification page
+        else:
+            messages.error(request, 'Please enter a valid email address.')
+
+    return render(request, 'send_otp.html')  # Create a template for email input
+
+# View for OTP verification
+#@login_required
+def otp_verification(request):
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        stored_otp = request.session.get('otp')
+        if entered_otp == stored_otp:
+            return redirect("password_reset")  # Redirect to the password reset page
+        else:
+            messages.error(request, 'Invalid OTP. Please try again.')
+
+    return render(request, 'otp_verification.html')  
+
+
+#@login_required
+def password_reset(request):
+    if request.method == 'POST':
+        user=request.user
+        # Reset the user's password and clear the OTP session
+        new_password = request.POST.get('new_password')
+        # Set the new password for the user
+        # You can use Django's built-in password reset functionality or your custom logic
+        # For example, using Django's built-in functionality:
+        user.set_password(new_password)
+        user.save()
+        
+        del request.session['otp']  # Clear the stored OTP from the session
+        messages.success(request, 'Password reset successful. You can now log in with your new password.')
+        return redirect('password_reset_complete')  
+
+    return render(request, 'password_reset.html')  
+
+
+
+
+def pwcomplete(request):
+    return render(request,"password_reset_complete.html")

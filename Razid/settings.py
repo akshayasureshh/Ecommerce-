@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
     'userapp',
+    'crispy_forms',
+    'crispy_bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -97,12 +99,15 @@ DATABASES = {
     }
 }
 
-# EMAIL_BACACKEND =  'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'w3digitalagency21@gmail.com'
-# EMAIL_HOST_PASSWORD = 'yedx kflb ujyk lncf'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Replace with your preferred backend
+
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your email host
+EMAIL_PORT = 587  # Replace with your email port
+EMAIL_USE_TLS = True  # Set to False if your email server doesn't use TLS
+EMAIL_HOST_USER = 'w3digitalagency21@gmail.com'  # Replace with your email username
+EMAIL_HOST_PASSWORD ='yedx kflb ujyk lncf'  # Replace with your email password
+
 
 
 # Password validation
@@ -220,3 +225,9 @@ CORS_ALLOWED_ORIGINS = [
 
 RAZOR_KEY_ID="rzp_test_QOX3KP4iASs3Ve"
 RAZOR_KEY_SECRET="ZmP8Xoh0luLVDwYJLJfMCpGE"
+
+
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"

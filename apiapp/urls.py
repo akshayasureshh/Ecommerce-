@@ -46,32 +46,32 @@ urlpatterns = [
 
 
 
-    path('api-auth/',include('rest_framework.urls')),
+    # path('api-auth/',include('rest_framework.urls')),
 
-    # path('api-token-auth/',views.obtain_auth_token),
+    # # path('api-token-auth/',views.obtain_auth_token),
 
-    path('register/', RegisterUser.as_view(), name='register'),
-    path('login/', CustomLoginView.as_view(), name='login'),
+    # path('register/', RegisterUser.as_view(), name='register'),
+    # path('login/', CustomLoginView.as_view(), name='login'),
 
-    path('userlist/',UserList.as_view(),name='userlist'),
+    # # path('userlist/',UserList.as_view(),name='userlist'),
 
-    # path('list_products/',ListProductsGenerics.as_view(),name="list_products"),
+    # # path('list_products/',ListProductsGenerics.as_view(),name="list_products"),
 
-    # path('products_detail/<int:pk>/',ProductsDetailGenerics.as_view(),name="products_detail"),
+    # # path('products_detail/<int:pk>/',ProductsDetailGenerics.as_view(),name="products_detail"),
 
-    path('customerlist/',CustomerListGenerics.as_view(),name="customerlist"),
+    # path('customerlist/',CustomerListGenerics.as_view(),name="customerlist"),
 
-    path('customerdtailgen/<int:pk>/',CustomerDetailGenerics.as_view(),name= "custumerdetail") ,
+    # path('customerdtailgen/<int:pk>/',CustomerDetailGenerics.as_view(),name= "custumerdetail") ,
 
-    path('categorylist/',CategoryList.as_view(),name= 'categorylist' ),
+    # path('categorylist/',CategoryList.as_view(),name= 'categorylist' ),
 
-    path('categorydetail/<int:pk>/',CategoryDetail.as_view(),name= 'categorydetail' ),
+    # path('categorydetail/<int:pk>/',CategoryDetail.as_view(),name= 'categorydetail' ),
 
-    # path('api/token/', ObtainAuthTokenView.as_view(), name='api_token_auth'),
+    # # path('api/token/', ObtainAuthTokenView.as_view(), name='api_token_auth'),
 
-    path('wishlist/',Wishlist.as_view(),name='wishlist'),
+    # path('wishlist/',Wishlist.as_view(),name='wishlist'),
 
-    # path('postimage/',PostImage.as_view(),name='postimage'),
+    # # path('postimage/',PostImage.as_view(),name='postimage'),
 
 
 ]

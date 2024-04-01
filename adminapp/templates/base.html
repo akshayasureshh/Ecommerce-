@@ -35,9 +35,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
 
   <!-- custom js-->
-  <script src={% static 'js/crop-image.js' %} defer></script>
+  <script src="{% static 'js/crop-image.js' %}" defer></script>
 
-  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
 
 </head>
 
@@ -107,12 +107,12 @@
 							<div class="collapse">
 								<ul class="sub-menu" id="users" data-parent="#sidebar-menu">
 									<li>
-										<a class="sidenav-item-link" href="user-card.html">
-											<span class="nav-text">User Grid</span>
+										<a class="sidenav-item-link" href="{% url 'userlist' %}">
+											<span class="nav-text">User List</span>
 										</a>
 									</li>
 
-									<li class="">
+									<!-- <li class="">
 										<a class="sidenav-item-link" href="user-list.html">
 											<span class="nav-text">User List</span>
 										</a>
@@ -121,7 +121,7 @@
 										<a class="sidenav-item-link" href="user-profile.html">
 											<span class="nav-text">Users Profile</span>
 										</a>
-									</li>
+									</li> -->
 								</ul>
 							</div>
 							<hr>

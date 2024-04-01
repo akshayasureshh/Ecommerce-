@@ -26,8 +26,9 @@
   <!-- custom js-->
   <!-- <script src="{% static 'js/crop-image.js' %}" defer></script> -->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script> 
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
   <style>
     .not-visible {
@@ -74,7 +75,16 @@
 									<button class="btn btn-primary mt-3 not-visible" id="confirm-btn">confirm</button>
 								 
 								</div> -->
-								<form method="POST" enctype="multipart/form-data" action="{% url 'product_add' %}" id="image-form">
+								{% comment %} <div class="container mt-3">
+									<div id="alert-box"></div>
+									<div id="image-box" class="mb-3"></div>
+									<form action="#" id="image-form">
+									  {% csrf_token %}
+									  {{image_upload_form.as_p}}
+									  <button class="btn btn-primary mt-3 not-visible" id="confirm-btn">confirm</button>
+									</form>
+								</div> {% endcomment %}
+								<form method="POST" enctype="multipart/form-data" action="#" id="main-form">
 									{% csrf_token %}
 									<div class="card-body">
 										<div class="row ec-vendor-uploads">
@@ -83,35 +93,20 @@
 													<div class="ec-vendor-main-img">
 														<div class="avatar-upload">
 
-															<div class="container mt-3">
-																<div id="alert-box"></div>
-																<div id="image-box" class="mb-3"></div>
-																															
-																  
-																  {{image_upload_form.as_p}}
-																
-																<button class="btn btn-primary mt-3 not-visible" id="confirm-btn">confirm</button>
-															  </div>
 
 
-
-
-															<!-- <div class="avatar-edit">
+															 <div class="avatar-edit">
 																<input type='file' id="imageUpload" class="ec-image-upload" name="product_image" accept=".png, .jpg, .jpeg" />
 																<label for="imageUpload">
 																	<img src="{% static 'images/icons/edit.svg' %}" class="svg_img header_svg" alt="edit" />
 																</label>
-															</div> -->
-															<!-- <div class="avatar-preview ec-preview">
+															</div> 
+															<div class="avatar-preview ec-preview">
 																<div class="imagePreview ec-div-preview">
 																	<img class="ec-image-preview" src="{% static 'images/products/vender-upload-preview.jpg' %}" alt="edit" />
 																</div>
-															</div> -->
-														<!-- Cropper container -->
-														<!-- <div class="cropper-container" style="display: none;">
-															<canvas id="cropperCanvas"></canvas>
-															<button class="cropButton">Crop Image</button>
-														</div> -->
+															</div> 
+														
 													</div>
 
 
@@ -125,7 +120,7 @@
 													<div class="thumb-upload-set col-md-12">
 														<div class="thumb-upload">
 															<div class="thumb-edit">
-																<input type='file' id="id_file" name="image1"
+																<input type='file' id="thumbUpload01" name="image1"
 																	class="ec-image-upload"
 																	accept=".png, .jpg, .jpeg" />
 																<label for="imageUpload"><img
@@ -403,14 +398,14 @@
 
 
 													<div class="col-md-12">
-														<button type="submit" class="btn btn-primary">Submit</button>
+														<button type="submit" class="btn btn-primary" id="confirm-btn" >Submit</button>
 													</div>
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
-								<input type="hidden" id="croppedImageData" name="cropped_image_data" />
+								{% comment %} <input type="hidden" id="croppedImageData" name="cropped_image_data" /> {% endcomment %}
 							
 							   </form>
 							</div>
@@ -606,44 +601,31 @@
 		}
 	});
 </script>
-<!-- 
+
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var image = document.getElementById('imageUpload');
-        var cropper;
-
-        image.addEventListener('change', function () {
-            var files = this.files;
-            var done = function (url) {
-                image.src = url;
-                cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                });
-            };
-
-            if (files && files.length > 0) {
-                reader = new FileReader();
-                reader.onload = function (e) {
-                    done(reader.result);
-                };
-                reader.readAsDataURL(files[0]);
-            }
-        });
-
-        // Handle crop button click event
-        document.getElementById('cropButton').addEventListener('click', function () {
-            var canvas = cropper.getCroppedCanvas();
-            if (canvas) {
-                var croppedImageData = canvas.toDataURL(); // Get cropped image data
-                document.getElementById('croppedImageData').value = croppedImageData; // Set cropped image data to hidden input
-                // You can also display the cropped image preview if needed
-                // document.getElementById('croppedImagePreview').src = croppedImageData;
-                
-                // Submit the form or do other actions here
-                // document.getElementById('formId').submit();
-            }
-        });
+    // Example using Cropper.js library for client-side cropping
+    // Initialize Cropper
+    var image = document.getElementById('imageUpload');
+    var cropper = new Cropper(image, {
+        aspectRatio: 1, // You can set the aspect ratio as needed
+        viewMode: 1, // Set the view mode as needed
+        // Add other options as needed
     });
-</script> -->
+
+    // Handle form submission
+    document.getElementById('main-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Get cropped image data
+        var croppedImageData = cropper.getCroppedCanvas().toDataURL('image/jpeg');
+        // Append the cropped image data to a hidden input field in the form
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type', 'hidden');
+        hiddenInput.setAttribute('name', 'cropped_image');
+        hiddenInput.setAttribute('value', croppedImageData);
+        this.appendChild(hiddenInput);
+        // Submit the form
+        this.submit();
+    });
+</script>
 {% endblock main-content %}
