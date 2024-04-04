@@ -75,6 +75,13 @@
   </script>
 
 
+  <style>
+    /* CSS to change the color of the icon */
+    .heart-icon {
+        color: red; /* Change to whatever color you want */
+    }
+</style>
+
  
 
     
@@ -471,15 +478,24 @@
                                     <button type="submit" class=" gap-2 btn btn-dark p-1 m-1 btn-lg text-decoration-none text-white">Add to Cart</button>
                                 </form>                                           
                                      </div> -->
-                            <!-- <a class="ec-btn-group wishlist" title="Wishlist"><i
-                                    class="fi-rr-heart"></i></a> -->
-                                    <div class="wishlist-button" style="margin-top: 4px; margin-left: 16px;">
+                                     
+                                     {% if wishlist %}
+                                        <a href="{% url 'minuswish' product.id %}" class="ec-btn-group wishlist plus-wishlist" title="Wishlist"><i
+                                                class="fi-rr-heart"></i></a>
+                                    {% else %}
+                                    <a href="{% url 'pluswish' product.id %}" class=" ec-btn-group wishlist minus-wishlist" title="Wishlist">                                     
+                                        <i class="fi-rr-heart heart-icon"></i>
+                                    </a>
+
+                                    {% endif %}
+
+                                    <!-- <div class="wishlist-button" style="margin-top: 4px; margin-left: 16px;">
                                         {% if wishlist %}
-                                            <a href="{% url 'minuwish' product.id %}" class="plus-wishlist btn shadow"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
+                                            <a href="{% url 'minuswish' product.id %}" class="plus-wishlist btn shadow"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
                                         {% else %}
-                                            <a href="{% url 'pluswish' product.id %}" class="minus-wishlist btn shadow"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
+                                            <a href="{% url 'pluswish' product.id %}" class="minus-wishlist btn shadow"><i class="fas fa-heart fa-lg" style="color: rgb(255, 255, 255);"></i></a>
                                         {% endif %}
-                                    </div>
+                                    </div> -->
                         </div>
                     </div>
                 </div>

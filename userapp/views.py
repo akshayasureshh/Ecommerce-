@@ -18,51 +18,6 @@ import random
 from django.core.mail import send_mail
 # Create your views here.
 
-def home(request):
-    data = SubCategory.objects.all()
-    parent_categories = Category.objects.all()
-    parent_slider = BackgroundSliders.objects.all()
-    child_slider = ChildSliders.objects.all()
-    products = Product.objects.all()
-    print("iteration problem:",products)
-    newarrival = Product.objects.latest('id')
-    latest_products = Product.objects.order_by('-id')[:4]
-    # product = Product.objects.get(id=id)
-    # wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
-    totalitem = 0
-    wishitem = 0
-    if request.user.is_authenticated:
-        totalitem = Cart.objects.filter(user=request.user).count()
-        wishitem = WishList.objects.filter(user=request.user).count()
-    
-    
-    
-    
-    # Calculate total quantity count for each category
-    category_quantities = {}
-    for category in parent_categories:
-        category_products = products.filter(categories__parent_category=category)
-        category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
-        category_quantities[category.name] = category_total_quantity
-    
-    
-    context = {
-        'SubCate': data,
-        'Category': parent_categories,
-        'parent_slider': parent_slider,
-        'child_slider': child_slider,
-        'products': products,
-        'totalitem': totalitem,
-        'wishitem': wishitem,
-        'newarrival': newarrival,
-        'category_quantities': category_quantities,  
-        'latest_products': latest_products,
-        # 'wishlist' : wishlist,
-    }
-    return render(request, 'index2.html', context)
-
-
-
 # def home(request):
 #     data = SubCategory.objects.all()
 #     parent_categories = Category.objects.all()
@@ -72,20 +27,16 @@ def home(request):
 #     print("iteration problem:",products)
 #     newarrival = Product.objects.latest('id')
 #     latest_products = Product.objects.order_by('-id')[:4]
-
-#     # id = request.GET.get('id')
-#     # product = Product.objects.get(id=id)  # Fetch the product using the retrieved id
-
-#     #         # Check wishlist only if the user is authenticated
-#     # if request.user.is_authenticated:
-#     #     wishlist = WishList.objects.filter(product=product, user=request.user.pk)
-
-  
-
-
-#     # Calculate total item count for cart and wishlist
-#     totalitem = Cart.objects.filter(user=request.user).count() if request.user.is_authenticated else 0
-#     wishitem = WishList.objects.filter(user=request.user).count() if request.user.is_authenticated else 0
+#     # product = Product.objects.get(id=id)
+#     wishlist = WishList.objects.filter(Q(product=products) & Q(user=request.user.pk))
+#     totalitem = 0
+#     wishitem = 0
+#     if request.user.is_authenticated:
+#         totalitem = Cart.objects.filter(user=request.user).count()
+#         wishitem = WishList.objects.filter(user=request.user).count()
+    
+    
+    
     
 #     # Calculate total quantity count for each category
 #     category_quantities = {}
@@ -93,6 +44,7 @@ def home(request):
 #         category_products = products.filter(categories__parent_category=category)
 #         category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
 #         category_quantities[category.name] = category_total_quantity
+    
     
 #     context = {
 #         'SubCate': data,
@@ -105,35 +57,74 @@ def home(request):
 #         'newarrival': newarrival,
 #         'category_quantities': category_quantities,  
 #         'latest_products': latest_products,
-#         # 'wishlist' : wishlist,
-#         # 'product': product,
-        
+#         'wishlist' : wishlist,
 #     }
 #     return render(request, 'index2.html', context)
 
+
+def home(request):
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    parent_slider = BackgroundSliders.objects.all()
+    child_slider = ChildSliders.objects.all()
+    products = Product.objects.all()
+    print("iteration problem:", products)
+    newarrival = Product.objects.latest('id')
+    latest_products = Product.objects.order_by('-id')[:4]
+    totalitem = 0
+    wishitem = 0
+    wishlist = {}
+    
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+        
+        # Filter the wishlist for each product individually
+        for product in products:
+            wishlist[product.id] = WishList.objects.filter(product=product, user=request.user.pk).exists()
+    
+    # Calculate total quantity count for each category
+    category_quantities = {}
+    for category in parent_categories:
+        category_products = products.filter(categories__parent_category=category)
+        category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+        category_quantities[category.name] = category_total_quantity
+    
+    context = {
+        'SubCate': data,
+        'Category': parent_categories,
+        'parent_slider': parent_slider,
+        'child_slider': child_slider,
+        'products': products,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'newarrival': newarrival,
+        'category_quantities': category_quantities,  
+        'latest_products': latest_products,
+        'wishlist': wishlist,
+    }
+    return render(request, 'index2.html', context)
 
 
 def pluswish(request, id):
     products = Product.objects.get(id=id)
     user = request.user
     WishList.objects.create(user=user, product=products)
-    product = Product.objects.get(id=id)
     
     return redirect(reverse('home'))
 
-
-
-def minuswish(request,id):
+def minuswish(request, id):
     print("inside minus")
    
     try:
-        product=Product.objects.get(id=id)
+        product = Product.objects.get(id=id)
     except Product.DoesNotExist:
         print("Not exists")
-    user=request.user
-    WishList.objects.filter(user=user,product=product).delete()
-    return redirect(home,id)
-
+    
+    user = request.user
+    WishList.objects.filter(user=user, product=product).delete()
+    
+    return redirect(reverse('home'))
 
 def register(request):
      data = SubCategory.objects.all()

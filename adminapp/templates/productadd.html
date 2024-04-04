@@ -21,15 +21,16 @@
 <!-- FAVICON -->
 <link href="{% static 'img/favicon.png' %}" rel="shortcut icon" />
   
-<!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
   <!-- custom js-->
   <!-- <script src="{% static 'js/crop-image.js' %}" defer></script> -->
 
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script> 
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
+  
   <style>
     .not-visible {
         display: none;
@@ -103,7 +104,7 @@
 															</div> 
 															<div class="avatar-preview ec-preview">
 																<div class="imagePreview ec-div-preview">
-																	<img class="ec-image-preview" src="{% static 'images/products/vender-upload-preview.jpg' %}" alt="edit" />
+																	<img id="cropperImage" class="ec-image-preview" src="{% static 'images/products/vender-upload-preview.jpg' %}" alt="edit" />
 																</div>
 															</div> 
 														
@@ -576,56 +577,13 @@
 	});
   </script>
 
- <!-- Add this script at the end of your HTML file, before the closing </body> tag -->
- <script>
-	document.addEventListener('DOMContentLoaded', function () {
-		var sizeCheckboxes = document.querySelectorAll('input[name="size"]');
-		var selectedSizesHidden = document.getElementById('selectedSizes');
-
-		sizeCheckboxes.forEach(function (checkbox) {
-			checkbox.addEventListener('change', function () {
-				updateSelectedSizes();
-			});
-		});
-
-		function updateSelectedSizes() {
-			var selectedSizes = Array.from(sizeCheckboxes)
-				.filter(function (checkbox) {
-					return checkbox.checked;
-				})
-				.map(function (checkbox) {
-					return checkbox.value;
-				});
-
-			selectedSizesHidden.value = JSON.stringify(selectedSizes);
-		}
-	});
-</script>
-
-
-<script>
-    // Example using Cropper.js library for client-side cropping
-    // Initialize Cropper
-    var image = document.getElementById('imageUpload');
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var image = document.getElementById('cropperImage');
     var cropper = new Cropper(image, {
-        aspectRatio: 1, // You can set the aspect ratio as needed
-        viewMode: 1, // Set the view mode as needed
-        // Add other options as needed
+        aspectRatio: 16 / 9,
+        // Other options...
     });
-
-    // Handle form submission
-    document.getElementById('main-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        // Get cropped image data
-        var croppedImageData = cropper.getCroppedCanvas().toDataURL('image/jpeg');
-        // Append the cropped image data to a hidden input field in the form
-        var hiddenInput = document.createElement('input');
-        hiddenInput.setAttribute('type', 'hidden');
-        hiddenInput.setAttribute('name', 'cropped_image');
-        hiddenInput.setAttribute('value', croppedImageData);
-        this.appendChild(hiddenInput);
-        // Submit the form
-        this.submit();
-    });
+});
 </script>
 {% endblock main-content %}

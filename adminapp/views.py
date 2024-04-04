@@ -6,6 +6,7 @@ from userapp . models import Rating,User
 from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from .forms import ImageUploadForm
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 # Create your views here.
@@ -133,7 +134,7 @@ def subcategory(request):
 #     if request.method == 'POST':
 #         print("im inside the if:")
         
-#         product_image = request.FILES['product_image']
+#         product_image = request.FILES['file']
 #         image1 = request.FILES['image1']
 #         image2 = request.FILES['image2']
 #         image3 = request.FILES['image3']
@@ -205,139 +206,137 @@ def subcategory(request):
 #             'stock_availability': ['IN STOCK', 'OUT OF STOCK'],
 #         }
 
-#     return render(request, 'productadd.html', context)
-from PIL import Image
-from io import BytesIO
-import base64
-
-def productsAdd(request):
-    data = SubCategory.objects.all()
-    if request.method == 'POST':
-        product_name = request.POST['product_name']
-        categories_id = request.POST['categories']
-        availability = request.POST['availability']
-        price = request.POST['price']
-        description = request.POST['description']
-        tags = request.POST['group_tag']
-        quantity = request.POST['quantity']
-        full_detail = request.POST['fulldetail']
-        slug = request.POST['slug']
-        custom_size = request.POST['customsize']
-        admin_choice = request.POST['admin_choice']
-        additional_colors = request.POST.getlist('additionalColor')
-        selected_sizes = request.POST.getlist('selectedSizes', [])
-        
-        # Get the category based on the provided ID
-        categories = SubCategory.objects.filter(id=categories_id).first()
-
-        # Handle product images
-        product_image = request.FILES['product_image']
-        product_image_data = request.POST.get('cropped_product_image', None)
-        if product_image_data:
-            # Decode base64 image data
-            img_data = base64.b64decode(product_image_data.split(',')[1])
-            # Open the image using PIL
-            img = Image.open(BytesIO(img_data))
-            # Save the image to a BytesIO buffer
-            img_buffer = BytesIO()
-            img.save(img_buffer, format='JPEG')
-            # Set the BytesIO buffer as the image file for the field
-            product_image = img_buffer
-
-        product_details = Product(
-            product_image=product_image,
-            title=product_name,
-            categories=categories,
-            availability=availability,
-            admin_choice=admin_choice,
-            price=price,
-            description=description,
-            product_tag=tags,
-            quantity=quantity,
-            full_detail=full_detail,
-            slug=slug,
-            colors=additional_colors,
-            custom_size=custom_size,
-            size=selected_sizes,
-        )
-        product_details.save()
-                    
-    context = {
-        'subcategory': data,
-        'stock_availability': ['IN STOCK', 'OUT OF STOCK'],
-    }
-    return render(request, 'productadd.html', context)
-
+#     return render(request, 'productadd2.html', context)
+# from PIL import Image
+# from io import BytesIO
+# import base64
 
 # def productsAdd(request):
 #     data = SubCategory.objects.all()
 #     if request.method == 'POST':
-#         # Extract form data from the request
-#         image_upload_form = ImageUploadForm(request.POST, request.FILES)
+#         product_name = request.POST['product_name']
+#         categories_id = request.POST['categories']
+#         availability = request.POST['availability']
+#         price = request.POST['price']
+#         description = request.POST['description']
+#         tags = request.POST['group_tag']
+#         quantity = request.POST['quantity']
+#         full_detail = request.POST['fulldetail']
+#         slug = request.POST['slug']
+#         custom_size = request.POST['customsize']
+#         admin_choice = request.POST['admin_choice']
+#         additional_colors = request.POST.getlist('additionalColor')
+#         selected_sizes = request.POST.getlist('selectedSizes', [])
+        
+#         # Get the category based on the provided ID
+#         categories = SubCategory.objects.filter(id=categories_id).first()
 
-#         # Validate the image upload form
-#         if image_upload_form.is_valid():
-#             # Save cropped image data from the upload form
-#             cropped_image_data = image_upload_form.cleaned_data['cropped_image_data']
+#         cropped_image_data = request.POST.get('cropped_product_image', None)
+#         if cropped_image_data:
+#             # Decode base64 image data
+#             img_data = base64.b64decode(cropped_image_data.split(',')[1])
+#             # Create an InMemoryUploadedFile from the decoded image data
+#             image_file = InMemoryUploadedFile(BytesIO(img_data), None, 'cropped_image.jpg', 'image/jpeg', len(img_data), None)
+#         else:
+#             # If no cropped image data is provided, use the original image
+#             image_file = request.FILES['product_image']
 
-#             # Extract data from the HTML form
-#             product_name = request.POST['product_name']
-#             categories_id = request.POST['categories']
-#             availability = request.POST['availability']
-#             price = request.POST['price']
-#             description = request.POST['description']
-#             tags = request.POST['group_tag']
-#             quantity = request.POST['quantity']
-#             full_detail = request.POST['fulldetail']
-#             slug = request.POST['slug']
-#             custom_size = request.POST['customsize']
-#             admin_choice = request.POST['admin_choice']
-#             color1 = request.POST.get('color1'),
-#             color2 = request.POST.get('color2'),
-#             color3 = request.POST.get('color3'),
-#             color4 = request.POST.get('color4'),
-#             additional_colors = request.POST.getlist('additionalColor')
-#             selected_sizes = request.POST.getlist('selectedSizes', [])
-
-#             categories = SubCategory.objects.filter(id=categories_id).first()
-
-#             # Create a new product instance
-#             product_details = Product(
-#                 product_image=cropped_image_data,  # Use cropped image data
-#                 title=product_name,
-#                 categories=categories,
-#                 availability=availability,
-#                 admin_choice=admin_choice,
-#                 price=price,
-#                 description=description,
-#                 product_tag=tags,
-#                 quantity=quantity,
-#                 full_detail=full_detail,
-#                 slug=slug,
-#                 color1=color1,
-#                 color2=color2,
-#                 color3=color3,
-#                 color4=color4,
-#                 colors=additional_colors,
-#                 custom_size=custom_size,
-#                 size=selected_sizes,
-#             )
-
-#             product_details.save()
-
-#             return JsonResponse({'message': 'Product added successfully'})
-
-#     else:
-#         image_upload_form = ImageUploadForm()
-
+#         product_details = Product(
+#             product_image=image_file,
+#             title=product_name,
+#             categories=categories,
+#             availability=availability,
+#             admin_choice=admin_choice,
+#             price=price,
+#             description=description,
+#             product_tag=tags,
+#             quantity=quantity,
+#             full_detail=full_detail,
+#             slug=slug,
+#             colors=additional_colors,
+#             custom_size=custom_size,
+#             size=selected_sizes,
+#         )
+#         product_details.save()
+                    
 #     context = {
-#         'image_upload_form': image_upload_form,
 #         'subcategory': data,
 #         'stock_availability': ['IN STOCK', 'OUT OF STOCK'],
 #     }
+#     return render(request, 'productadd2.html', context)
 
-#     return render(request, 'productadd.html', context)
+from django.http import JsonResponse
+from .forms import ImageUploadForm
+from .models import Product, SubCategory
 
+def productsAdd(request):
+    data = SubCategory.objects.all()
+    if request.method == 'POST':
+        # Extract form data from the request
+        image_upload_form = ImageUploadForm(request.POST, request.FILES)
+
+        # Validate the image upload form
+        if image_upload_form.is_valid():
+            # Save cropped image data from the upload form
+            cropped_image_data = image_upload_form.cleaned_data['file']
+
+            # Extract data from the HTML form
+            product_name = request.POST['product_name']
+            categories_id = request.POST['categories']
+            availability = request.POST['availability']
+            price = request.POST['price']
+            description = request.POST['description']
+            tags = request.POST['group_tag']
+            quantity = request.POST['quantity']
+            full_detail = request.POST['fulldetail']
+            slug = request.POST['slug']
+            custom_size = request.POST['customsize']
+            admin_choice = request.POST['admin_choice']
+            color1 = request.POST.get('color1')
+            color2 = request.POST.get('color2')
+            color3 = request.POST.get('color3')
+            color4 = request.POST.get('color4')
+            additional_colors = request.POST.getlist('additionalColor')
+            selected_sizes = request.POST.getlist('size')
+
+            categories = SubCategory.objects.get(id=categories_id)
+
+            # Create a new product instance
+            product_details = Product(
+                product_image=cropped_image_data,  # Use cropped image data
+                title=product_name,
+                categories=categories,
+                availability=availability,
+                admin_choice=admin_choice,
+                price=price,
+                description=description,
+                product_tag=tags,
+                quantity=quantity,
+                full_detail=full_detail,
+                slug=slug,
+                color1=color1,
+                color2=color2,
+                color3=color3,
+                color4=color4,
+                colors=additional_colors,
+                custom_size=custom_size,
+                size=selected_sizes,
+            )
+
+            product_details.save()
+
+            return JsonResponse({'message': 'Product added successfully'})
+
+    else:
+        image_upload_form = ImageUploadForm()
+
+    context = {
+        'image_upload_form': image_upload_form,
+        'subcategory': data,
+        'stock_availability': ['IN STOCK', 'OUT OF STOCK'],
+    }
+
+    return render(request, 'productadd2.html', context)
 
 
 
