@@ -122,6 +122,43 @@
    <link rel="stylesheet" href="{% static 'css/plugins/owl.theme.default.min.css' %}" />
 
     <!-- Background css -->
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script>
+     $( function() {
+    var availableTags = [
+      "ActionScript",
+      "AppleScript",
+      "Asp",
+      "BASIC",
+      "C",
+      "C++",
+      "Clojure",
+      "COBOL",
+      "ColdFusion",
+      "Erlang",
+      "Fortran",
+      "Groovy",
+      "Haskell",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+      "Python",
+      "Ruby",
+      "Scala",
+      "Scheme"
+    ];
+    $( "#tags" ).autocomplete({
+      source: "{% url 'autosuggest' %}",    
+    });
+  
+   
+  } );
+        
+    </script>
      
 </head>
 
@@ -258,7 +295,7 @@
                             <div class="header-search">
                                 <form class="ec-btn-group-form" action="{% url 'search' %}">
                                     <input class="form-control ec-search-bar" placeholder="Search products..."
-                                        type="text" name="search_query">
+                                        type="text" name="search_query" id="tags">
                                     <button class="submit" type="submit"><i class="fi-rr-search"></i></button>
                                 </form>
                             </div>
@@ -406,7 +443,7 @@
                                 
                                 
                                 
-                                <li><a href="offer.html">Hot Offers</a></li>
+                                <!-- <li><a href="offer.html">Hot Offers</a></li> -->
                                 <li class="dropdown scroll-to"><a href="javascript:void(0)"><i
                                             class="fi fi-rr-sort-amount-down-alt"></i></a>
                                     <ul class="sub-menu">
@@ -631,7 +668,7 @@
                                 <li><a href="elemets-blog.html">Blogs</a></li>
                             </ul>
                         </li>
-                        <li><a href="offer.html">Hot Offers</a></li>
+                        <!-- <li><a href="offer.html">Hot Offers</a></li> -->
                     </ul>
                 </div>
                 <div class="header-res-lan-curr">
@@ -1171,6 +1208,15 @@
     <!-- Main Js -->
     <script src="{% static 'js/vendor/index.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+
+
+    <script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"></script>
+
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 </body>
 
 </html>

@@ -79,9 +79,23 @@ def home(request):
         totalitem = Cart.objects.filter(user=request.user).count()
         wishitem = WishList.objects.filter(user=request.user).count()
         
-        # Filter the wishlist for each product individually
-        for product in products:
-            wishlist[product.id] = WishList.objects.filter(product=product, user=request.user.pk).exists()
+       
+    for product in products:
+        wishlist = WishList.objects.filter(product=product, user=request.user.pk).exists()
+         
+    # wishlist_products = []
+    # if request.user.is_authenticated:
+    #     user_wishlist = request.user
+    #     products = Product.objects.all()
+    #     for product in products:
+    #         # in_wishlist = product in user_wishlist.product.all()
+    #         wishlist_products.append((product, in_wishlist))
+    # else:
+    #     # If the user is not authenticated, assume the wishlist is empty
+    #     products = Product.objects.all()
+    #     for product in products:
+    #         wishlist_products.append((product, False))
+
     
     # Calculate total quantity count for each category
     category_quantities = {}
@@ -89,6 +103,16 @@ def home(request):
         category_products = products.filter(categories__parent_category=category)
         category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
         category_quantities[category.name] = category_total_quantity
+    
+
+    for product in latest_products:
+        print("product id : ", product.id)
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        print("this is rating :",product.avg_rating)
+
+
     
     context = {
         'SubCate': data,
@@ -102,29 +126,92 @@ def home(request):
         'category_quantities': category_quantities,  
         'latest_products': latest_products,
         'wishlist': wishlist,
+        # 'sizes': sizes,
+        # 'wishlist_products': wishlist_products,
     }
+    # sizes = []
+    for product in products:
+        print("product is ",product)
+        if product.size[0] != '':        
+            size_list = json.loads(product.size[0]) 
+            print("size list is ",size_list)       
+            context['sizes'] = size_list
+
     return render(request, 'index2.html', context)
 
 
-def pluswish(request, id):
-    products = Product.objects.get(id=id)
+
+
+# @login_required
+def add_to_cart_index(request):
     user = request.user
-    WishList.objects.create(user=user, product=products)
-    
+    print(user)
+    product_id = request.GET.get('prod_id')
+
+    # Check if product_id is provided and not empty
+    if not product_id:
+        return HttpResponseBadRequest("Product ID is missing")
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return HttpResponseBadRequest("Product does not exist")
+
+    # Create a Cart object for the user and product
+    Cart(user=user, product=product).save()
+
     return redirect(reverse('home'))
 
-def minuswish(request, id):
-    print("inside minus")
+
+
+
+def add_to_wishlist(request, product_id):
+    product = Product.objects.get(pk=product_id)
+    wishlist, created = WishList.objects.get_or_create(user=request.user)
+    wishlist.products.add(product)
+    return redirect('home')
+
+def remove_from_wishlist(request, product_id):
+    product = Product.objects.get(pk=product_id)
+    wishlist = WishList.objects.get(user=request.user)
+    wishlist.products.remove(product)
+    return redirect('home')
+
+def toggle_wishlist(request, product_id):
+    if request.method == 'POST' and request.is_ajax():
+        product = get_object_or_404(Product, pk=product_id)
+        wishlist, created = WishList.objects.get_or_create(user=request.user)
+        if 'active' in request.POST and request.POST['active'] == 'true':
+            wishlist.products.remove(product)
+            return JsonResponse({'success': True})
+        else:
+            wishlist.products.add(product)
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+# def pluswish(request, id):
+#     products = Product.objects.get(id=id)
+#     user = request.user
+#     WishList.objects.create(user=user, product=products)
+    
+#     return redirect('home')
+
+
+# def minuswish(request, id):
+#     print("inside minus")
    
-    try:
-        product = Product.objects.get(id=id)
-    except Product.DoesNotExist:
-        print("Not exists")
+#     try:
+#         product = Product.objects.get(id=id)
+#     except Product.DoesNotExist:
+#         print("Not exists")
     
-    user = request.user
-    WishList.objects.filter(user=user, product=product).delete()
+#     user = request.user
+#     WishList.objects.filter(user=user, product=product).delete()
     
-    return redirect(reverse('home'))
+#     return redirect('home')
+
+
 
 def register(request):
      data = SubCategory.objects.all()
@@ -226,7 +313,7 @@ def singleproduct(request, id):
     colors = [color.replace("('", "") for color in colors if color]
     print("lala colors",colors)
 
-    # wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
+    wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
     totalitem = 0
     wishitem = 0
     if request.user.is_authenticated:
@@ -246,7 +333,7 @@ def singleproduct(request, id):
     #     print(product.avg_rating)
        
     context.update({
-        # 'wishlist' : wishlist,
+        'wishlist' : wishlist,
         'product': product,
         'SubCate': data,
         'Category': parent_categories,
@@ -786,14 +873,13 @@ def shopall(request):
 
 
 
-# Generate and send OTP via email
 #@login_required
 def send_otp_email(user_email):
     otp = str(random.randint(100000, 999999))
     send_mail(
        'Password Reset OTP',
         f'Your OTP for password reset is: {otp}',
-        'your_email@example.com',  # Replace with your email
+        'your_email@example.com',  
         [user_email],
         fail_silently=False,
     )
@@ -807,8 +893,8 @@ def send_otp(request):
         
         if user_email:
             otp = send_otp_email(user_email)
-            request.session['otp'] = otp  # Store OTP in the session
-            return redirect('otp_verification')  # Redirect to OTP verification page
+            request.session['otp'] = otp  
+            return redirect('otp_verification')  
         else:
             messages.error(request, 'Please enter a valid email address.')
 
@@ -821,18 +907,35 @@ def otp_verification(request):
         entered_otp = request.POST.get('otp')
         stored_otp = request.session.get('otp')
         if entered_otp == stored_otp:
-            return redirect("password_reset")  # Redirect to the password reset page
+             return render(request, 'password-reset.html')  
         else:
             messages.error(request, 'Invalid OTP. Please try again.')
 
     return render(request, 'otp_verification.html')  
 
 
-#@login_required
-def password_reset(request):
+# #@login_required
+# def password_reset(request):
+#     if request.method == 'POST':
+#         user=request.user
+#         # Reset the user's password and clear the OTP session
+#         new_password = request.POST.get('new_password')
+#         # Set the new password for the user
+#         # You can use Django's built-in password reset functionality or your custom logic
+#         # For example, using Django's built-in functionality:
+#         user.set_password(new_password)
+#         user.save()
+        
+#         del request.session['otp']  # Clear the stored OTP from the session
+#         messages.success(request, 'Password reset successful. You can now log in with your new password.')
+#         return redirect('password_reset_complete')  
+
+#     return render(request, 'password_reset.html')  
+
+
+def PasswordReset(request):
     if request.method == 'POST':
         user=request.user
-        # Reset the user's password and clear the OTP session
         new_password = request.POST.get('new_password')
         # Set the new password for the user
         # You can use Django's built-in password reset functionality or your custom logic
@@ -844,10 +947,19 @@ def password_reset(request):
         messages.success(request, 'Password reset successful. You can now log in with your new password.')
         return redirect('password_reset_complete')  
 
-    return render(request, 'password_reset.html')  
-
-
+    return render(request, 'password-reset.html')  
+    
 
 
 def pwcomplete(request):
     return render(request,"password_reset_complete.html")
+
+
+
+def autosuggest(request):
+    print(request.GET)
+    query_original = request.GET.get('term')
+    queryset = Product.objects.filter(slug__icontains=query_original) | Product.objects.filter(product_tag__icontains=query_original)
+    mylist = []
+    mylist += [x.slug for x in queryset]
+    return JsonResponse(mylist, safe=False)

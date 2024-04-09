@@ -45,6 +45,7 @@ def subcategory(request):
         full_description =  request.POST['fulldescription']
         product_tags = request.POST['group_tag']
         id=request.POST['parent-category']
+        image= request.FILES['image1']
 
         id = Category.objects.filter(id = id).first()
         data = SubCategory()
@@ -54,6 +55,7 @@ def subcategory(request):
         data.sort_description = sort_description
         data.product_tag = product_tags
         data.parent_category = id
+        data.image = image
         data.save()
     return render(request, 'sub_category.html', {'parentCategory': parentCategory})
 

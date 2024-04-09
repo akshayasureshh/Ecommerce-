@@ -43,7 +43,7 @@
 									<div class="ec-cat-form">
 										<h4>Add Sub Category</h4>
 
-										<form method="POST">
+										<form method="POST" enctype="multipart/form-data">
                                             {% csrf_token %}
 
 											<div class="form-group row">
@@ -96,7 +96,15 @@
 													<input type="text" class="form-control" id="group_tag" name="group_tag" value="" placeholder="" data-role="tagsinput">
 												</div>
 											</div>
-
+											{% comment %} image upload {% endcomment %}
+											<div class="thumb-edit">
+												<input type='file' id="thumbUpload01" name="image1"
+													class="ec-image-upload"
+													accept=".png, .jpg, .jpeg" />
+												<label for="imageUpload"><img
+														class="svg_img header_svg"  /></label>
+											</div>
+                                            {% comment %} end {% endcomment %}
 											<div class="row">
 												<div class="col-12">
 													<button name="submit" type="submit" class="btn btn-primary">Submit</button>

@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_view
 from . forms import MyPasswordResetForm,MySetPasswordForm
 from django.contrib.auth import views as auth_views
+from .views import toggle_wishlist
 
 
 
@@ -46,32 +47,24 @@ urlpatterns = [
 
     path('shopall/',views.shopall,name='shopall'),
 
-    path('pluswish/<int:id>/',views.pluswish,name='pluswish'),
+    # path('pluswish/<int:id>/',views.pluswish,name='pluswish'),
 
-    path('minuswish/<int:id>/',views.minuswish,name='minuswish'),
+    # path('minuswish/<int:id>/',views.minuswish,name='minuswish'),
 
     path('send_otp/', views.send_otp, name='send_otp'),
     path('otp_verification/', views.otp_verification, name='otp_verification'),
-    path('password-reset/',views.password_reset,name='password_reset'),
-    path('password-reset/',auth_view.PasswordResetView.as_view(template_name='password_reset.html',form_class=MyPasswordResetForm),name='password_reset'),
-
-    path('password-reset-confirm/<uidb64>/<token>/',auth_view.PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html',form_class=MySetPasswordForm),name='password_reset_confirm'),
+    path('password-reset/',views.PasswordReset,name='password-reset'),
     path('password-reset-complete/',views.pwcomplete,name='password_reset_complete'),
 
-    # path('password-reset/',auth_view.PasswordResetView.as_view(template_name='app/password_reset.html',form_class=MyPasswordResetForm),name='password_reset'),
-    # path('password-reset/done/',auth_view.PasswordResetDoneView.as_view(template_name='app/password_reset_done.html'),name='password_reset_done'),
-    # path('password-reset-confirm/<uidb64>/<token>/',auth_view.PasswordResetConfirmView.as_view(template_name='app/password_reset_confirm.html',form_class=MySetPasswordForm),name='password_reset_confirm'),
-    # path('password_reset_complete/',auth_view.PasswordResetCompleteView.as_view(template_name='app/password_reset_complete.html'),name='password_reset_complete'),
+   
 
+    path('add_to_cart_index/', views.add_to_cart_index, name='add_to_cart_index'),
     
-    # path('password_reset/', auth_views.PasswordResetView.as_view(form_class=MyPasswordResetForm), name='password_reset'),
-    # path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    # path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    # path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('autosuggest/',views.autosuggest,name="autosuggest"),
 
-
-
-    
+    path('wishlist/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/remove/<int:product_id>/',views.remove_from_wishlist, name='remove_from_wishlist'),
+    path('wishlist/<int:product_id>/toggle/', toggle_wishlist, name='toggle_wishlist'),
 
 ]
 if settings.DEBUG:

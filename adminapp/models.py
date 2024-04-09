@@ -59,6 +59,7 @@ class SubCategory(models.Model):
     sort_description = models.TextField(null=True, blank=True)
     full_detail = models.TextField(null=True, blank=True)
     product_tag = models.CharField(max_length=200,null=True)
+    image=models.ImageField(upload_to='subcate_image',null=True)
     
 
 
