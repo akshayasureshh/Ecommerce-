@@ -159,7 +159,9 @@
   } );
         
     </script>
-     
+ 
+
+  
 </head>
 
 <body>
@@ -245,6 +247,8 @@
                                     <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                                     <li><a class="dropdown-item" href="{% url 'profile' %}">My profile</a></li>
                                     <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Log out</a></li>
+
                                 </ul>
                             </div>
                             <!-- Header User End -->
@@ -314,6 +318,8 @@
                                         <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                                         <li><a class="dropdown-item" href="{% url 'profile' %}">My profile</a></li>
                                         <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'logout' %}">Log out</a></li>
+
                                     </ul>
                                 </div>
                                 <!-- Header User End -->
@@ -353,8 +359,8 @@
                     <!-- Ec Header Search Start -->
                     <div class="col">
                         <div class="header-search">
-                            <form class="ec-btn-group-form" action="#">
-                                <input class="form-control ec-search-bar" placeholder="Search products..." type="text">
+                            <form class="ec-btn-group-form" action="{% url 'search' %}">
+                                <input class="form-control  ec-search-bar" name="search_query" id="tags" placeholder="Search products..." type="text">
                                 <button class="submit" type="submit"><i class="fi-rr-search"></i></button>
                             </form>
                         </div>
@@ -726,20 +732,24 @@
                     <span class="cart_title">My Cart</span>
                     <button class="ec-close">×</button>
                 </div>
+                {% for item in cart %}
                 <ul class="eccart-pro-items">
                     <li>
                         <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                src="{% static 'images/product-image/6_1.jpg' %}" alt="product"></a>
+                                src="{{item.product.product_image.url}}" alt="product"></a>
                         <div class="ec-pro-content">
-                            <a href="product-left-sidebar.html" class="cart_pro_title">T-shirt For Women</a>
-                            <span class="cart-price"><span>$76.00</span> x 1</span>
-                            <div class="qty-plus-minus">
-                                <input class="qty-input" type="text" name="ec_qtybtn" value="1" />
-                            </div>
-                            <a href="javascript:void(0)" class="remove">×</a>
+                            <a href="product-left-sidebar.html" class="cart_pro_title">{{item.product.title}}</a>
+                            <span class="cart-price"><span>Rs.{{item.product.price}}</span> x 1</span>
+                            <!-- <div class="qty-plus-minus"> -->
+                                <!-- <input class="qty-input" type="text" name="ec_qtybtn" value="1" /> -->
+                                <a class="minus-cart btn" pid={{item.product.id}}><i class="fas fa-minus-square fa-lg"></i></a>
+                                      <span id="quantity">{{item.quantity}}</span>
+                                    <a class="plus-cart btn" pid="{{item.product.id}}"><i class="fas fa-plus-square fa-lg"></i></a>
+                            <!-- </div> -->
+                            <!-- <a href="javascript:void(0)" class="remove">×</a> -->
                         </div>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
                                 src="assets/images/product-image/12_1.jpg" alt="product"></a>
                         <div class="ec-pro-content">
@@ -762,8 +772,9 @@
                             </div>
                             <a href="javascript:void(0)" class="remove">×</a>
                         </div>
-                    </li>
+                    </li> -->
                 </ul>
+                {% endfor %}
             </div>
             <div class="ec-cart-bottom">
                 <div class="cart-sub-total">
@@ -771,15 +782,15 @@
                         <tbody>
                             <tr>
                                 <td class="text-left">Sub-Total :</td>
-                                <td class="text-right">$300.00</td>
+                                <td class="text-right" id="amount2">Rs. {{amount2}}</td>
                             </tr>
                             <tr>
-                                <td class="text-left">VAT (20%) :</td>
-                                <td class="text-right">$60.00</td>
+                                <td class="text-left">Delivery charge :</td>
+                                <td class="text-right">40.00</td>
                             </tr>
                             <tr>
                                 <td class="text-left">Total :</td>
-                                <td class="text-right primary-color">$360.00</td>
+                                <td class="text-right primary-color" id="totalamount2">Rs. {{totalamount2}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1216,6 +1227,7 @@
   crossorigin="anonymous"></script>
 
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 
 </body>
 

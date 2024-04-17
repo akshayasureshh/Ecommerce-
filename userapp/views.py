@@ -16,6 +16,7 @@ from . forms import CustomerProfileForm
 from django.urls import reverse
 import random
 from django.core.mail import send_mail
+from django.contrib.auth import logout
 # Create your views here.
 
 # def home(request):
@@ -112,7 +113,25 @@ def home(request):
         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
         print("this is rating :",product.avg_rating)
 
+    
+    for product in products:
+        print("product id : ", product.id)
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
 
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        print("this is rating :",product.avg_rating)
+    
+    user=request.user
+    cart=Cart.objects.filter(user=user)
+    print("the cart item is",cart)
+    amount=0
+    for p in cart:
+        value = p.quantity*p.product.price
+        amount= amount + value
+        amount2=amount
+        
+    totalamount=amount+40
+    print(totalamount)
     
     context = {
         'SubCate': data,
@@ -128,6 +147,7 @@ def home(request):
         'wishlist': wishlist,
         # 'sizes': sizes,
         # 'wishlist_products': wishlist_products,
+        'cart' : cart,
     }
     # sizes = []
     for product in products:
@@ -264,6 +284,11 @@ def user_login(request):
             return redirect('login')
     else:
         return render(request, 'login.html',context)
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')
 
 
 
@@ -429,6 +454,7 @@ def show_cart(request):
     parent_categories = Category.objects.all()
     user=request.user
     cart=Cart.objects.filter(user=user)
+    latest_products = Product.objects.order_by('-id')[:4]
     amount=0
     for p in cart:
         value = p.quantity*p.product.price
@@ -442,6 +468,14 @@ def show_cart(request):
         totalitem = len(Cart.objects.filter(user=request.user))
         wishitem=len(WishList.objects.filter(user=request.user))
     
+    for product in latest_products:
+        print("product id : ", product.id)
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        print("this is rating :",product.avg_rating)
+
+
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
     context = {
@@ -450,8 +484,12 @@ def show_cart(request):
         'Category': parent_categories,
         'totalitem':totalitem,
         'wishitem':wishitem,
+        'latest_products': latest_products,
+        'cart' : cart,
+        'totalamount' :  totalamount,
+        'amount' : amount,
     }
-    return render(request,'cart.html',locals())
+    return render(request,'cart2.html',context)
 
 
 
@@ -591,34 +629,31 @@ def minus_wishlist(request,id):
 
 
 
-# @method_decorator(login_required,name='dispatch')
+
 class checkout(View):
-    def get(self,request):
+    def get(self, request):
         totalitem = 0
         wishitem = 0
         if request.user.is_authenticated:
-          totalitem = len(Cart.objects.filter(user=request.user))
-          wishitem=len(WishList.objects.filter(user=request.user))
+            totalitem = len(Cart.objects.filter(user=request.user))
+            wishitem = len(WishList.objects.filter(user=request.user))
 
-        user=request.user
-        # print(request.user)
-        add=Customer.objects.filter(user=user)
-        cart_items=Cart.objects.filter(user=user)
+        user = request.user
+        add = Customer.objects.filter(user=user)
+        cart_items = Cart.objects.filter(user=user)
 
         famount = 0
         for p in cart_items:
-            value=p.quantity * p.product.price
-            famount=famount + value
-        totalamount=famount+40
-        razoramount=int(totalamount * 100)
-        client=razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-        data={"amount":razoramount,"currency":"INR","receipt":"order_rcptid_12"}
-        payment_response=client.order.create(data=data)
-        # print(payment_response)
-        #{'id': 'order_MxHMDkdiLLJyd7', 'entity': 'order', 'amount': 28739, 'amount_paid': 0, 'amount_due': 28739, 'currency': 'INR', 'receipt': 'order_rcptid_11', 'offer_id': None, 'status': 'created', 'attempts': 0, 'notes': [], 'created_at': 1699293499}
-        order_id=payment_response['id']
-        order_status=payment_response['status']
-        if order_status == 'created' :
+            value = p.quantity * p.product.price
+            famount = famount + value
+        totalamount = famount + 40
+        razoramount = int(totalamount * 100)
+        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+        data = {"amount": razoramount, "currency": "INR", "receipt": "order_rcptid_12"}
+        payment_response = client.order.create(data=data)
+        order_id = payment_response['id']
+        order_status = payment_response['status']
+        if order_status == 'created':
             payment = Payment(
                 user=user,
                 amount=totalamount,
@@ -626,10 +661,43 @@ class checkout(View):
                 razorpay_payment_status=order_status
             )
             payment.save()
-        return render(request,'checkout.html',locals())  
-    
+
+        return render(request, 'checkout.html', locals())
+
+    def post(self, request):
+        if 'cod' in request.POST:
+            # Handle Cash on Delivery logic
+            # Retrieve form data
+            user_id = request.user.id  # Assuming you have a logged-in user
+            cust_id = request.POST.get('custid')
+            tot_amount = request.POST.get('totamount')
+
+            # Get product IDs and quantities from the submitted form data
+            product_ids = request.POST.getlist('product_ids[]')
+            quantities = request.POST.getlist('quantities[]')
+
+            # Create OrderPlaced objects for each item in the cart
+            for product_id, quantity in zip(product_ids, quantities):
+                OrderPlaced.objects.create(
+                    user_id=user_id,
+                    customer_id=cust_id,
+                    product_id=product_id,
+                    quantity=quantity,
+                    payment_method='COD',
+                    amount=tot_amount,
+                )
+
+            # Redirect to COD confirmation page or display success message
+            return redirect('cod_confirmation')
+        else:
+            # Handle online payment logic (Razorpay or any other payment gateway)
+            pass
+
+        return render(request, 'checkout.html', locals())
 
 
+def cod_confirmation(request):
+    return render(request,'cod_orderplaced.html')
 
 
 # @login_required
@@ -875,6 +943,7 @@ def shopall(request):
 
 #@login_required
 def send_otp_email(user_email):
+    
     otp = str(random.randint(100000, 999999))
     send_mail(
        'Password Reset OTP',
@@ -888,6 +957,12 @@ def send_otp_email(user_email):
 # View for sending OTP
 #@login_required
 def send_otp(request):
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    totalitem = Cart.objects.filter(user=request.user).count()
+    wishitem = WishList.objects.filter(user=request.user).count() 
+
+
     if request.method == 'POST':
         user_email = request.POST.get('email')
         
@@ -898,11 +973,23 @@ def send_otp(request):
         else:
             messages.error(request, 'Please enter a valid email address.')
 
-    return render(request, 'send_otp.html')  # Create a template for email input
+    context = {
+        
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+    }
+
+    return render(request, 'send_otp.html',context)  # Create a template for email input
 
 # View for OTP verification
 #@login_required
 def otp_verification(request):
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    totalitem = Cart.objects.filter(user=request.user).count()
+    wishitem = WishList.objects.filter(user=request.user).count()
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
         stored_otp = request.session.get('otp')
@@ -911,7 +998,16 @@ def otp_verification(request):
         else:
             messages.error(request, 'Invalid OTP. Please try again.')
 
-    return render(request, 'otp_verification.html')  
+
+    context = {
+        
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+    }
+
+    return render(request, 'otp_verification.html',context)  
 
 
 # #@login_required
@@ -933,22 +1029,52 @@ def otp_verification(request):
 #     return render(request, 'password_reset.html')  
 
 
+    
 def PasswordReset(request):
     if request.method == 'POST':
-        user=request.user
         new_password = request.POST.get('new_password')
-        # Set the new password for the user
-        # You can use Django's built-in password reset functionality or your custom logic
-        # For example, using Django's built-in functionality:
-        user.set_password(new_password)
-        user.save()
+        confirm_password = request.POST.get('confirm_password')
         
-        del request.session['otp']  # Clear the stored OTP from the session
-        messages.success(request, 'Password reset successful. You can now log in with your new password.')
-        return redirect('password_reset_complete')  
-
-    return render(request, 'password-reset.html')  
+        if new_password == confirm_password:
+            user = request.user
+            if user.is_authenticated:
+                # If user is authenticated, update their password
+                user.set_password(new_password)
+                user.save()
+                
+                # Clear the stored OTP from the session if it exists
+                if 'otp' in request.session:
+                    del request.session['otp']
+                    
+                # messages.success(request, 'Password reset successful. You can now log in with your new password.')
+                return redirect('login')
+            else:
+                # If user is not authenticated, get their username or email
+                username_or_email = request.POST.get('username_or_email')
+                user = None
+                try:
+                    # Check if the username or email provided exists in the database
+                    user = User.objects.get(Q(username=username_or_email) | Q(email=username_or_email))
+                except User.DoesNotExist:
+                    messages.error(request, 'User not found.')
+                if user:
+                    # Set the new password for the user and save
+                    user.set_password(new_password)
+                    user.save()
+                    
+                    # Clear the stored OTP from the session if it exists
+                    if 'otp' in request.session:
+                        del request.session['otp']
+                    
+                    # messages.success(request, 'Password reset successful. You can now log in with your new password.')
+                    return redirect('login')
+                else:
+                    messages.error(request, 'User not found.')
+        else:
+            messages.error(request, 'Passwords do not match.')
     
+    return render(request, 'password-reset.html')
+
 
 
 def pwcomplete(request):
@@ -957,9 +1083,159 @@ def pwcomplete(request):
 
 
 def autosuggest(request):
-    print(request.GET)
+    print("autosuggest",request.GET)
     query_original = request.GET.get('term')
-    queryset = Product.objects.filter(slug__icontains=query_original) | Product.objects.filter(product_tag__icontains=query_original)
+    queryset = Product.objects.filter(title__icontains=query_original) | Product.objects.filter(product_tag__icontains=query_original)
     mylist = []
     mylist += [x.slug for x in queryset]
     return JsonResponse(mylist, safe=False)
+
+
+def delete_item(request, item_id):
+    if request.method == 'POST':
+        
+        try:
+            item = WishList.objects.get(id=item_id)
+            item.delete()
+        except WishList.DoesNotExist:
+            # Handle the case where the item doesn't exist
+            pass
+    
+        return redirect('wishlist')  
+    return render(request, 'wishlist.html')
+
+
+
+
+# # @login_required
+# def add_to_cart_wishlist(request):
+#     user = request.user
+#     print("lalala",user)
+#     product_id = request.GET.get('prod_id')
+#     print(product_id)
+#     # Check if product_id is provided and not empty
+#     if not product_id:
+#         return HttpResponseBadRequest("Product ID is missing")
+
+#     try:
+#         product = Product.objects.get(id=product_id)
+#     except Product.DoesNotExist:
+#         return HttpResponseBadRequest("Product does not exist")
+
+#     # Create a Cart object for the user and product
+#     Cart(user=user, product=product).save()
+
+#     return redirect(reverse('wishlist'))
+
+
+
+
+# # @login_required
+# def show_cart(request):
+#     user=request.user
+#     cart=Cart.objects.filter(user=user)
+#     amount=0
+#     for p in cart:
+#         value = p.quantity*p.product.price
+#         amount= amount + value
+#         amount2=amount
+        
+#     totalamount=amount+40
+#     totalitem = 0
+#     wishitem = 0
+#     if request.user.is_authenticated:
+#         totalitem = len(Cart.objects.filter(user=request.user))
+#         wishitem=len(WishList.objects.filter(user=request.user))
+    
+#     context = {
+#         'totalitem':totalitem,
+#         'wishitem':wishitem,
+#     }
+#     return render(request,'index2.html',locals())
+
+
+
+
+# # @login_required
+# def plus_cart_base(request):
+#     if request.method=="GET":
+#         prod_id=request.GET['prod_id']
+#         print("this is product id",prod_id)
+#         c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+#         c.quantity+=1
+#         c.save()
+#         user=request.user
+#         cart=Cart.objects.filter(user=user)
+#         amount2=0
+#         # amount2=0
+#         for p in cart:
+#             value = p.quantity*p.product.price
+#             amount2= amount2 + value
+#             # amount2=amount
+
+#         totalamount2=amount2+40
+#         #print(prod_id)
+#         data={
+#               'quantity':c.quantity,
+#               'amount':amount2,
+#             #   'amount2': amount2,
+#               'totalamount2':totalamount2,
+#         }
+#         return JsonResponse(data)
+
+
+
+# # @login_required
+# def minus_cart_base(request):
+#     if request.method=="GET":
+#         prod_id=request.GET['prod_id']
+#         c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+#         c.quantity-=1
+#         c.save()
+#         user=request.user
+#         cart=Cart.objects.filter(user=user)
+#         amount2=0
+#         # amount2=0
+
+#         for p in cart:
+#             value = p.quantity*p.product.price
+#             amount2= amount2 + value
+#             # amount2=amount
+
+#         totalamount2=amount2+40
+#         #print(prod_id)
+#         data={
+#               'quantity':c.quantity,
+#               'amount2':amount2,
+#             #   'amount2': amount2,
+#               'totalamount2':totalamount2,
+#         }
+#         return JsonResponse(data)
+
+
+# # @login_required
+# def remove_cart_base(request):
+#     if request.method=="GET":
+#         prod_id=request.GET['prod_id']
+#         c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+#         c.delete()
+#         user=request.user
+#         cart=Cart.objects.filter(user=user)
+#         amount=0
+#         # amount2=0
+#         for p in cart:
+#             value = p.quantity * p.product.price
+#             amount= amount + value
+#             # amount2=amount
+#         totalamount=amount+40
+       
+#         data={
+#               'quantity':c.quantity,
+#               'amount':amount,
+#             #   'amount2': amount2,
+#               'totalamount':totalamount,
+            
+#         }
+#         return JsonResponse(data)
+
+

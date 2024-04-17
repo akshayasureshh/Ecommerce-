@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed Successfully</title>
+    <style>
+        body {
+            background-color: #8BC34A; /* Green background color */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #FFF; /* White text color */
+        }
+
+        p {
+            color: #FFF; /* White text color */
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tick {
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #FFF; /* White background color */
+            color: #8BC34A; /* Green text color */
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #E0E0E0; /* Light gray background color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://media.tenor.com/images/71441b510fbf6f4393a28ff84fa3efb4/tenor.gif" alt="Tick" class="tick"><!-- Replace the src attribute with the URL of your GIF -->
+        <h1>Order Placed Successfully!</h1>
+        <p>Your order has been successfully placed. Thank you for shopping with us!</p>
+        <a href="{% url 'home' %}" class="btn">Continue Shopping</a>
+    </div>
+</body>
+</html>

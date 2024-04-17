@@ -18,6 +18,8 @@ urlpatterns = [
      
     path('crop-image/', views.upload_and_crop, name='upload_and_crop'),
     path('userlist/',views.userlist,name='userlist'),
+
+    path('neworder/',views.neworder,name= "neworder"),
     
 ] 
 

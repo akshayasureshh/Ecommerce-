@@ -14,6 +14,7 @@ urlpatterns = [
     path('home/',views.home,name='home'),
     path('register/',views.register,name='register'),
     path('login/',views.user_login,name='login'),
+    path('logout/', views.user_logout, name='logout'),
     path('product-detail/<int:categoryID>/',views.productdetail,name='product-detail'),
     path('singleproduct/<int:id>/', views.singleproduct, name='singleproduct'),
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
@@ -59,12 +60,22 @@ urlpatterns = [
    
 
     path('add_to_cart_index/', views.add_to_cart_index, name='add_to_cart_index'),
+    # path('add_to_cart_wishlist  /', views.add_to_cart_wishlist, name='add_to_cart_wishlist'),
+
     
     path('autosuggest/',views.autosuggest,name="autosuggest"),
 
     path('wishlist/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:product_id>/',views.remove_from_wishlist, name='remove_from_wishlist'),
     path('wishlist/<int:product_id>/toggle/', toggle_wishlist, name='toggle_wishlist'),
+
+    path('delete-item/<int:item_id>/',views.delete_item, name='delete_item'),
+
+    # path('pluscart2/',views.plus_cart_base,name="plus_cart2"),
+    # path('minuscart2/',views.minus_cart_base,name="minus_cart2"),
+    # path('removecart2/',views.remove_cart_base,name="remove_cart2"),
+
+    path('cod_confirmation/',views.cod_confirmation,name="cod_confirmation"),
 
 ]
 if settings.DEBUG:

@@ -108,6 +108,42 @@
    <link rel="stylesheet" href="{% static 'css/plugins/owl.theme.default.min.css' %}" />
 
     <!-- Background css -->
+<style>
+    /* Style for the form container */
+.ec-upload-form {
+    max-width: 500px; /* Adjust width as needed */
+    margin: 0 auto;
+}
+
+/* Style for the input fields */
+.ec-ratting-input textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style for the file input */
+.ec-ratting-input input[type="file"] {
+    margin-bottom: 10px;
+}
+
+/* Style for the submit button */
+.ec-ratting-input button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.ec-ratting-input button:hover {
+    background-color: #0056b3;
+}
+</style>
 
 
 {% endblock %}
@@ -347,11 +383,14 @@
                                                 
                                                 <div class="ec-ratting-input ">
                                                     <h4>Enter your text here:</h4> 
-                                                    <textarea name="your-text"
-                                                        placeholder="Enter Your Text"></textarea>
-                                                    
+                                                    {% comment %} <textarea name="your-text"
+                                                        placeholder="Enter Your Text"></textarea> {% endcomment %}
+                                                         
+                                                    <input type="text" name="your-text" placeholder="Enter Your Text" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                                                    &nbsp;<br/>
                                                     <h4>Select Image:</h4>
-                                                    <input type="file" id="image" name="upload-image" accept="image/*">
+                                                    {% comment %} <input type="file" id="image" name="upload-image" accept="image/*"> {% endcomment %}
+                                                    <input type="file" id="image" name="upload-image" accept="image/*" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; ">
                                                      &nbsp;<br/>&nbsp;
                                                     <button class="btn btn-primary" type="submit"
                                                     value="Submit">Submit</button>

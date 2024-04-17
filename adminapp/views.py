@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import *
 from django.views import View
 from django.http import JsonResponse
-from userapp . models import Rating,User
+from userapp . models import Rating,User,OrderPlaced
 from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from .forms import ImageUploadForm
@@ -407,3 +407,9 @@ def upload_and_crop(request):
 def userlist(request):
     data=User.objects.all()
     return render(request, "users-list.html",{ 'data': data })
+
+
+def neworder(request):
+    data = OrderPlaced.objects.all()
+
+    return render(request, "new_order.html",{'data': data})

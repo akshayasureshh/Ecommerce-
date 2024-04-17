@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from adminapp .models import Product
+from .utils import generate_order_id
+from django.utils.crypto import get_random_string
+import uuid
+from django.utils import timezone
 
 # Create your models here.
 
@@ -90,9 +94,44 @@ class OrderPlaced(models.Model):
     customer=models.ForeignKey(Customer,on_delete=models.CASCADE,null=True)
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity=models.PositiveIntegerField(default=1)
-    ordered_date=models.DateField(auto_now_add=True)
+    ordered_date = models.DateTimeField(auto_now_add=True,null=True)
+    amount=models.FloatField(null=True)
     status=models.CharField(max_length=50,default='Order Placed')
-    payment=models.ForeignKey(Payment,on_delete=models.CASCADE,default="")
+    payment=models.ForeignKey(Payment,on_delete=models.CASCADE,default="",null=True)
+    order_id = models.CharField(max_length=20, unique=True, null=True) 
+    payment_method = models.CharField(max_length=20, default='COD')
+
+
+    def save(self, *args, **kwargs):
+        if self.payment_method == 'COD' and not self.order_id:
+            # Generate a unique order ID for COD orders
+            self.order_id = get_random_string(length=10)  # Generate a random string
+        super().save(*args, **kwargs)
+
+
+
+#     last_order_timestamp = None  # Variable to store the timestamp of the last generated order ID
+
+# def generate_order_id():
+#     global last_order_timestamp
+    
+#     # Get the current timestamp
+#     current_timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+
+#     # Check if the current order is placed within the same second as the last one
+#     if last_order_timestamp == current_timestamp:
+#         # If so, return the same order ID as the last one
+#         return last_order_id
+    
+#     # Generate a unique order ID
+#     unique_id = uuid.uuid4().hex[:6]  
+#     order_id = f'{current_timestamp}-{unique_id}'
+    
+#     # Update the last order timestamp and ID
+#     last_order_timestamp = current_timestamp
+#     last_order_id = order_id
+    
+#     return order_id
 
 
 class Rating(models.Model):

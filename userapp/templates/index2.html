@@ -471,34 +471,74 @@
                                                 <!-- <span class="percentage">20%</span> -->
                                                 
                                                 <div class="ec-pro-actions">
-                                                    <form action="{% url 'add_to_cart_index' %}" >
-                                                        <input type="hidden" name="prod_id" value="{{ product.id }}">
-                                                        <button type="submit" class="add-to-cart"><i
-                                                            class="fi-rr-shopping-basket"></i>Add To Cart</button>
-                                                    </form>
-                                                   
                                                     
-                                                         {% for product, in_wishlist in wishlist_products %}
-                                                            <div class="product">
-                                                                <p>{{ product.name }}</p>
-                                                                <i class="heart-icon {% if in_wishlist %}active{% endif %}" data-product-id="{{ product.id }}"></i>
-                                                            </div>
-                                                        {% endfor %}
-                                                        
+                                               
+                                                    
+                                                   
                                                 </div>
+
+                                                <form action="{% url 'add_to_cart_index' %}" >
+                                                    <input type="hidden" name="prod_id" value="{{ product.id }}">
+                                                    <button type="submit" class="add-to-cart"><i
+                                                        class="fi-rr-shopping-basket"></i></button>
+                                                </form>
+                                                <!-- <div class="wishlist-button" style="margin-left: 280px;margin-top: 100px;">
+                                                    {% if wishlist %}
+                                                        <a href="{% url 'minus_wishlist' product.id %}" class="plus-wishlist btn" style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
+                                                    {% else %}
+                                                        <a href="{% url 'plus_wishlist' product.id %}" class="minus-wishlist btn" style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
+                                                    {% endif %}
+                                                </div> -->
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
                                             <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.id %}">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
+                                                
+                                                {% if product.avg_rating == 0 %}
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                
+                                                {% elif product.avg_rating == 1 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                             {% elif product.avg_rating == 2 %}                                                            
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                    
+                    
+                                             {% elif product.avg_rating == 3 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                    
+                                             {% elif product.avg_rating == 4 %}
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
-                                                <i class="ecicon eci-star"></i>
-                                            </div>
+                    
+                                             {% elif product.avg_rating == 5 %}
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             
+                                             {% endif %}
+                                            
+                                        </div>
                                             <span class="ec-price">
-                                                <span class="old-price">$27.00</span>
+                                                <!-- <span class="old-price">$27.00</span> -->
                                                 <span class="new-price">{{product.price}}</span>
                                             </span>
                                             <div class="ec-pro-variation">
@@ -506,7 +546,7 @@
                                                 
                                                     <div class="ec-pro-variation-content">
                                                         <ul>
-                                                            {% for size in sizes %}
+                                                            {% for size in size_list %}
                                                                  <li>{{ size }}</li>
                                                             {% endfor %}
                                                             {{product.custom_size}}
@@ -574,12 +614,49 @@
                                         <div class="ec-pro-content">
                                             <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
+                                                
+                                                {% if product.avg_rating == 0 %}
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                
+                                                {% elif product.avg_rating == 1 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                             {% elif product.avg_rating == 2 %}                                                            
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                    
+                    
+                                             {% elif product.avg_rating == 3 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                    
+                                             {% elif product.avg_rating == 4 %}
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
-                                                <i class="ecicon eci-star"></i>
-                                            </div>
+                    
+                                             {% elif product.avg_rating == 5 %}
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             
+                                             {% endif %}
+                                            
+                                        </div>
                                             <span class="ec-price">
                                                 <!-- <span class="old-price">$30.00</span> -->
                                                 <span class="new-price">{{product.price}}</span>
@@ -665,12 +742,49 @@
                                         <div class="ec-pro-content">
                                             <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
+                                                
+                                                {% if product.avg_rating == 0 %}
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                
+                                                {% elif product.avg_rating == 1 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                             {% elif product.avg_rating == 2 %}                                                            
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                    
+                    
+                                             {% elif product.avg_rating == 3 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                    
+                                             {% elif product.avg_rating == 4 %}
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
-                                                <i class="ecicon eci-star"></i>
-                                            </div>
+                    
+                                             {% elif product.avg_rating == 5 %}
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             
+                                             {% endif %}
+                                            
+                                        </div>
                                             <span class="ec-price">
                                                 <!-- <span class="old-price">$30.00</span> -->
                                                 <span class="new-price">{{product.price}}</span>
@@ -755,12 +869,49 @@
                                         <div class="ec-pro-content">
                                             <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
+                                                
+                                                {% if product.avg_rating == 0 %}
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                
+                                                {% elif product.avg_rating == 1 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                             {% elif product.avg_rating == 2 %}                                                            
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                                                <i class="ecicon eci-star-o"></i>
+                    
+                    
+                                             {% elif product.avg_rating == 3 %}
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                                                <i class="ecicon eci-star fill"></i>
+                    
+                                             {% elif product.avg_rating == 4 %}
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
                                                 <i class="ecicon eci-star fill"></i>
-                                                <i class="ecicon eci-star"></i>
-                                            </div>
+                    
+                                             {% elif product.avg_rating == 5 %}
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             <i class="ecicon eci-star fill"></i>
+                                             
+                                             {% endif %}
+                                            
+                                        </div>
                                             <span class="ec-price">
                                                 <!-- <span class="old-price">$40.00</span> -->
                                                 <span class="new-price">{{product.price}}</span>
@@ -1038,91 +1189,86 @@
                         <h2 class="ec-title">Feature Items</h2>
                     </div>
                 </div>
-
+                
                 <div class="ec-fre-products">
+                    {% for pro in latest_products %}
                     <div class="ec-fs-product">
                         <div class="ec-fs-pro-inner">
                             <div class="ec-fs-pro-image-outer col-lg-6 col-md-6 col-sm-6">
                                 <div class="ec-fs-pro-image">
                                     <a href="product-left-sidebar.html" class="image"><img class="main-image"
-                                            src="images/product-image/1_1.jpg" alt="Product" /></a>
-                                    <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
-                                        data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a>
+                                            src="{{pro.product_image.url}}" alt="Product" style="width: 289px; height: 411px;"/></a>
+                                    <!-- <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
+                                        data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a> -->
                                 </div>
                             </div>
                             <div class="ec-fs-pro-content col-lg-6 col-md-6 col-sm-6">
-                                <h5 class="ec-fs-pro-title"><a href="product-left-sidebar.html">Baby Toy
-                                        Teddybear</a>
+                                <h5 class="ec-fs-pro-title"><a href="{% url 'singleproduct' pro.id %}">{{pro.title}}</a>
                                 </h5>
-                                <div class="ec-fs-pro-rating">
-                                    <span class="ec-fs-rating-icon">
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star"></i>
-                                    </span>
-                                    <span class="ec-fs-rating-text">4 Review</span>
-                                </div>
+                                <div class="ec-pro-rating">
+                                                
+                                    {% if pro.avg_rating == 0 %}
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    
+                                    {% elif pro.avg_rating == 1 %}
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                 {% elif pro.avg_rating == 2 %}                                                            
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+        
+        
+                                 {% elif pro.avg_rating == 3 %}
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+        
+                                 {% elif pro.avg_rating == 4 %}
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+        
+                                 {% elif pro.avg_rating == 5 %}
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 
+                                 {% endif %}
+                                
+                            </div>
                                 <div class="ec-fs-price">
-                                    <span class="old-price">$549.00</span>
-                                    <span class="new-price">$480.00</span>
+                                    <!-- <span class="old-price">$549.00</span> -->
+                                    <span class="new-price">Rs.{{ pro.price }}</span>
                                 </div>
 
-                                <div class="countdowntimer"><span id="ec-fs-count-1"></span></div>
-                                <div class="ec-fs-pro-desc">Lorem Ipsum is simply dummy text the printing and
-                                    typesetting.
+                                <!-- <div class="countdowntimer"><span id="ec-fs-count-1"></span></div> -->
+                                <div class="ec-fs-pro-desc">{{pro.description}}
                                 </div>
-                                <div class="ec-fs-pro-book">Total Booking: <span>25</span></div>
+                                <!-- <div class="ec-fs-pro-book">Total Booking: <span>25</span></div> -->
                                 <div class="ec-fs-pro-btn">
-                                    <a href="#" class="btn btn-lg btn-secondary">Remind Me</a>
-                                    <a href="#" class="btn btn-lg btn-primary">Book Now</a>
+                                    <!-- <a href="#" class="btn btn-lg btn-secondary">Remind Me</a> -->
+                                    <a href="{% url 'singleproduct' pro.id %}" class="btn btn-lg btn-primary">Book Now</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="ec-fs-product">
-                        <div class="ec-fs-pro-inner">
-                            <div class="ec-fs-pro-image-outer col-lg-6 col-md-6 col-sm-6">
-                                <div class="ec-fs-pro-image">
-                                    <a href="product-left-sidebar.html" class="image"><img class="main-image"
-                                            src="assets/images/product-image/3_1.jpg" alt="Product" /></a>
-                                    <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
-                                        data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a>
-                                </div>
-                            </div>
-                            <div class="ec-fs-pro-content col-lg-6 col-md-6 col-sm-6">
-                                <h5 class="ec-fs-pro-title"><a href="product-left-sidebar.html">Leather Purse For
-                                        Women</a>
-                                </h5>
-                                <div class="ec-fs-pro-rating">
-                                    <span class="ec-fs-rating-icon">
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                    </span>
-                                    <span class="ec-fs-rating-text">4 Review</span>
-                                </div>
-                                <div class="ec-fs-price">
-                                    <span class="old-price">$300.00</span>
-                                    <span class="new-price">$250.00</span>
-                                </div>
-
-                                <div class="countdowntimer"><span id="ec-fs-count-2"></span></div>
-                                <div class="ec-fs-pro-desc">Lorem Ipsum is simply dummy text the printing and
-                                    typesetting.
-                                </div>
-                                <div class="ec-fs-pro-book">Total Booking: <span>25</span></div>
-                                <div class="ec-fs-pro-btn">
-                                    <a href="#" class="btn btn-lg btn-secondary">Remind Me</a>
-                                    <a href="#" class="btn btn-lg btn-primary">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
+                    
                 </div>
+
             </div>
             <!--  Feature Section End -->
             <!--  Special Section Start -->
@@ -1135,47 +1281,81 @@
                 </div>
 
                 <div class="ec-spe-products">
+                    {% for pro in products %}
                     <div class="ec-fs-product">
                         <div class="ec-fs-pro-inner">
                             <div class="ec-fs-pro-image-outer col-lg-6 col-md-6 col-sm-6">
                                 <div class="ec-fs-pro-image">
                                     <a href="product-left-sidebar.html" class="image"><img class="main-image"
-                                            src="assets/images/product-image/8_1.jpg" alt="Product" /></a>
-                                    <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
-                                        data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a>
+                                            src="{{pro.product_image.url}}" alt="Product" style="width: 289px; height: 411px;"/></a>
+                                    <!-- <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
+                                        data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a> -->
                                 </div>
                             </div>
                             <div class="ec-fs-pro-content col-lg-6 col-md-6 col-sm-6">
-                                <h5 class="ec-fs-pro-title"><a href="product-left-sidebar.html">Smart watch
-                                        Firebolt</a>
+                                <h5 class="ec-fs-pro-title"><a href="{% url 'singleproduct' pro.id %}">{{pro.title}}</a>
                                 </h5>
-                                <div class="ec-fs-pro-rating">
-                                    <span class="ec-fs-rating-icon">
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star fill"></i>
-                                        <i class="ecicon eci-star"></i>
-                                    </span>
-                                    <span class="ec-fs-rating-text">4 Review</span>
-                                </div>
+                                <div class="ec-pro-rating">
+                                                
+                                    {% if pro.avg_rating == 0 %}
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    
+                                    {% elif pro.avg_rating == 1 %}
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                 {% elif pro.avg_rating == 2 %}                                                            
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+                                    <i class="ecicon eci-star-o"></i>
+        
+        
+                                 {% elif pro.avg_rating == 3 %}
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+        
+                                 {% elif pro.avg_rating == 4 %}
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+                                    <i class="ecicon eci-star fill"></i>
+        
+                                 {% elif pro.avg_rating == 5 %}
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 <i class="ecicon eci-star fill"></i>
+                                 
+                                 {% endif %}
+                                
+                            </div>
                                 <div class="ec-fs-price">
-                                    <span class="old-price">$200.00</span>
-                                    <span class="new-price">$180.00</span>
+                                    <!-- <span class="old-price">$200.00</span> -->
+                                    <span class="new-price">Rs.{{pro.price}}</span>
                                 </div>
                                 <div class="countdowntimer"><span id="ec-fs-count-3"></span></div>
-                                <div class="ec-fs-pro-desc">Lorem Ipsum is simply dummy text the printing and
-                                    typesetting.
+                                <div class="ec-fs-pro-desc">{{pro.description}}
                                 </div>
-                                <div class="ec-fs-pro-book">Total Booking: <span>25</span></div>
+                                <!-- <div class="ec-fs-pro-book">Total Booking: <span>25</span></div> -->
                                 <div class="ec-fs-pro-btn">
-                                    <a href="#" class="btn btn-lg btn-secondary">Remind Me</a>
-                                    <a href="#" class="btn btn-lg btn-primary">Book Now</a>
+                                    <!-- <a href="#" class="btn btn-lg btn-secondary">Remind Me</a> -->
+                                    <a href="{% url 'singleproduct' pro.id %}" class="btn btn-lg btn-primary">Book Now</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="ec-fs-product">
+                    {% endfor %}
+                    <!-- <div class="ec-fs-product">
                         <div class="ec-fs-pro-inner">
                             <div class="ec-fs-pro-image-outer col-lg-6 col-md-6 col-sm-6">
                                 <div class="ec-fs-pro-image">
@@ -1214,7 +1394,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <!--  Special Section End -->
@@ -1323,7 +1503,7 @@
                             </a>
                             <span class="flags">
                                 <span class="sale">Sale</span>
-                            </span>
+                            </span>```                  
                             <!-- <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
                                 data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i
                                     class="fi-rr-eye"></i></a> -->
@@ -1435,7 +1615,7 @@
 <!-- New Product end -->
 
 <!-- ec testmonial Start -->
-<section class="section ec-test-section section-space-ptb-100 section-space-m" id="reviews">
+<!-- <section class="section ec-test-section section-space-ptb-100 section-space-m" id="reviews">
     <div class="container">
         <div class="row">
             <div class="col-md-12 text-center">
@@ -1522,7 +1702,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 <!-- ec testmonial end -->
 
 <!-- Ec Brand Section Start -->
