@@ -21,6 +21,9 @@
 <!-- FAVICON -->
 <link href="{% static 'img/favicon.png' %}" rel="shortcut icon" />
 
+
+<link rel="stylesheet" href="{% static 'css/vendors/ecicons.min.css' %}" />
+
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 
@@ -72,47 +75,50 @@
                                                 <td>{{ review.product.title }}</td>
                                                 <td>
                                                     <div class="ec-t-rate">
-                                                        {% if review.rating == 0 %}
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                           
-                                                     {% elif review.rating == 1 %}
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                     {% elif review.rating == 2 %}                                                            
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
-                                                        <i class="ecicon eci-star-o"></i>
+                                                        {% if review.avg_rating == 0 %}
+															<i class="mdi mdi-star"></i>
+															<i class="mdi mdi-star"></i>
+															<i class="mdi mdi-star"></i>
+															<i class="mdi mdi-star"></i>
+															<i class="mdi mdi-star"></i>
 
+                                                        {% elif review.avg_rating == 1 %}
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star"></i>
+                                                            <i class="mdi mdi-star"></i>
+                                                            <i class="mdi mdi-star"></i>
+                                                            <i class="mdi mdi-star"></i>
 
-                                                     {% elif review.rating == 3 %}
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
+                                                        {% elif review.avg_rating == 2 %}
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star"></i>
+                                                            <i class="mdi mdi-star"></i>
+                                                            <i class="mdi mdi-star"></i>
 
-                                                     {% elif review.rating == 4 %}
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
+                                                        {% elif review.avg_rating == 3 %}
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star"></i>
+                                                            <i class="mdi mdi-star"></i>
 
-                                                     {% elif review.rating == 5 %}
-                                                     <i class="ecicon eci-star fill"></i>
-                                                     <i class="ecicon eci-star fill"></i>
-                                                     <i class="ecicon eci-star fill"></i>
-                                                     <i class="ecicon eci-star fill"></i>
-                                                     <i class="ecicon eci-star fill"></i>
-                                                     
-                                                     {% endif %}
-                                                    </div>
+                                                        {% elif review.avg_rating == 4 %}
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star"></i>
+
+                                                        {% elif review.avg_rating == 5 %}
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                            <i class="mdi mdi-star is-rated"></i>
+                                                        {% endif %}
+
+														</div>
                                                 </td>
                                                 
                                                 <td>{{ review.created_at }}</td>

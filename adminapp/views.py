@@ -2,18 +2,20 @@ from django.shortcuts import render
 from .models import *
 from django.views import View
 from django.http import JsonResponse
-from userapp . models import Rating,User,OrderPlaced
+from userapp . models import Rating,User,OrderPlaced,Order
 from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from .forms import ImageUploadForm
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Avg
 
 # Create your views here.
 
 
 def home(request):
-    return render(request,'home.html')
+    orders = Order.objects.all()
+    return render(request,'home.html',{'orders':orders})
 
 
 def categorypage(request):
@@ -267,79 +269,151 @@ def subcategory(request):
 #     }
 #     return render(request, 'productadd2.html', context)
 
-from django.http import JsonResponse
-from .forms import ImageUploadForm
-from .models import Product, SubCategory
+# from django.http import JsonResponse
+# from .forms import ImageUploadForm
+# from .models import Product, SubCategory
+
+# def productsAdd(request):
+#     data = SubCategory.objects.all()
+#     if request.method == 'POST':
+#         # Extract form data from the request
+#         image_upload_form = ImageUploadForm(request.POST, request.FILES)
+
+#         # Validate the image upload form
+#         if image_upload_form.is_valid():
+#             # Save cropped image data from the upload form
+#             cropped_image_data = image_upload_form.cleaned_data['file']
+
+#             # Extract data from the HTML form
+#             product_name = request.POST['product_name']
+#             categories_id = request.POST['categories']
+#             availability = request.POST['availability']
+#             price = request.POST['price']
+#             description = request.POST['description']
+#             tags = request.POST['group_tag']
+#             quantity = request.POST['quantity']
+#             full_detail = request.POST['fulldetail']
+#             slug = request.POST['slug']
+#             custom_size = request.POST['customsize']
+#             admin_choice = request.POST['admin_choice']
+#             color1 = request.POST.get('color1')
+#             color2 = request.POST.get('color2')
+#             color3 = request.POST.get('color3')
+#             color4 = request.POST.get('color4')
+#             additional_colors = request.POST.getlist('additionalColor')
+#             selected_sizes = request.POST.getlist('size')
+
+#             categories = SubCategory.objects.get(id=categories_id)
+
+#             # Create a new product instance
+#             product_details = Product(
+#                 product_image=cropped_image_data,  # Use cropped image data
+#                 title=product_name,
+#                 categories=categories,
+#                 availability=availability,
+#                 admin_choice=admin_choice,
+#                 price=price,
+#                 description=description,
+#                 product_tag=tags,
+#                 quantity=quantity,
+#                 full_detail=full_detail,
+#                 slug=slug,
+#                 color1=color1,
+#                 color2=color2,
+#                 color3=color3,
+#                 color4=color4,
+#                 colors=additional_colors,
+#                 custom_size=custom_size,
+#                 size=selected_sizes,
+#             )
+
+#             product_details.save()
+
+#             return JsonResponse({'message': 'Product added successfully'})
+
+#     else:
+#         image_upload_form = ImageUploadForm()
+
+#     context = {
+#         'image_upload_form': image_upload_form,
+#         'subcategory': data,
+#         'stock_availability': ['IN STOCK', 'OUT OF STOCK'],
+#     }
+
+#     return render(request, 'productadd2.html', context)
 
 def productsAdd(request):
     data = SubCategory.objects.all()
     if request.method == 'POST':
-        # Extract form data from the request
-        image_upload_form = ImageUploadForm(request.POST, request.FILES)
+    # Safely retrieve files from request.FILES
+        product_image = request.FILES.get('product_image')
+        image1 = request.FILES.get('image1')
+        image2 = request.FILES.get('image2')
+        image3 = request.FILES.get('image3')
+        image4 = request.FILES.get('image4')
+        image5 = request.FILES.get('image5')
+        image6 = request.FILES.get('image6')
+        
 
-        # Validate the image upload form
-        if image_upload_form.is_valid():
-            # Save cropped image data from the upload form
-            cropped_image_data = image_upload_form.cleaned_data['file']
+        # Retrieve other form data
+        product_name = request.POST.get('product_name', '')
+        categories_id = request.POST.get('categories', '')
+        availability = request.POST.get('availability', '')
+        price = request.POST.get('price', '')
+        description = request.POST.get('description', '')
+        tags = request.POST.get('group_tag', '')
+        quantity = request.POST.get('quantity', '')
+        full_detail = request.POST.get('fulldetail', '')
+        slug = request.POST.get('slug', '')
+        custom_size = request.POST.get('customsize', '')
+        admin_choice = request.POST.get('admin_choice', '')
+        color1 = request.POST.get('color1', '')
+        color2 = request.POST.get('color2', '')
+        color3 = request.POST.get('color3', '')
+        color4 = request.POST.get('color4', '')
+        additional_colors = request.POST.getlist('additionalColor')
+        selected_sizes = request.POST.getlist('size')
 
-            # Extract data from the HTML form
-            product_name = request.POST['product_name']
-            categories_id = request.POST['categories']
-            availability = request.POST['availability']
-            price = request.POST['price']
-            description = request.POST['description']
-            tags = request.POST['group_tag']
-            quantity = request.POST['quantity']
-            full_detail = request.POST['fulldetail']
-            slug = request.POST['slug']
-            custom_size = request.POST['customsize']
-            admin_choice = request.POST['admin_choice']
-            color1 = request.POST.get('color1')
-            color2 = request.POST.get('color2')
-            color3 = request.POST.get('color3')
-            color4 = request.POST.get('color4')
-            additional_colors = request.POST.getlist('additionalColor')
-            selected_sizes = request.POST.getlist('size')
+        categories = SubCategory.objects.get(id=categories_id)
 
-            categories = SubCategory.objects.get(id=categories_id)
+        # Create a new product instance
+        product_details = Product(
+            product_image=product_image,
+            product_image1=image1,
+            product_image2=image2,
+            product_image3=image3,
+            product_image4=image4,
+            product_image5=image5,
+            product_image6=image6,
+            title=product_name,
+            categories=categories,
+            availability=availability,
+            admin_choice=admin_choice,
+            price=price,
+            description=description,
+            product_tag=tags,
+            quantity=quantity,
+            full_detail=full_detail,
+            slug=slug,
+            color1=color1,
+            color2=color2,
+            color3=color3,
+            color4=color4,
+            colors=additional_colors,
+            custom_size=custom_size,
+            size=selected_sizes,
+        )
 
-            # Create a new product instance
-            product_details = Product(
-                product_image=cropped_image_data,  # Use cropped image data
-                title=product_name,
-                categories=categories,
-                availability=availability,
-                admin_choice=admin_choice,
-                price=price,
-                description=description,
-                product_tag=tags,
-                quantity=quantity,
-                full_detail=full_detail,
-                slug=slug,
-                color1=color1,
-                color2=color2,
-                color3=color3,
-                color4=color4,
-                colors=additional_colors,
-                custom_size=custom_size,
-                size=selected_sizes,
-            )
+        product_details.save()
 
-            product_details.save()
-
-            return JsonResponse({'message': 'Product added successfully'})
-
-    else:
-        image_upload_form = ImageUploadForm()
+        return render(request,'productadd2.html')
 
     context = {
-        'image_upload_form': image_upload_form,
         'subcategory': data,
         'stock_availability': ['IN STOCK', 'OUT OF STOCK'],
     }
 
     return render(request, 'productadd2.html', context)
-
 
 
 
@@ -389,6 +463,11 @@ def Childslider(request):
 def Review(request):
     
     reviews = Rating.objects.all()
+    
+    for review in reviews:
+        avg_rating = Rating.objects.filter(product=review.product).aggregate(Avg('rating'))['rating__avg']
+        review.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        print("this is rating :",review.avg_rating)
 
     return render(request, 'reviews.html', { 'reviews': reviews})
 
@@ -411,5 +490,60 @@ def userlist(request):
 
 def neworder(request):
     data = OrderPlaced.objects.all()
+    datas = Order.objects.all()
 
-    return render(request, "new_order.html",{'data': data})
+    
+    # Paginate the products
+    paginator = Paginator(datas, 12)  # Show 12 products per page
+    page_number = request.GET.get('page')
+    try:
+        datas = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        datas = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        datas = paginator.page(paginator.num_pages)
+        
+    context = {
+        'data': data,
+        'datas': datas,
+    }
+
+    return render(request, "new_order.html", context)
+
+import logging
+logger = logging.getLogger(__name__)
+
+def update_order_status(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        order_id = request.POST.get('order_id')
+        new_status = request.POST.get('status')
+        delivery_date = request.POST.get('delivery_date')  # Extract delivery date from POST data
+
+        try:
+            order = Order.objects.get(order_id=order_id)
+            order.status = new_status
+            order.delivery_expected_date = delivery_date  # Update delivery date
+            order.save()
+            return JsonResponse({'success': True})
+        except Order.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Order not found'})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+def order_detail(request):
+    detail = Order.objects.latest('id')
+    details = OrderPlaced.objects.all()
+
+    context={
+          'detail': detail,
+          'details': details,
+
+
+    }
+    return render(request, 'order_detail.html',context)
+
+def orderhistory(request):
+    data = Order.objects.all()
+    return render(request,'order_history.html',{'data' : data})

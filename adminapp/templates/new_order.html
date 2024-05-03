@@ -64,47 +64,122 @@
 													<th>Payment</th>
 													<th>Status</th>
 													<th>Date</th>
+													<th>Expected delivery<th>
 													<th>Action</th>
 												</tr>
 											</thead>
-
+                                            
 											<tbody>
+												
                                                 {% for order in data %}
+												
 												<tr>
+													
 													<td>{{order.id}}</td>
 													<td><img class="product-img tbl-img" src="{{order.product.product_image.url}}" alt="product"></td>
 													<td>{{order.product.title}}</td>
-													<td><strong>{{order.user}}</strong><br>
+													<td>{% for i in datas %}
+														{% if i.id == order.order_id %}
+														<strong>{{i.user}}</strong>
+														{% endif %}
+													{% endfor %}<br>
 														{{order.user.email}}
 													</td>
 													<td>{{order.quantity}}</td>
-													<td>Rs.{{order.amount}}</td>
-													<td>{{order.payment_method}}</td>
-													<td><span class="mb-2 mr-2 badge badge-secondary">{{order.status}}</span>
-													</td>
-													<td>{{order.ordered_date}}</td>
+													{% comment %} <td>Rs.{{i.amount}}</td> {% endcomment %}
 													<td>
-														<div class="btn-group mb-1">
-															<button type="button"
+														{% for i in datas %}
+															{% if i.id == order.order_id %}
+																Rs.{{ i.amount }}
+															{% endif %}
+														{% endfor %}
+													</td>
+													<td>
+														{% for i in datas %}
+														{% if i.id == order.order_id %}
+																{{ i.payment_method }}
+															{% endif %}
+														{% endfor %}
+													</td>
+													{% comment %} <td><span class="mb-2 mr-2 badge badge-secondary">{{order.status}}</span> {% endcomment %}
+														<td>
+															{% for i in datas %}
+															{% if i.id == order.order_id %}
+															<span class="mb-2 mr-2 badge badge-secondary">
+																<input type="hidden" name="order_id" value="{{ i.order_id }}">
+																<select name="status" class="form-select edit-status">
+																	
+																	
+																	<option value="{{ i.status }}" {% if order.status == i.status %} selected {% endif %}>
+																		{{ i.status }}
+																	</option>
+																	{% endif %}
+																	{% endfor %}
+																	<option value="Pending">Pending</option>
+																	<option value="Processing">Processing</option>
+																	<option value="Shipped">Shipped</option>
+																	<option value="Shipped">Enroute</option>
+																	<option value="Delivered">Delivered</option>
+																</select>
+															</span>
+														</td>
+													<td>{% for i in datas %}
+														{% if i.id == order.order_id %}
+															{{ i.ordered_date }}
+														{% endif %}
+													{% endfor %}
+												</td>
+												<td>
+													{% for i in datas %}
+														{% if i.id == order.order_id %}
+													<input type="date" id="delivery_date" name="delivery_date" value="{{ i.delivery_expected_date|date:'Y-m-d' }}">
+												    {% endif %}
+													{% endfor %}
+												</td>
+												
+													<td>
+														
+
+														
+														<div class="btn-group ">
+															{% comment %} <button type="button"
 																class="btn btn-outline-success">Info</button>
 															<button type="button"
 																class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
 																data-bs-toggle="dropdown" aria-haspopup="true"
 																aria-expanded="false" data-display="static">
 																<span class="sr-only">Info</span>
-															</button>
+															</button> {% endcomment %}
+															
+                                                            <button type="button" class="btn btn-primary update-btn">Update</button>
+                                                            {% comment %} <a href="{% url 'orderdetail' order.id %}"> <button type="button" class="btn btn-primary ">Detail</button></a> {% endcomment %}
 
+															{% comment %} 
 															<div class="dropdown-menu">
-																<a class="dropdown-item" href="#">Detail</a>
-																<a class="dropdown-item" href="#">Track</a>
-																<a class="dropdown-item" href="#">Cancel</a>
-															</div>
+                                                                <form method="post" action="{% url 'update_status' %}" class="dropdown-item edit-status-form">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="order_time" value="{{ order.ordered_date }}">
+                                                                    <select name="status" class="form-select">
+                                                                        <option value="Pending">Pending</option>
+                                                                        <option value="Processing">Processing</option>
+                                                                        <option value="Shipped">Shipped</option>
+                                                                        <option value="Delivered">Delivered</option>
+                                                                    </select>
+                                                                </form>
+                                                                {% comment %} <a class="dropdown-item" href="#">Cancel</a> 
+                                                            </div> {% endcomment %}
+
+
 														</div>
 													</td>
 												</tr>
+										
                                                 {% endfor %}
+                                                
+
 												
 											</tbody>
+											
                                             
 										</table>
 									</div>
@@ -114,11 +189,56 @@
 
 						</div>
 					</div>
+					
+					<nav aria-label="...">
+						<ul class="pagination">
+						  <li class="page-item {% if data.has_previous %} {% else %}disabled{% endif %}">
+							<a class="page-link" href="?page={{ data.previous_page_number }}" tabindex="-1">Previous</a>
+						  </li>
+						  {% for num in data.paginator.page_range %}
+							<li class="page-item {% if num == data.number %}active{% endif %}">
+							  <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+							</li>
+						  {% endfor %}
+						  <li class="page-item {% if data.has_next %} {% else %}disabled{% endif %}">
+							<a class="page-link" href="?page={{ data.next_page_number }}">Next</a>
+						  </li>
+						</ul>
+					  </nav>
                     
 				</div> <!-- End Content -->
 			</div> <!-- End Content Wrapper -->
-
-
-
-
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+	$(document).ready(function () {
+		$('.update-btn').click(function () {
+			var orderId = $(this).closest('tr').find('input[name="order_id"]').val();
+			var newStatus = $(this).closest('tr').find('select[name="status"]').val();
+			var deliveryDate = $(this).closest('tr').find('input[name="delivery_date"]').val();
+	
+			$.ajax({
+				type: 'POST',
+				url: '{% url "update_order_status" %}',
+				data: {
+					'order_id': orderId,
+					'status': newStatus,
+					'delivery_date': deliveryDate,  // Include delivery date in the data
+					'csrfmiddlewaretoken': '{{ csrf_token }}'
+				},
+				success: function (response) {
+					if (response.success) {
+						alert('Status updated successfully.');
+						// Optionally, update the UI to reflect the new status
+					} else {
+						alert('Failed to update status: ' + response.error);
+					}
+				},
+				error: function () {
+					alert('An error occurred while updating status.');
+				}
+			});
+		});
+	});
+	
+</script>
  {% endblock main-content %}

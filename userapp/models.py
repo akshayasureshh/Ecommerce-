@@ -5,6 +5,9 @@ from .utils import generate_order_id
 from django.utils.crypto import get_random_string
 import uuid
 from django.utils import timezone
+import random
+from datetime import timedelta
+
 
 # Create your models here.
 
@@ -54,13 +57,22 @@ STATE_CHOICES=(
 class Customer(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='customers')
     name=models.CharField(max_length=200)
-    locality=models.CharField(max_length=200)
-    city=models.CharField(max_length=50)
+    email1=models.EmailField(null=True,blank=True)
+    email2=models.EmailField(null=True,blank=True)
+    image1=models.ImageField(null=True,blank=True,upload_to="customer-images/")
+    image2=models.ImageField(null=True,blank=True,upload_to="customer-images/")
+    address1=models.TextField(null=True)
+    address2=models.TextField(null=True)
+    address3=models.TextField(null=True)
+    locality=models.CharField(max_length=200,null=True)
+    city=models.CharField(max_length=50,null=True)
     mobile=models.IntegerField(default=0)
-    zipcode=models.IntegerField()
-    state=models.CharField(choices=STATE_CHOICES,max_length=100)
+    mobile2=models.IntegerField(default=0,null=True)
+    zipcode=models.IntegerField(null=True)
+    state=models.CharField(choices=STATE_CHOICES,max_length=100,null=True)
     def __str__(self):
         return self.name
+
 
 
 
@@ -89,24 +101,59 @@ class Payment(models.Model):
     razorpay_payment_id=models.CharField(max_length=100,blank=True,null=True)
     paid=models.BooleanField(default=False)
 
-class OrderPlaced(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    customer=models.ForeignKey(Customer,on_delete=models.CASCADE,null=True)
-    product=models.ForeignKey(Product,on_delete=models.CASCADE)
-    quantity=models.PositiveIntegerField(default=1)
-    ordered_date = models.DateTimeField(auto_now_add=True,null=True)
-    amount=models.FloatField(null=True)
-    status=models.CharField(max_length=50,default='Order Placed')
-    payment=models.ForeignKey(Payment,on_delete=models.CASCADE,default="",null=True)
-    order_id = models.CharField(max_length=20, unique=True, null=True) 
-    payment_method = models.CharField(max_length=20, default='COD')
 
+class Order(models.Model):
+    order_id = models.CharField(max_length=20, unique=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
+    address_id =  models.TextField(null=True)
+    ordered_date = models.DateTimeField(auto_now_add=True, null=True)
+    amount = models.FloatField(null=True)
+    status = models.CharField(max_length=50, default='Order Placed')
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, default="", null=True)
+    payment_method = models.CharField(max_length=20)
+    delivery_expected_date = models.DateField(null=True)
 
     def save(self, *args, **kwargs):
-        if self.payment_method == 'COD' and not self.order_id:
-            # Generate a unique order ID for COD orders
-            self.order_id = get_random_string(length=10)  # Generate a random string
+        if not self.order_id:
+            # Generate alphanumeric order ID using UUID version 4
+            self.order_id = self.generate_order_id()
+
+        if not self.ordered_date:
+            self.ordered_date = timezone.now()  # Set ordered_date if not already set
+
+        # Set delivery expected date as 7 days from ordered date
+        if not self.delivery_expected_date:
+            self.delivery_expected_date = self.ordered_date + timedelta(days=7)
+
         super().save(*args, **kwargs)
+
+    def generate_order_id(self):
+        return uuid.uuid4().hex[:10]
+
+
+
+
+class OrderPlaced(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,null=True)
+    quantity = models.PositiveIntegerField(default=1,null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.order_id:  # Check if this is the first product in the order
+            order = Order.objects.create(
+                user=self.user,
+                customer=self.customer,
+                amount=self.amount,
+                status=self.status,
+                payment=self.payment,
+                payment_method=self.payment_method
+            )
+            self.order = order  
+            self.order_id = order.order_id  
+
+        super().save(*args, **kwargs)
+
 
 
 

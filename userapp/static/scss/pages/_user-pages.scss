@@ -12,17 +12,30 @@
 			}
 		}
 	}
+	// .ec-vendor-block-bg {
+	// 	width: 100%;
+	// 	height: 200px;
+	// 	background-image: url(../images/banner/8.jpg) !important;
+	// 	background-size: cover;
+	// 	background-position: center;
+	// 	background-repeat: no-repeat;
+	// 	background-blend-mode: overlay;
+	// 	background-color: rgba(0, 0, 0, 0.6);
+	// 	position: relative;
+	// }
+
 	.ec-vendor-block-bg {
-		width: 100%;
-		height: 200px;
-		background-image: url(../images/banner/8.jpg) !important;
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-blend-mode: overlay;
-		background-color: rgba(0, 0, 0, 0.6);
-		position: relative;
-	}
+        width: 100%;
+        height: 200px;
+        background-image: url('{{ background_image_url }}') !important;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-blend-mode: overlay;
+        background-color: rgba(0, 0, 0, 0.6);
+        position: relative;
+    }
+	
 	.border-none {
 		border: none;
 	}

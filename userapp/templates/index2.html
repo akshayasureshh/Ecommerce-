@@ -75,19 +75,6 @@
   </script>
 
 
-  <style>
-    /* CSS to change the color of the icon */
-    .heart-icon {
-        color: red; /* Change to whatever color you want */
-    }
-</style>
-
- 
-
-    
-    
-    
-
     <!-- site Favicon -->
     <link rel="icon" href="{% static 'images/favicon/favicon.png' %}" sizes="32x32" />
     <link rel="apple-touch-icon" href="{% static 'images/favicon/favicon.png' %}" />
@@ -181,11 +168,13 @@
             <div class="ec-sb-slider-title">Best Sellers</div>
             <div class="ec-sb-pro-sl">
                 <div>
+                    {% for seller in most_ordered_products %}
+                    
                     <div class="ec-sb-pro-sl-item">
                         <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                src="assets/images/product-image/1.jpg" alt="product" /></a>
+                                src="{{seller.product.product_image.url}}" alt="product" style="width: 100px;height: 100px;"/></a>
                         <div class="ec-pro-content">
-                            <h5 class="ec-pro-title"><a href="product-left-sidebar.html">baby fabric shoes</a></h5>
+                            <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{seller.product.title}}</a></h5>
                             <div class="ec-pro-rating">
                                 <i class="ecicon eci-star fill"></i>
                                 <i class="ecicon eci-star fill"></i>
@@ -194,14 +183,15 @@
                                 <i class="ecicon eci-star fill"></i>
                             </div>
                             <span class="ec-price">
-                                <span class="old-price">$5.00</span>
-                                <span class="new-price">$4.00</span>
+                                <!-- <span class="old-price">$5.00</span> -->
+                                <span class="new-price">Rs.{{seller.product.price}}</span>
                             </span>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
                 <div>
-                    <div class="ec-sb-pro-sl-item">
+                    <!-- <div class="ec-sb-pro-sl-item">
                         <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
                                 src="assets/images/product-image/2.jpg" alt="product" /></a>
                         <div class="ec-pro-content">
@@ -341,7 +331,7 @@
                                 <span class="new-price">$13.00</span>
                             </span>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -546,10 +536,11 @@
                                                 
                                                     <div class="ec-pro-variation-content">
                                                         <ul>
-                                                            {% for size in size_list %}
-                                                                 <li>{{ size }}</li>
-                                                            {% endfor %}
-                                                            {{product.custom_size}}
+                                                            
+                                                            {% for size in sizes %}
+                                                            <li> {{ size }}</li>
+                                                        {% endfor %}
+                                                        <li>{{product.custom_size}}</li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -1510,10 +1501,29 @@
                             <div class="ec-pro-actions">
                                 <!-- <a href="compare.html" class="ec-btn-group compare" title="Compare"><i
                                         class="fi fi-rr-arrows-repeat"></i></a> -->
-                                <button title="Add To Cart" class="add-to-cart"><i
-                                        class="fi-rr-shopping-basket"></i> Add To Cart</button>
-                                <a class="ec-btn-group wishlist" title="Wishlist"><i class="fi-rr-heart"></i></a>
+                                        <form action="{% url 'add_to_cart_newarrivals' %}" >
+                                            <input type="hidden" name="prod_id" value="{{ pro.id }}">
+                                            <button type="submit" class="add-to-cart"><i
+                                                class="fi-rr-shopping-basket"></i></button>
+                                        </form>
+                                        <form action="{% url 'add_to_wishlist_newarrivals' %}" >
+                                            <input type="hidden" name="prodwish_id" value="{{ pro.id }}">
+                                            <a class="ec-btn-group wishlist" title="Wishlist"></a><button type="submit" class="add-to-wishlist"><i class="fi-rr-heart"></i></button></a>
+                                        </form>
+                                        {% if messages %}
+                                        <ul class="messages">
+                                            {% for message in messages %}
+                                            <li>{{ message }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% endif %}
+                                        <!-- <button title="Add To Cart" class="add-to-cart" data-item-id="{{ pro.id }}">
+                                            <i class="fi-rr-shopping-basket"></i> Add To Cart</button> -->
+                                <!-- <a class="ec-btn-group wishlist" title="Wishlist"><i class="fi-rr-heart"></i></a> -->
+                               
+                               
                             </div>
+                            
                         </div>
                     </div>
                     <div class="ec-pro-content">
@@ -1782,6 +1792,13 @@
     </div>
 </section>
 
+{% if message %}
+<script>
+    // Display the message in a pop-up using JavaScript
+    alert("{{ message }}");
+</script>
+{% endif %}
+
 <script>
 
 $('.plus-wishlist').click(function(){
@@ -1822,7 +1839,7 @@ $('.minus-wishlist').click(function(){
 })
 
 </script>
-<script>
+<!-- <script>
     document.querySelectorAll('.heart-icon').forEach(icon => {
     icon.addEventListener('click', function() {
         const productId = this.dataset.productId;
@@ -1854,6 +1871,51 @@ $('.minus-wishlist').click(function(){
     });
 });
 
-</script>
+</script> -->
+
+<!-- 
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        window.alert("inside the function script")
+        const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+
+        wishlistBtns.forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default link behavior
+
+                // Toggle active class for heart icon
+                const heartIcon = button.querySelector('.heart-icon');
+                heartIcon.classList.toggle('active');
+
+                // Get the product ID
+                const productId = button.dataset.productId;
+
+                // Send an AJAX request to add/remove from wishlist
+                fetch(`/add-to-wishlist/${productId}/`)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Failed to add item to wishlist');
+                        }
+                    })
+                    .then(data => {
+                        if (data.message) {
+                            // If the item already exists, show the message
+                            const itemExistsMessage = button.parentElement.querySelector('.item-exists-message');
+                            itemExistsMessage.style.display = 'block';
+                        } else {
+                            console.log('Item added to wishlist');
+                            // Optionally, update UI to reflect item added to wishlist
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            });
+        });
+    });
+</script> -->
 
 {% endblock main-content %}

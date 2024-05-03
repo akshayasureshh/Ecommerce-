@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_view
 from . forms import MyPasswordResetForm,MySetPasswordForm
 from django.contrib.auth import views as auth_views
-from .views import toggle_wishlist
+from .views import toggle_wishlist,resend_otp
 
 
 
@@ -54,13 +54,14 @@ urlpatterns = [
 
     path('send_otp/', views.send_otp, name='send_otp'),
     path('otp_verification/', views.otp_verification, name='otp_verification'),
+    path('resend_otp/', resend_otp, name='resend_otp'),
     path('password-reset/',views.PasswordReset,name='password-reset'),
     path('password-reset-complete/',views.pwcomplete,name='password_reset_complete'),
 
    
 
     path('add_to_cart_index/', views.add_to_cart_index, name='add_to_cart_index'),
-    # path('add_to_cart_wishlist  /', views.add_to_cart_wishlist, name='add_to_cart_wishlist'),
+    path('add_to_cart_wishlist/', views.add_to_cart_wishlist, name='add_to_cart_wishlist'),
 
     
     path('autosuggest/',views.autosuggest,name="autosuggest"),
@@ -71,11 +72,23 @@ urlpatterns = [
 
     path('delete-item/<int:item_id>/',views.delete_item, name='delete_item'),
 
-    # path('pluscart2/',views.plus_cart_base,name="plus_cart2"),
-    # path('minuscart2/',views.minus_cart_base,name="minus_cart2"),
-    # path('removecart2/',views.remove_cart_base,name="remove_cart2"),
+    path('pluscart2/',views.plus_cart_base,name="plus_cart2"),
+    path('minuscart2/',views.minus_cart_base,name="minus_cart2"),
+    path('removecart2/',views.remove_cart_base,name="remove_cart2"),
 
     path('cod_confirmation/',views.cod_confirmation,name="cod_confirmation"),
+
+    path('trackorder/',views.trackorder,name='trackorder'),
+
+    path('invoice/',views.invoice,name='invoice'),
+    path('invoice/export/',views. invoice, name='export_invoice'),
+
+    path('userprofile/',views.userprofile,name='userprofile'),
+
+    path('add-to-cart-newarrivals/', views.add_to_cart_newarrival, name='add_to_cart_newarrivals'),
+    path('add-to-wishlist-newarrivals/',views.add_to_wishlist_newarrivals,name='add_to_wishlist_newarrivals'),
+
+    
 
 ]
 if settings.DEBUG:

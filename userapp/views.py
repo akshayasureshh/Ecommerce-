@@ -17,6 +17,14 @@ from django.urls import reverse
 import random
 from django.core.mail import send_mail
 from django.contrib.auth import logout
+from django.db.models import Count
+from django.http import HttpResponseRedirect
+from django.http import HttpResponse
+import csv
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 # def home(request):
@@ -64,6 +72,7 @@ from django.contrib.auth import logout
 
 
 def home(request):
+    context = {}
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
     parent_slider = BackgroundSliders.objects.all()
@@ -72,13 +81,30 @@ def home(request):
     print("iteration problem:", products)
     newarrival = Product.objects.latest('id')
     latest_products = Product.objects.order_by('-id')[:4]
+    most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')[:4]
     totalitem = 0
     wishitem = 0
     wishlist = {}
+    cart = []
+    amount2 = 0
+    totalamount2 = 0
     
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
         wishitem = WishList.objects.filter(user=request.user).count()
+        cart = Cart.objects.filter(user=request.user)
+        amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+        amount2 = amount
+        totalamount2 = amount + 40
+        user = request.user
+        
+    else:
+        totalitem = 0
+        wishitem = 0
+        user = None
+        cart = []
+        
+
         
        
     for product in products:
@@ -121,8 +147,8 @@ def home(request):
         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
         print("this is rating :",product.avg_rating)
     
-    user=request.user
-    cart=Cart.objects.filter(user=user)
+    # user=request.user
+    # cart=Cart.objects.filter(user=user)
     print("the cart item is",cart)
     amount=0
     for p in cart:
@@ -133,6 +159,16 @@ def home(request):
     totalamount=amount+40
     print(totalamount)
     
+    
+    # sizes = []
+    for product in products:
+      print("product is ", product)
+      if product.size[0] != '':        
+        size_list = json.loads(product.size[0])      
+        print("sizelist",size_list)  
+        context['sizes'] = size_list
+
+
     context = {
         'SubCate': data,
         'Category': parent_categories,
@@ -148,14 +184,14 @@ def home(request):
         # 'sizes': sizes,
         # 'wishlist_products': wishlist_products,
         'cart' : cart,
+        'amount2' : amount2,
+        'totalamount2' : totalamount,
+        'most_ordered_products': most_ordered_products,
     }
-    # sizes = []
-    for product in products:
-        print("product is ",product)
-        if product.size[0] != '':        
-            size_list = json.loads(product.size[0]) 
-            print("size list is ",size_list)       
-            context['sizes'] = size_list
+      # Append each size_list to sizes list
+
+    # Assign the sizes list to the context dictionary outside the loop
+    
 
     return render(request, 'index2.html', context)
 
@@ -181,8 +217,6 @@ def add_to_cart_index(request):
     Cart(user=user, product=product).save()
 
     return redirect(reverse('home'))
-
-
 
 
 def add_to_wishlist(request, product_id):
@@ -398,7 +432,7 @@ def review(request, product_pk):
     product_id = product_pk
     
     if request.method == 'POST':
-        rating = request.POST['items']
+        rating = request.POST['rating']
         comment = request.POST['your-commemt']
         
         product = get_object_or_404(Product, pk=product_id)
@@ -592,12 +626,28 @@ def show_wishlist(request):
     product = WishList.objects.filter(user=user)
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
+
+    user=request.user
+    cart=Cart.objects.filter(user=user)
+    print("the cart item is",cart)
+    amount=0
+    for p in cart:
+        value = p.quantity*p.product.price
+        amount= amount + value
+        amount2=amount
+        
+    totalamount=amount+40
+    print(totalamount)
+    
     context = {
         'SubCate': data,
         'Category': parent_categories,
         'totalitem':totalitem,
         'wishitem':wishitem,
         'products': product,
+        'cart' : cart,
+        'amount2' : amount2,
+        'totalamount2' : totalamount,
 
     }
     return render(request,'wishlist.html',context)
@@ -630,8 +680,82 @@ def minus_wishlist(request,id):
 
 
 
+# class checkout(View):
+#     def get(self, request):
+#         # if 'paid' in request.POST:
+#             totalitem = 0
+#             wishitem = 0
+#             if request.user.is_authenticated:
+#                 totalitem = len(Cart.objects.filter(user=request.user))
+#                 wishitem = len(WishList.objects.filter(user=request.user))
+
+#             user = request.user
+#             add = Customer.objects.filter(user=user)
+#             cart_items = Cart.objects.filter(user=user)
+
+#             famount = 0
+#             for p in cart_items:
+#                 value = p.quantity * p.product.price
+#                 famount = famount + value
+#             totalamount = famount + 40
+#             razoramount = int(totalamount * 100)
+#             client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+#             data = {"amount": razoramount, "currency": "INR", "receipt": "order_rcptid_12"}
+#             payment_response = client.order.create(data=data)
+#             order_id = payment_response['id']
+#             order_status = payment_response['status']
+#             if order_status == 'created':
+#                 payment = Payment(
+#                     user=user,
+#                     amount=totalamount,
+#                     razorpay_order_id=order_id,
+#                     razorpay_payment_status=order_status
+#                 )
+#                 payment.save()
+     
+
+#             return render(request, 'checkout.html', locals())
+
+#     def post(self, request):
+#         if 'cod' in request.POST:
+#             # Handle Cash on Delivery logic
+#             # Retrieve form data
+#             user_id = request.user.id  # Assuming you have a logged-in user
+#             cust_id = request.POST.get('custid')
+#             tot_amount = request.POST.get('totamount')
+
+#             # Get product IDs and quantities from the submitted form data
+#             product_ids = request.POST.getlist('product_ids[]')
+#             quantities = request.POST.getlist('quantities[]')
+
+#             # Create OrderPlaced objects for each item in the cart
+#             for product_id, quantity in zip(product_ids, quantities):
+#                 Order.objects.create(
+#                     user_id=user_id,
+#                     customer_id=cust_id,
+#                     product_id=product_id,
+#                     quantity=quantity,
+#                     payment_method='COD',
+#                     amount=tot_amount,
+#                 )
+
+#             # Redirect to COD confirmation page or display success message
+#             return redirect('cod_confirmation')
+#         else:
+#             # Handle online payment logic (Razorpay or any other payment gateway)
+#             pass
+
+#         return render(request, 'checkout.html', locals())
+
+
+from django.shortcuts import redirect
+
 class checkout(View):
     def get(self, request):
+        user = request.user
+        cart = Cart.objects.filter(user=user)
+        data = SubCategory.objects.all()
+        parent_categories = Category.objects.all()
         totalitem = 0
         wishitem = 0
         if request.user.is_authenticated:
@@ -662,15 +786,41 @@ class checkout(View):
             )
             payment.save()
 
-        return render(request, 'checkout.html', locals())
+        context = {
+            'user': user,
+            'cart': cart,
+            'data': data,
+            'parent_categories': parent_categories,
+            'totalitem': totalitem,
+            'wishitem': wishitem,
+            'add': add,
+            'cart_items': cart_items,
+            'famount': famount,
+            'totalamount': totalamount,
+            'razoramount': razoramount,
+            'order_id': order_id,
+            'order_status': order_status
+        }
+
+        return render(request, 'checkout.html', context)
 
     def post(self, request):
         if 'cod' in request.POST:
-            # Handle Cash on Delivery logic
-            # Retrieve form data
-            user_id = request.user.id  # Assuming you have a logged-in user
+            user = request.user
             cust_id = request.POST.get('custid')
             tot_amount = request.POST.get('totamount')
+
+            # Retrieve the selected address ID from the form data
+            address_id = request.POST.get('cust')
+
+            # Create a single order for all products in the cart
+            order = Order.objects.create(
+                user=user,
+                customer_id=cust_id,
+                amount=tot_amount,
+                payment_method='COD',
+                address_id=address_id  # Save the selected address ID with the order
+            )
 
             # Get product IDs and quantities from the submitted form data
             product_ids = request.POST.getlist('product_ids[]')
@@ -679,12 +829,9 @@ class checkout(View):
             # Create OrderPlaced objects for each item in the cart
             for product_id, quantity in zip(product_ids, quantities):
                 OrderPlaced.objects.create(
-                    user_id=user_id,
-                    customer_id=cust_id,
+                    order=order,
                     product_id=product_id,
-                    quantity=quantity,
-                    payment_method='COD',
-                    amount=tot_amount,
+                    quantity=quantity
                 )
 
             # Redirect to COD confirmation page or display success message
@@ -694,7 +841,6 @@ class checkout(View):
             pass
 
         return render(request, 'checkout.html', locals())
-
 
 def cod_confirmation(request):
     return render(request,'cod_orderplaced.html')
@@ -731,7 +877,7 @@ def payment_done(request):
 def search_view(request):
     if request.method == 'GET':
         search_query = request.GET.get('search_query', '')
-        product = Product.objects.filter(slug__icontains=search_query) | Product.objects.filter(product_tag__icontains=search_query)
+        product = Product.objects.filter(title__icontains=search_query) 
 
         data = SubCategory.objects.all()
         parent_categories = Category.objects.all()
@@ -941,7 +1087,7 @@ def shopall(request):
 
 
 
-#@login_required
+# @login_required
 def send_otp_email(user_email):
     
     otp = str(random.randint(100000, 999999))
@@ -955,60 +1101,176 @@ def send_otp_email(user_email):
     return otp
 
 # View for sending OTP
-#@login_required
+# @login_required
+# def send_otp(request):
+#     data = SubCategory.objects.all()
+#     parent_categories = Category.objects.all()
+#     totalitem = Cart.objects.filter(user=request.user).count()
+#     wishitem = WishList.objects.filter(user=request.user).count() 
+
+
+#     if request.method == 'POST':
+#         user_email = request.POST.get('email')
+        
+#         if user_email:
+#             otp = send_otp_email(user_email)
+#             request.session['otp'] = otp  
+#             return redirect('otp_verification')  
+#         else:
+#             messages.error(request, 'Please enter a valid email address.')
+
+    
+    
+
+#     context = {
+        
+#         'SubCate': data,
+#         'Category': parent_categories,
+#         'totalitem': totalitem,
+#         'wishitem': wishitem,
+#     }
+
+#     return render(request, 'send_otp.html',context) 
+
+
 def send_otp(request):
-    data = SubCategory.objects.all()
-    parent_categories = Category.objects.all()
-    totalitem = Cart.objects.filter(user=request.user).count()
-    wishitem = WishList.objects.filter(user=request.user).count() 
-
-
     if request.method == 'POST':
         user_email = request.POST.get('email')
         
         if user_email:
-            otp = send_otp_email(user_email)
+            # Generate OTP
+            otp = generate_otp()
+
+            # Send OTP to the provided email address
+            send_mail(
+                'Your OTP',
+                f'Your OTP is: {otp}',
+                'sender@example.com',  # Update with your email address
+                [user_email],
+                fail_silently=False,
+            )
+
+            # Store OTP in session
             request.session['otp'] = otp  
+
+            # Redirect to OTP verification page
             return redirect('otp_verification')  
         else:
             messages.error(request, 'Please enter a valid email address.')
+    
+    # If not a POST request or email is not provided, render the send OTP page
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+
+    totalitem = 0
+    wishitem = 0
+
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+
+    else:
+        totalitem = 0
+        wishitem = 0
 
     context = {
-        
         'SubCate': data,
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
     }
 
-    return render(request, 'send_otp.html',context)  # Create a template for email input
+    return render(request, 'send_otp.html', context)
 
+def generate_otp():
+    # Generate a 6-digit OTP
+    return ''.join(random.choices('0123456789', k=6))
+
+@csrf_exempt
+def resend_otp(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_email = data.get('email')
+
+        if user_email:
+            try:
+                # Generate new OTP
+                new_otp = generate_otp()
+
+                # Send new OTP to the provided email address
+                send_mail(
+                    'Your New OTP',
+                    f'Your new OTP is: {new_otp}',
+                    'sender@example.com',  # Replace with your email address
+                    [user_email],
+                    fail_silently=False,
+                )
+
+                # Update session with the new OTP
+                request.session['otp'] = new_otp  
+
+                # Return a success response
+                return JsonResponse({'success': True})
+            except Exception as e:
+                # Return an error response if email sending fails
+                return JsonResponse({'error': str(e)}, status=500)
+        else:
+            # Return an error response if email is not provided
+            return JsonResponse({'error': 'Please provide a valid email address.'}, status=400)
+    else:
+        # Return a method not allowed response if request method is not POST
+        return JsonResponse({'error': 'Method Not Allowed'}, status=405)
+    
 # View for OTP verification
 #@login_required
 def otp_verification(request):
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
-    totalitem = Cart.objects.filter(user=request.user).count()
-    wishitem = WishList.objects.filter(user=request.user).count()
+    
+    
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
         stored_otp = request.session.get('otp')
+        
+        # Check if OTP has expired
+        if 'otp_generated_time' in request.session:
+            otp_generated_time = request.session['otp_generated_time']
+            if timezone.now() > otp_generated_time + timedelta(seconds=60):
+                request.session.flush()
+                messages.error(request, 'OTP has expired. Please request a new one.')
+                # return redirect('send_otp')
+
         if entered_otp == stored_otp:
-             return render(request, 'password-reset.html')  
+            return render(request, 'password-reset.html')  
         else:
             messages.error(request, 'Invalid OTP. Please try again.')
 
+    # Calculate the remaining time for OTP expiration
+    remaining_time = 0
+    if 'otp_generated_time' in request.session:
+        otp_generated_time = request.session['otp_generated_time']
+        remaining_time = max(0, 60 - (timezone.now() - otp_generated_time).total_seconds())
+
+    totalitem = 0
+    wishitem = 0
+
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+
+    else:
+        totalitem = 0
+        wishitem = 0
 
     context = {
-        
         'SubCate': data,
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
+        'remaining_time': remaining_time,  # Pass remaining time to template
     }
 
-    return render(request, 'otp_verification.html',context)  
-
+    return render(request, 'otp_verification.html', context)
 
 # #@login_required
 # def password_reset(request):
@@ -1085,9 +1347,9 @@ def pwcomplete(request):
 def autosuggest(request):
     print("autosuggest",request.GET)
     query_original = request.GET.get('term')
-    queryset = Product.objects.filter(title__icontains=query_original) | Product.objects.filter(product_tag__icontains=query_original)
+    queryset = Product.objects.filter(title__icontains=query_original) 
     mylist = []
-    mylist += [x.slug for x in queryset]
+    mylist += [x.title for x in queryset]
     return JsonResponse(mylist, safe=False)
 
 
@@ -1107,25 +1369,25 @@ def delete_item(request, item_id):
 
 
 
-# # @login_required
-# def add_to_cart_wishlist(request):
-#     user = request.user
-#     print("lalala",user)
-#     product_id = request.GET.get('prod_id')
-#     print(product_id)
-#     # Check if product_id is provided and not empty
-#     if not product_id:
-#         return HttpResponseBadRequest("Product ID is missing")
+# @login_required
+def add_to_cart_wishlist(request):
+    user = request.user
+    print("lalala",user)
+    product_id = request.GET.get('prod_id')
+    print(product_id)
+    # Check if product_id is provided and not empty
+    if not product_id:
+        return HttpResponseBadRequest("Product ID is missing")
 
-#     try:
-#         product = Product.objects.get(id=product_id)
-#     except Product.DoesNotExist:
-#         return HttpResponseBadRequest("Product does not exist")
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return HttpResponseBadRequest("Product does not exist")
 
-#     # Create a Cart object for the user and product
-#     Cart(user=user, product=product).save()
+    # Create a Cart object for the user and product
+    Cart(user=user, product=product).save()
 
-#     return redirect(reverse('wishlist'))
+    return redirect(reverse('wishlist'))
 
 
 
@@ -1156,86 +1418,327 @@ def delete_item(request, item_id):
 
 
 
-# # @login_required
-# def plus_cart_base(request):
-#     if request.method=="GET":
-#         prod_id=request.GET['prod_id']
-#         print("this is product id",prod_id)
-#         c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-#         c.quantity+=1
-#         c.save()
-#         user=request.user
-#         cart=Cart.objects.filter(user=user)
-#         amount2=0
-#         # amount2=0
-#         for p in cart:
-#             value = p.quantity*p.product.price
-#             amount2= amount2 + value
-#             # amount2=amount
+# @login_required
+def plus_cart_base(request):
+    if request.method=="GET":
+        prod_id=request.GET['prod_id']
+        print("this is product id",prod_id)
+        c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity+=1
+        c.save()
+        user=request.user
+        cart=Cart.objects.filter(user=user)
+        amount2=0
+        # amount2=0
+        for p in cart:
+            value = p.quantity*p.product.price
+            amount2= amount2 + value
+            # amount2=amount
 
-#         totalamount2=amount2+40
-#         #print(prod_id)
-#         data={
-#               'quantity':c.quantity,
-#               'amount':amount2,
-#             #   'amount2': amount2,
-#               'totalamount2':totalamount2,
-#         }
-#         return JsonResponse(data)
-
-
-
-# # @login_required
-# def minus_cart_base(request):
-#     if request.method=="GET":
-#         prod_id=request.GET['prod_id']
-#         c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-#         c.quantity-=1
-#         c.save()
-#         user=request.user
-#         cart=Cart.objects.filter(user=user)
-#         amount2=0
-#         # amount2=0
-
-#         for p in cart:
-#             value = p.quantity*p.product.price
-#             amount2= amount2 + value
-#             # amount2=amount
-
-#         totalamount2=amount2+40
-#         #print(prod_id)
-#         data={
-#               'quantity':c.quantity,
-#               'amount2':amount2,
-#             #   'amount2': amount2,
-#               'totalamount2':totalamount2,
-#         }
-#         return JsonResponse(data)
+        totalamount2=amount2+40
+        #print(prod_id)
+        data={
+              'quantity':c.quantity,
+              'amount':amount2,
+            #   'amount2': amount2,
+              'totalamount2':totalamount2,
+        }
+        return JsonResponse(data)
 
 
-# # @login_required
-# def remove_cart_base(request):
-#     if request.method=="GET":
-#         prod_id=request.GET['prod_id']
-#         c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-#         c.delete()
-#         user=request.user
-#         cart=Cart.objects.filter(user=user)
-#         amount=0
-#         # amount2=0
-#         for p in cart:
-#             value = p.quantity * p.product.price
-#             amount= amount + value
-#             # amount2=amount
-#         totalamount=amount+40
+
+# @login_required
+def minus_cart_base(request):
+    if request.method=="GET":
+        prod_id=request.GET['prod_id']
+        c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity-=1
+        c.save()
+        user=request.user
+        cart=Cart.objects.filter(user=user)
+        amount2=0
+        # amount2=0
+
+        for p in cart:
+            value = p.quantity*p.product.price
+            amount2= amount2 + value
+            # amount2=amount
+
+        totalamount2=amount2+40
+        #print(prod_id)
+        data={
+              'quantity':c.quantity,
+              'amount2':amount2,
+            #   'amount2': amount2,
+              'totalamount2':totalamount2,
+        }
+        return JsonResponse(data)
+
+
+# @login_required
+def remove_cart_base(request):
+    if request.method=="GET":
+        prod_id=request.GET['prod_id']
+        c=Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.delete()
+        user=request.user
+        cart=Cart.objects.filter(user=user)
+        amount=0
+        # amount2=0
+        for p in cart:
+            value = p.quantity * p.product.price
+            amount= amount + value
+            # amount2=amount
+        totalamount=amount+40
        
-#         data={
-#               'quantity':c.quantity,
-#               'amount':amount,
-#             #   'amount2': amount2,
-#               'totalamount':totalamount,
+        data={
+              'quantity':c.quantity,
+              'amount':amount,
+            #   'amount2': amount2,
+              'totalamount':totalamount,
             
-#         }
-#         return JsonResponse(data)
+        }
+        return JsonResponse(data)
 
 
+def trackorder(request):
+    orders = Order.objects.filter(user=request.user)
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    totalitem = Cart.objects.filter(user=request.user).count()
+    wishitem = WishList.objects.filter(user=request.user).count()
+
+    context = {
+        
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'orders': orders
+    }
+
+    return render(request, 'track_order.html', context)
+
+def invoice(request):
+    # Retrieve the latest order for the user, if any
+    try:
+        order = Order.objects.filter(user=request.user).latest('ordered_date')
+    except Order.DoesNotExist:
+        order = None
+
+    # Retrieve all order items
+    orders = OrderPlaced.objects.all()
+
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    totalitem = Cart.objects.filter(user=request.user).count()
+    wishitem = WishList.objects.filter(user=request.user).count()
+
+    subtotal = 0
+    if order:
+        # Iterate through each order item and calculate the subtotal
+        for order_item in orders:
+            if order_item.order_id == order.id:
+                subtotal += order_item.quantity * order_item.product.price
+
+    # Calculate total amount including taxes or other charges
+    totalamount = subtotal + 352
+
+    context = {
+        'order': order,
+        'orders': orders,
+        'subtotal': subtotal,
+        'totalamount': totalamount,
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+    }
+
+    # Check if export request
+    if 'export' in request.GET and order:
+        # Generate PDF response
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+        
+        # Create PDF document
+        doc = SimpleDocTemplate(response, pagesize=letter)
+        elements = []
+        
+        # Create PDF table
+        data = [['Product', 'Quantity', 'Price', 'Amount']]
+        for order_item in orders:
+            if order_item.order_id == order.id:
+                data.append([order_item.product.title, order_item.quantity, order_item.product.price, order_item.amount])
+        table = Table(data)
+        table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                                   ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                   ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                   ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                   ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                   ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                   ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+        elements.append(table)
+        
+        # Build PDF document
+        doc.build(elements)
+        return response
+
+    return render(request, 'invoice.html', context)
+
+def userprofile(request):
+    # Retrieve the Customer object for the current user
+    registered_user = User.objects.all()
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    
+    # Define default background image URL
+    default_background_image = "{% static '/images/banner/8.jpg' %}"
+
+    if request.method == 'POST':
+        # Retrieve data from the form
+        image1 = request.POST.get('image1')
+        image2 = request.POST.get('image2')
+        name = request.POST.get('name')
+        address1 = request.POST.get('address1')
+        address2 = request.POST.get('address2')
+        address3 = request.POST.get('address3')
+        email1 = request.POST.get('email1')
+        email2 = request.POST.get('email2')
+        phone1 = request.POST.get('phone1')
+        phone2 = request.POST.get('phone2')
+
+        if customer:
+            # Update only the fields that were submitted in the form
+            if name:
+                customer.name = name
+            if address1:
+                customer.address1 = address1
+            if address2:
+                customer.address2 = address2
+            if address3:
+                customer.address3 = address3
+            if email1:
+                customer.email1 = email1
+            if email2:
+                customer.email2 = email2
+            if phone1:
+                customer.mobile = phone1
+            if phone2:
+                customer.mobile2 = phone2
+            if image1:
+                customer.image1 = image1
+            if image2:
+                customer.image2 = image2
+            customer.save()
+            messages.success(request, "Congratulations! Profile updated successfully.")
+        else:
+            # Create a new Customer object and save it
+            customer = Customer(
+                user=request.user,
+                name=name,
+                address1=address1,
+                address2=address2,
+                address3=address3,
+                email1=email1,
+                email2=email2,
+                mobile2=phone2,
+                mobile=phone1,
+                image1=image1,
+                image2=image2,
+            )
+            customer.save()
+            messages.success(request, "Congratulations! Profile created successfully.")
+
+        # If customer has an image, get its URL
+        background_image_url = customer.image1.url if customer and customer.image1 else default_background_image
+
+    else:
+        # If it's a GET request, just set default background image URL
+        background_image_url = default_background_image
+
+    totalitem = 0
+    wishitem = 0
+    customer = {}
+
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+        customer = Customer.objects.filter(user=request.user).first()
+
+
+    else:
+        totalitem = 0
+        wishitem = 0
+
+    context = {
+        'customer': customer,
+        'background_image_url': background_image_url,
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'registered_user' : registered_user,
+        
+    }
+
+    
+    # Render the form with existing user details
+    return render(request, 'userprofile2.html', context)
+
+
+def add_to_cart_newarrival(request):
+    user = request.user
+    product_id = request.GET.get('prod_id')
+
+    # Check if product_id is provided and not empty
+    if not product_id:
+        return HttpResponseBadRequest("Product ID is missing")
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return HttpResponseBadRequest("Product does not exist")
+
+    # Check if the product is already in the user's cart
+    try:
+        cart_item = Cart.objects.get(user=user, product=product)
+        # If the item is already in the cart, add a message
+        messages.info(request, 'Item already exists in the cart.')
+    except Cart.DoesNotExist:
+        # If the item is not in the cart, create a new Cart object for the user and product
+        Cart(user=user, product=product).save()
+        # Add a success message indicating that the item was successfully added to the cart
+        messages.success(request, 'Item added to cart.')
+
+    # Redirect back to the home page
+    return redirect(reverse('home'))
+
+
+
+
+def add_to_wishlist_newarrivals(request):
+    user = request.user
+    product_id = request.GET.get('prodwish_id')
+
+    # Check if product_id is provided and not empty
+    if not product_id:
+        return HttpResponseBadRequest("Product ID is missing")
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return HttpResponseBadRequest("Product does not exist")
+
+    # Check if the product is already in the user's cart
+    try:
+        cart_item = WishList.objects.get(user=user, product=product)
+        # If the item is already in the cart, add a message
+        messages.info(request, 'Item already exists in the wishlist.')
+    except WishList.DoesNotExist:
+        # If the item is not in the cart, create a new Cart object for the user and product
+        WishList(user=user, product=product).save()
+        
+
+    # Redirect back to the home page
+    return redirect(reverse('home'))

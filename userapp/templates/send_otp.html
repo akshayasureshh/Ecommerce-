@@ -124,8 +124,6 @@
 </div>
 <!-- Ec breadcrumb end -->
 
-
-
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-6">
@@ -137,13 +135,40 @@
         {% endfor %}
       </ul>
       {% endif %}
-      <form method="post">
+      <form id="sendOtpForm" method='post'>
         {% csrf_token %}
         <label for="email" class="form-label">Enter your email address:</label>
         <input type="email" id="email" name="email" class="form-control" required>
         <button type="submit" class="btn btn-primary mt-3">Send OTP</button>
-      </form>
+    </form>
     </div>
   </div>
 </div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Get the send OTP form
+    var sendOtpForm = document.getElementById("sendOtpForm");
+
+    // Add event listener to the send OTP form
+    sendOtpForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        // Get the email address from the form
+        var email = document.getElementById("email").value;
+
+        // Save email to local storage
+        localStorage.setItem("user_email", email);
+
+        // Show alert to notify the user
+        alert("Your email has been saved to local storage.");
+
+        // Submit the form
+        this.submit();
+    });
+});
+
+
+</script>
 {% endblock main-content %}

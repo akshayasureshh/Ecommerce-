@@ -75,7 +75,11 @@
   </script>
 
 
- 
+<style>
+    .star.active {
+        color: yellow; /* Set the color to yellow for active stars */
+    }
+</style>
 
     
     
@@ -454,8 +458,8 @@
                                             <li><span>Color</span> Black, Pink, Red, White</li> -->
                                             <ul>
                                                 {% for size in sizes %}
-                                                             <li> {{ size }}</li>
-                                                        {% endfor %}
+                                                    <li> {{ size }}</li>
+                                                {% endfor %}
                                                 <li>{{product.custom_size}}</li>
 
                                             <!-- </ul> -->
@@ -557,34 +561,22 @@
                                         <div class="ec-ratting-content">
                                             <h3>Add a Review</h3>
                                             <div class="ec-ratting-form">
-                                                <form action="{% url 'review' product.id %}" method="post">
+                                                <form id="review-form" action="{% url 'review' product.id %}" method="post">
                                                     {% csrf_token %}
                                                     <div class="ec-ratting-star">
                                                         <span>Your rating:</span>
                                                         <div class="ec-t-review-rating">
-                                                             <select id="items" name="items">
-                                                                <option value=1>1 star</option>
-                                                                <option value=2>2 stars</option>
-                                                                <option value=3>3 stars</option>
-                                                                <option value=4>4 stars</option>
-                                                                <option value=5>5 stars</option>
-
-                                                                
-                                                            </select>
+                                                            <span class="star" data-value="1" style="color: black;">&#9733;</span>
+                                                            <span class="star" data-value="2" style="color: black;">&#9733;</span>
+                                                            <span class="star" data-value="3" style="color: black;">&#9733;</span>
+                                                            <span class="star" data-value="4" style="color: black;">&#9733;</span>
+                                                            <span class="star" data-value="5" style="color: black;">&#9733;</span>
+                                                            <input id="rating-input" type="hidden" name="rating" value="0"> <!-- Hidden input to store the rating value -->
                                                         </div>
                                                     </div>
-                                                    <!-- <div class="ec-ratting-input">
-                                                        <input name="your-name" placeholder="Name" type="text" />
-                                                    </div>
-                                                    <div class="ec-ratting-input">
-                                                        <input name="your-email" placeholder="Email*" type="email"
-                                                            required />
-                                                    </div> -->
                                                     <div class="ec-ratting-input form-submit">
-                                                        <textarea name="your-commemt"
-                                                            placeholder="Enter Your Comment"></textarea>
-                                                        <button class="btn btn-primary" type="submit"
-                                                            value="Submit">Submit</button>
+                                                        <textarea name="your-commemt" placeholder="Enter Your Comment"></textarea>
+                                                        <button class="btn btn-primary" type="submit">Submit</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -950,8 +942,29 @@
         </div>
     </section>
     <!-- Related Product end -->
-    
 
+    <script>
+        // JavaScript to handle star rating
+        document.querySelectorAll('.star').forEach(function(star) {
+            star.addEventListener('click', function() {
+                var value = this.dataset.value;
+                document.querySelector('#rating-input').value = value;
+                
+                // Reset color of all stars
+                document.querySelectorAll('.star').forEach(function(s) {
+                    s.style.color = 'black';
+                });
+    
+                // Change color of clicked star and all previous stars
+                this.style.color = 'orange';
+                var prevStars = this.previousElementSibling;
+                while (prevStars) {
+                    prevStars.style.color = 'orange';
+                    prevStars = prevStars.previousElementSibling;
+                }
+            });
+        });
+    </script>
 
     <script>
 
