@@ -25,6 +25,9 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.core.files.storage import default_storage
+
 # Create your views here.
 
 # def home(request):
@@ -109,7 +112,17 @@ def home(request):
        
     for product in products:
         wishlist = WishList.objects.filter(product=product, user=request.user.pk).exists()
-         
+
+#     most_ordered_products = (
+#     OrderPlaced.objects
+#     .values('product')  # Group by product
+#     .annotate(total_ordered=Count('product'))  # Count the occurrences of each product
+#     .order_by('-total_ordered')[:4]  # Order by total occurrences in descending order and get the top 4
+# )
+
+    for seller in most_ordered_products:
+        product_id = seller['product']
+        print("prodid",product_id)
     # wishlist_products = []
     # if request.user.is_authenticated:
     #     user_wishlist = request.user
@@ -159,14 +172,17 @@ def home(request):
     totalamount=amount+40
     print(totalamount)
     
-    
-    # sizes = []
+
     for product in products:
-      print("product is ", product)
-      if product.size[0] != '':        
-        size_list = json.loads(product.size[0])      
-        print("sizelist",size_list)  
-        context['sizes'] = size_list
+        if product.size and product.size[0] != '':
+            try:
+                size_list = json.loads(product.size[0])
+                context['sizes'] = size_list
+            except json.JSONDecodeError:
+                # Handle the case where size is not a valid JSON string
+                pass
+
+    
 
 
     context = {
@@ -354,9 +370,61 @@ def productdetail(request,categoryID):
 
     return render(request,'productdetail.html',context)
 
+@require_POST
+def add_to_cart_productdetail(request):
+    # Extract product ID and quantity from the POST data
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity', 1))
+
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, associate the product with the user's cart
+        cart, created = Cart.objects.get_or_create(user=request.user, product=product)
+    else:
+        # For anonymous users, you might handle carts differently
+        # For example, using session-based carts
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+    # Update the quantity of the product in the cart
+    cart.quantity += quantity
+    cart.save()
+
+    # Return a success response
+    return JsonResponse({'message': 'Product added to cart successfully'})
 
 
+@require_POST
+def add_to_wishlist_productdetail(request):
+    # Extract product ID from the POST data
+    product_id = request.POST.get('product_id')
 
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, add the product to the user's wishlist
+        wishlist, created = WishList.objects.get_or_create(user=request.user, product=product)
+        if created:
+            return JsonResponse({'message': 'Product added to wishlist successfully'})
+        else:
+            return JsonResponse({'message': 'Product is already in wishlist'})
+    else:
+        # For anonymous users, you might handle adding to wishlist differently
+        # For example, you could prompt them to log in
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+
+from django.http import Http404
 def singleproduct(request, id):
     context = {}
     data = SubCategory.objects.all()
@@ -364,9 +432,12 @@ def singleproduct(request, id):
     relatedproduct = Product.objects.all()
     product = Product.objects.get(id=id)
     admin_choice = product.admin_choice
-    if product.size[0] != '':        
-        size_list = json.loads(product.size[0])        
-        context['sizes'] = size_list
+    # if product.size[0] != '':        
+    #     size_list = json.loads(product.size[0])        
+    #     print(size_list)
+    #     context['sizes'] = size_list
+    if product.size:
+        context['sizes'] = product.size
     reviews = Rating.objects.filter(product=product)
     colors = [product.color1, product.color2, product.color3, product.color4]
     colors = [color.replace("('", "") for color in colors if color]
@@ -403,6 +474,7 @@ def singleproduct(request, id):
         'admin_choice': admin_choice,
         'colors': colors,
         'avg_rating': avg_rating,
+    
 
     })
     
@@ -1185,6 +1257,8 @@ def send_otp(request):
 def generate_otp():
     # Generate a 6-digit OTP
     return ''.join(random.choices('0123456789', k=6))
+
+
 
 @csrf_exempt
 def resend_otp(request):

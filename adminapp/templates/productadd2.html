@@ -29,7 +29,7 @@
 	
 
 	<!-- Include Cropper.js library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.js"></script>
+{% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.js"></script> {% endcomment %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.css" rel="stylesheet">
 <script>
@@ -75,8 +75,12 @@
 			// Append the cropped image data to the form data
 			formData.append('cropped_image_data', croppedImageData);
 	
+			// Get the data URL of the cropped image and append it to the form data as product_image
+			var croppedImageDataURL = document.getElementById('croppedPreview').src;
+			formData.append('product_image', croppedImageDataURL);
+	
 			// Submit the form
-			fetch('/your-submit-url', {
+			fetch('/productadd/', {
 				method: 'POST',
 				body: formData
 			})
@@ -89,7 +93,6 @@
 			});
 		});
 	});
-	
 </script>
 <script>
 	document.addEventListener("DOMContentLoaded", function() {
@@ -111,7 +114,6 @@
 	});
 </script>
 
-
 </head>
 
 <body class="ec-header-fixed ec-sidebar-fixed ec-sidebar-dark ec-header-light" id="body">
@@ -124,7 +126,7 @@
 			<div id="sidebar" class="sidebar ec-sidebar-footer">
 
 				<div class="ec-brand">
-					<a href="index.html" title="ekka">
+					<a href="{% url 'home' %}" title="ekka">
 						<img class="ec-brand-icon" src="{% static 'images/logo/ec-site-logo.png' %}" alt="" />
 						<span class="ec-brand-name text-truncate">RAZID</span>
 					</a>
@@ -180,11 +182,11 @@
 							<div class="collapse">
 								<ul class="sub-menu" id="users" data-parent="#sidebar-menu">
 									<li>
-										<a class="sidenav-item-link" href="user-card.html">
-											<span class="nav-text">User Grid</span>
+										<a class="sidenav-item-link" href="{% url 'userlist' %}">
+											<span class="nav-text">User List</span>
 										</a>
 									</li>
-
+{% comment %} 
 									<li class="">
 										<a class="sidenav-item-link" href="user-list.html">
 											<span class="nav-text">User List</span>
@@ -194,7 +196,7 @@
 										<a class="sidenav-item-link" href="user-profile.html">
 											<span class="nav-text">Users Profile</span>
 										</a>
-									</li>
+									</li> {% endcomment %}
 								</ul>
 							</div>
 							<hr>
@@ -209,12 +211,12 @@
 							<div class="collapse">
 								<ul class="sub-menu" id="categorys" data-parent="#sidebar-menu">
 									<li class="">
-										<a class="sidenav-item-link" href="main-category.html">
+										<a class="sidenav-item-link" href="{% url 'category'  %}">
 											<span class="nav-text">Main Category</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="sub-category.html">
+										<a class="sidenav-item-link" href="{% url 'subcategory' %}">
 											<span class="nav-text">Sub Category</span>
 										</a>
 									</li>
@@ -231,22 +233,22 @@
 							<div class="collapse show">
 								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
 									<li class="active">
-										<a class="sidenav-item-link" href="product-add.html">
+										<a class="sidenav-item-link" href="{% url 'product_add' %}">
 											<span class="nav-text">Add Product</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="product-list.html">
+										<a class="sidenav-item-link" href="{% url 'productlist' %}">
 											<span class="nav-text">List Product</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="product-grid.html">
+										<a class="sidenav-item-link" href="{% url 'product-grid' %}">
 											<span class="nav-text">Grid Product</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="product-detail.html">
+										<a class="sidenav-item-link" href="{% url 'productdetail' %}">
 											<span class="nav-text">Product Detail</span>
 										</a>
 									</li>
@@ -263,17 +265,17 @@
 							<div class="collapse">
 								<ul class="sub-menu" id="orders" data-parent="#sidebar-menu">
 									<li class="">
-										<a class="sidenav-item-link" href="new-order.html">
+										<a class="sidenav-item-link" href="{% url 'neworder' %}">
 											<span class="nav-text">New Order</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="order-history.html">
+										<a class="sidenav-item-link" href="{% url 'orderhistory'  %}">
 											<span class="nav-text">Order History</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="order-detail.html">
+										<a class="sidenav-item-link" href="{% url 'orderdetail'  %}">
 											<span class="nav-text">Order Detail</span>
 										</a>
 									</li>
@@ -288,7 +290,7 @@
 
 						<!-- Reviews -->
 						<li>
-							<a class="sidenav-item-link" href="review-list.html">
+							<a class="sidenav-item-link" href="{% url 'review' %}">
 								<i class="mdi mdi-star-half"></i>
 								<span class="nav-text">Reviews</span>
 							</a>
@@ -1034,10 +1036,10 @@
 											<div class="ec-vendor-img-upload">
 												<div class="ec-vendor-main-img">
 													<div class="thumb-upload">
-														<div class="avatar-upload">
-															<input type="file"   id="imageUpload" class="ec-image-upload" accept=".png, .jpg, .jpeg" />
+													  <div class="avatar-upload">
+															<input type="file"  id="imageUpload" class="ec-image-upload" accept=".png, .jpg, .jpeg" />
 															<div id="cropperContainer" style="max-height: 400px; overflow: hidden;">
-																<img id="imagePreview" src="{% static 'images/icons/edit.svg' %}" alt="Uploaded Image" />
+																<img id="imagePreview"  src="{% static 'images/icons/edit.svg' %}" alt="Uploaded Image" />
 															</div>
 															<div id="cropButtonContainer">
 																<button id="confirmCrop" style="background-color: blue; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Confirm</button>
@@ -1048,11 +1050,29 @@
 												    </div>
 													<!-- Container for cropped image preview -->
 													<div id="cropped-preview">
-														<label for="imageUpload"><img id="croppedPreview" name="product_image"  src="{% static 'images/icons/edit.svg' %}" alt="Cropped Image Preview" style="display: block; max-width: 100%; height: auto; margin-top: 10px;"></label>
-													</div>
+														<img id="croppedPreview" name="product_image"  src="{% static 'images/icons/edit.svg' %}" alt="Cropped Image Preview" style="display: block; max-width: 100%; height: auto; margin-top: 10px;">
+														<input type="hidden" name="cropped_image_data" id="croppedImageData" value="">
+													</div>  
 													    <!-- Optional: Preview area for cropped image -->
 														
-												
+														{% comment %} <div class="avatar-upload">
+															<input type="file" id="imageUpload" class="ec-image-upload" accept=".png, .jpg, .jpeg" />
+															<div id="cropperContainer" style="max-height: 400px; overflow: hidden;">
+																<img id="imagePreview" src="{% static 'images/icons/edit.svg' %}" alt="Uploaded Image" />
+															</div>
+															<div id="cropButtonContainer">
+																<button id="confirmCrop" style="background-color: blue; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Confirm</button>
+															</div>
+														</div>
+														
+														<div id="cropped-preview">
+															<img id="croppedPreview" name="product_image" src="{% static 'images/icons/edit.svg' %}" alt="Cropped Image Preview" style="display: block; max-width: 100%; height: auto; margin-top: 10px;">
+															<input type="hidden" name="cropped_image_data" id="croppedImageData" value="">
+														</div> {% endcomment %}
+													
+
+
+
 													
 														<div class="thumb-upload-set col-md-12">
 															<div class="thumb-upload">
@@ -1368,6 +1388,32 @@
 
 	
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+	document.getElementById('confirmCrop').addEventListener('click', function() {
+		// Assume you have a function to get the cropped image data, such as getCroppedImageData()
+		var croppedImageData = getCroppedImageData();
+		document.getElementById('croppedImageData').value = croppedImageData;
+	});
+</script>
+
+<script>
+	// JavaScript to capture the cropped image data and add it to the form before submission
+	document.getElementById('main-form').addEventListener('submit', function(event) {
+		// Get the data URL of the cropped image
+		var croppedImageData = document.getElementById('croppedPreview').src;
+	
+		// Create a hidden input field to store the cropped image data
+		var hiddenInput = document.createElement('input');
+		hiddenInput.type = 'hidden';
+		hiddenInput.name = 'cropped_image_data';
+		hiddenInput.value = croppedImageData;
+	
+		// Append the hidden input field to the form
+		this.appendChild(hiddenInput);
+	});
+	</script>
+
 <script>
     $(document).ready(function () {
         $('input[type="color"]').change(function () {

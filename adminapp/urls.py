@@ -3,6 +3,7 @@ from django.urls import path
 from .import  views
 from django.conf import settings
 from django.conf.urls.static import static
+from . views import product_edit_view
 
 
 urlpatterns = [
@@ -11,8 +12,10 @@ urlpatterns = [
     path('category/',views.categorypage,name='category'),
     path('subcategory/',views.subcategory,name="subcategory"),
     path('productadd/',views.productsAdd,name= 'product_add'),
-    path('productlist/',views.Productlist, name='product-list'),
+    path('productedit/<int:product_id>/', product_edit_view, name='product_edit'),
+    path('productlist/',views.Productlist, name='productlist'),
     path('productgrid/',views.Productgrid,name='product-grid'),
+    path('productdetail/',views.ProductDetail,name='productdetail'),
     path('backgroundslider/',views.Backgroundslider,name='backgroundslider'),
     path('childslider/',views.Childslider,name='childslider'),
     path('review/',views.Review,name='review'),
@@ -26,6 +29,8 @@ urlpatterns = [
     path('orderdetail/',views.order_detail,name='orderdetail'),
 
     path('orderhistory/',views.orderhistory,name='orderhistory'),
+
+    path('deletelist/<int:item_id>/',views.delete_item_list,name='deletelist'),
     
 ] 
 

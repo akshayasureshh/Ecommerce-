@@ -137,17 +137,21 @@ class Product(models.Model):
     def get_json_data(self):
         return json.dumps(self.size)
     
-    def  save(self, *args,**kwargs):
-        super().save(*args,**kwargs)
-        img=Image.open(self.product_image.path)
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
+        if self.product_image:
+            img = Image.open(self.product_image.path)
 
-        if img.height!=850 or img.width!=765:
-            output_size = (850,765)
-            img.thumbnail(output_size)
+            # Resize the image to 765x850
+            img = img.resize((765, 850), Image.ANTIALIAS)
+
+            # Overwrite the original image file
             img.save(self.product_image.path)
-     
 
+        super(Product, self).save(*args, **kwargs)
+
+    
     
     def save(self, *args, **kwargs):
         # If title is empty, generate a unique identifier as a fallback

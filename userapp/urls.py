@@ -88,6 +88,9 @@ urlpatterns = [
     path('add-to-cart-newarrivals/', views.add_to_cart_newarrival, name='add_to_cart_newarrivals'),
     path('add-to-wishlist-newarrivals/',views.add_to_wishlist_newarrivals,name='add_to_wishlist_newarrivals'),
 
+    path('add_to_cart_productdetail/',views.add_to_cart_productdetail,name='add_to_cart_productdetail'),
+    path('add_to_wishlist_productdetail/',views.add_to_wishlist_productdetail,name='add_to_wishlist_productdetail'),
+
     
 
 ]

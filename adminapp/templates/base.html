@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
 
   <!-- custom js-->
-  <script src="{% static 'js/crop-image.js' %}" defer></script>
+  <!-- <script src="{% static 'js/crop-image.js' %}" defer></script> -->
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
 
@@ -149,37 +149,37 @@
 							</div>
 						</li>
 
-						<!-- Products -->
-						<li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-palette-advanced"></i>
-								<span class="nav-text">Products</span> <b class="caret"></b>
+			<!-- Products -->
+			<li class="has-sub">
+				<a class="sidenav-item-link" href="javascript:void(0)">
+					<i class="mdi mdi-palette-advanced"></i>
+					<span class="nav-text">Products</span> <b class="caret"></b>
+				</a>
+				<div class="collapse">
+					<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
+						<li class="">
+							<a class="sidenav-item-link" href="{% url 'product_add' %}">
+								<span class="nav-text">Add Product</span>
 							</a>
-							<div class="collapse">
-								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
-									<li class="">
-										<a class="sidenav-item-link" href="{% url 'product_add' %}">
-											<span class="nav-text">Add Product</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="{% url 'product-list' %}">
-											<span class="nav-text">List Product</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="{% url 'product-grid' %}">
-											<span class="nav-text">Grid Product</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="product-detail.html">
-											<span class="nav-text">Product Detail</span>
-										</a>
-									</li>
-								</ul>
-							</div>
 						</li>
+						<li class="">
+							<a class="sidenav-item-link" href="{% url 'productlist' %}">
+								<span class="nav-text">List Product</span>
+							</a>
+						</li>
+						<li class="">
+							<a class="sidenav-item-link" href="{% url 'product-grid' %}">
+								<span class="nav-text">Grid Product</span>
+							</a>
+						</li>
+						<li class="">
+							<a class="sidenav-item-link" href="{% url 'productdetail' %}">
+								<span class="nav-text">Product Detail</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</li>
 
 						<!-- Orders -->
 						<li class="has-sub">
