@@ -60,4 +60,3 @@ $('.remove-cart').click(function(){
     })
 })
 
-

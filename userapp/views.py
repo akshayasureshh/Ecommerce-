@@ -84,7 +84,7 @@ def home(request):
     print("iteration problem:", products)
     newarrival = Product.objects.latest('id')
     latest_products = Product.objects.order_by('-id')[:4]
-    most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')[:4]
+    most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')
     totalitem = 0
     wishitem = 0
     wishlist = {}
@@ -106,35 +106,12 @@ def home(request):
         wishitem = 0
         user = None
         cart = []
-        
+    
 
-        
+
        
     for product in products:
         wishlist = WishList.objects.filter(product=product, user=request.user.pk).exists()
-
-#     most_ordered_products = (
-#     OrderPlaced.objects
-#     .values('product')  # Group by product
-#     .annotate(total_ordered=Count('product'))  # Count the occurrences of each product
-#     .order_by('-total_ordered')[:4]  # Order by total occurrences in descending order and get the top 4
-# )
-
-    for seller in most_ordered_products:
-        product_id = seller['product']
-        print("prodid",product_id)
-    # wishlist_products = []
-    # if request.user.is_authenticated:
-    #     user_wishlist = request.user
-    #     products = Product.objects.all()
-    #     for product in products:
-    #         # in_wishlist = product in user_wishlist.product.all()
-    #         wishlist_products.append((product, in_wishlist))
-    # else:
-    #     # If the user is not authenticated, assume the wishlist is empty
-    #     products = Product.objects.all()
-    #     for product in products:
-    #         wishlist_products.append((product, False))
 
     
     # Calculate total quantity count for each category
@@ -152,13 +129,21 @@ def home(request):
         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
         print("this is rating :",product.avg_rating)
 
+
+    for i in most_ordered_products:
+        print("Most ordered product ID:", i.product.id)
+        avg_rating2 = Rating.objects.filter(product=i.product).aggregate(Avg('rating'))['rating__avg']
+        i.product.avg_rating2 = round(avg_rating2) if avg_rating2 is not None else 0
+        print("This is rating:", i.product.avg_rating2)
+
+
     
     for product in products:
-        print("product id : ", product.id)
+        print("product idwdsde : ", product.id)
         avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
 
         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
-        print("this is rating :",product.avg_rating)
+        print("this is ratingwdadwdw :",product.avg_rating)
     
     # user=request.user
     # cart=Cart.objects.filter(user=user)
@@ -181,6 +166,21 @@ def home(request):
             except json.JSONDecodeError:
                 # Handle the case where size is not a valid JSON string
                 pass
+    
+    most_ordered = (OrderPlaced.objects
+                    .values('product')
+                    .annotate(total_quantity=Sum('quantity'))
+                    .order_by('-total_quantity')
+                    .first())
+    
+    print("Most Ordered:", most_ordered)  # Debugging statement
+    
+    product = None
+    if most_ordered:
+        product_id = most_ordered['product']
+        product = Product.objects.get(id=product_id)
+        product.total_quantity = most_ordered['total_quantity']
+        print("Product Found:", product) 
 
     
 
@@ -203,6 +203,8 @@ def home(request):
         'amount2' : amount2,
         'totalamount2' : totalamount,
         'most_ordered_products': most_ordered_products,
+        'most_ordered' : product,
+        # 'subcategories_with_products': subcategories_with_products,
     }
       # Append each size_list to sizes list
 
@@ -211,28 +213,6 @@ def home(request):
 
     return render(request, 'index2.html', context)
 
-
-
-
-# @login_required
-def add_to_cart_index(request):
-    user = request.user
-    print(user)
-    product_id = request.GET.get('prod_id')
-
-    # Check if product_id is provided and not empty
-    if not product_id:
-        return HttpResponseBadRequest("Product ID is missing")
-
-    try:
-        product = Product.objects.get(id=product_id)
-    except Product.DoesNotExist:
-        return HttpResponseBadRequest("Product does not exist")
-
-    # Create a Cart object for the user and product
-    Cart(user=user, product=product).save()
-
-    return redirect(reverse('home'))
 
 
 def add_to_wishlist(request, product_id):
@@ -357,12 +337,31 @@ def productdetail(request,categoryID):
         totalitem = 0
         wishitem = 0
 
+    # Fetch sizes
+    for product in products:
+        product_size = product.size
+        print(product_size)
+
+    paginator = Paginator(products, 12)  # Show 12 products per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    for product in products:
+        print("product id : ", product.id)
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        print(product.avg_rating)
+
     context = {
         'products': products,
         'SubCate':data,
         'Category' : parent_categories,
         'totalitem':totalitem,
         'wishitem':wishitem,
+        'page_obj': page_obj,
+        'product_sizes': product_size,
 
           
 
@@ -431,6 +430,8 @@ def singleproduct(request, id):
     parent_categories = Category.objects.all()
     relatedproduct = Product.objects.all()
     product = Product.objects.get(id=id)
+    most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')
+
     admin_choice = product.admin_choice
     # if product.size[0] != '':        
     #     size_list = json.loads(product.size[0])        
@@ -456,6 +457,13 @@ def singleproduct(request, id):
         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
         print(product.avg_rating)
 
+    for i in most_ordered_products:
+        print("Most ordered product ID:", i.product.id)
+        avg_rating2 = Rating.objects.filter(product=i.product).aggregate(Avg('rating'))['rating__avg']
+        i.product.avg_rating2 = round(avg_rating2) if avg_rating2 is not None else 0
+        print("This is rating:", i.product.avg_rating2)
+
+
     # for product in relatedproduct:
     #     print("product id : ", product.id)
     #     avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
@@ -474,6 +482,7 @@ def singleproduct(request, id):
         'admin_choice': admin_choice,
         'colors': colors,
         'avg_rating': avg_rating,
+        'most_ordered_products': most_ordered_products,
     
 
     })
@@ -1788,31 +1797,288 @@ def add_to_cart_newarrival(request):
     # Redirect back to the home page
     return redirect(reverse('home'))
 
-
-
-
-def add_to_wishlist_newarrivals(request):
-    user = request.user
-    product_id = request.GET.get('prodwish_id')
-
-    # Check if product_id is provided and not empty
-    if not product_id:
-        return HttpResponseBadRequest("Product ID is missing")
+# @login_required
+def add_to_cart_tabmen(request):
+    # Extract product ID and quantity from the POST data
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity', 1))
 
     try:
-        product = Product.objects.get(id=product_id)
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
     except Product.DoesNotExist:
-        return HttpResponseBadRequest("Product does not exist")
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
 
-    # Check if the product is already in the user's cart
+    if request.user.is_authenticated:
+        # If the user is authenticated, associate the product with the user's cart
+        cart, created = Cart.objects.get_or_create(user=request.user, product=product)
+    else:
+        # For anonymous users, you might handle carts differently
+        # For example, using session-based carts
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+    # Update the quantity of the product in the cart
+    cart.quantity += quantity
+    cart.save()
+
+    # Return a success response
+    return JsonResponse({'message': 'Product added to cart successfully'})
+
+# @login_required
+def add_to_wishlist_tabmen(request):
+    # Extract product ID from the POST data
+    product_id = request.POST.get('product_id')
+
     try:
-        cart_item = WishList.objects.get(user=user, product=product)
-        # If the item is already in the cart, add a message
-        messages.info(request, 'Item already exists in the wishlist.')
-    except WishList.DoesNotExist:
-        # If the item is not in the cart, create a new Cart object for the user and product
-        WishList(user=user, product=product).save()
-        
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
 
-    # Redirect back to the home page
-    return redirect(reverse('home'))
+    if request.user.is_authenticated:
+        # If the user is authenticated, add the product to the user's wishlist
+        wishlist, created = WishList.objects.get_or_create(user=request.user, product=product)
+        if created:
+            return JsonResponse({'message': 'Product added to wishlist successfully'})
+        else:
+            return JsonResponse({'message': 'Product is already in wishlist'})
+    else:
+        # For anonymous users, you might handle adding to wishlist differently
+        # For example, you could prompt them to log in
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+
+
+
+# @login_required
+def add_to_cart_tabwomen(request):
+    # Extract product ID and quantity from the POST data
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity', 1))
+
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, associate the product with the user's cart
+        cart, created = Cart.objects.get_or_create(user=request.user, product=product)
+    else:
+        # For anonymous users, you might handle carts differently
+        # For example, using session-based carts
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+    # Update the quantity of the product in the cart
+    cart.quantity += quantity
+    cart.save()
+
+    # Return a success response
+    return JsonResponse({'message': 'Product added to cart successfully'})
+
+# @login_required
+def add_to_wishlist_tabwomen(request):
+    # Extract product ID from the POST data
+    product_id = request.POST.get('product_id')
+
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, add the product to the user's wishlist
+        wishlist, created = WishList.objects.get_or_create(user=request.user, product=product)
+        if created:
+            return JsonResponse({'message': 'Product added to wishlist successfully'})
+        else:
+            return JsonResponse({'message': 'Product is already in wishlist'})
+    else:
+        # For anonymous users, you might handle adding to wishlist differently
+        # For example, you could prompt them to log in
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+
+
+
+
+
+
+# @login_required
+def add_to_cart_tabchild(request):
+    # Extract product ID and quantity from the POST data
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity', 1))
+
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, associate the product with the user's cart
+        cart, created = Cart.objects.get_or_create(user=request.user, product=product)
+    else:
+        # For anonymous users, you might handle carts differently
+        # For example, using session-based carts
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+    # Update the quantity of the product in the cart
+    cart.quantity += quantity
+    cart.save()
+
+    # Return a success response
+    return JsonResponse({'message': 'Product added to cart successfully'})
+
+# @login_required
+def add_to_wishlist_tabchild(request):
+    # Extract product ID from the POST data
+    product_id = request.POST.get('product_id')
+
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, add the product to the user's wishlist
+        wishlist, created = WishList.objects.get_or_create(user=request.user, product=product)
+        if created:
+            return JsonResponse({'message': 'Product added to wishlist successfully'})
+        else:
+            return JsonResponse({'message': 'Product is already in wishlist'})
+    else:
+        # For anonymous users, you might handle adding to wishlist differently
+        # For example, you could prompt them to log in
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+
+
+
+
+# @login_required
+def add_to_cart_taball(request):
+    # Extract product ID and quantity from the POST data
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity', 1))
+
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, associate the product with the user's cart
+        cart, created = Cart.objects.get_or_create(user=request.user, product=product)
+    else:
+        # For anonymous users, you might handle carts differently
+        # For example, using session-based carts
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+    # Update the quantity of the product in the cart
+    cart.quantity += quantity
+    cart.save()
+
+    # Return a success response
+    return JsonResponse({'message': 'Product added to cart successfully'})
+
+# @login_required
+def add_to_wishlist_taball(request):
+    # Extract product ID from the POST data
+    product_id = request.POST.get('product_id')
+
+    try:
+        # Retrieve the product from the database
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # If the product does not exist, return an error response
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    if request.user.is_authenticated:
+        # If the user is authenticated, add the product to the user's wishlist
+        wishlist, created = WishList.objects.get_or_create(user=request.user, product=product)
+        if created:
+            return JsonResponse({'message': 'Product added to wishlist successfully'})
+        else:
+            return JsonResponse({'message': 'Product is already in wishlist'})
+    else:
+        # For anonymous users, you might handle adding to wishlist differently
+        # For example, you could prompt them to log in
+        return JsonResponse({'error': 'Authentication required'}, status=403)
+
+
+# @login_required
+# @require_POST
+def add_to_wishlist_newarrivals(request):
+    product_id = request.POST.get('product_id')
+
+    if not product_id:
+        return JsonResponse({'error': 'No product ID provided'}, status=400)
+
+    try:
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    wishlist, created = WishList.objects.get_or_create(user=request.user, product=product)
+    if created:
+        return JsonResponse({'message': 'Product added to wishlist successfully'})
+    else:
+        return JsonResponse({'message': 'Product is already in wishlist'})
+
+
+
+# @login_required
+# @require_POST
+def add_to_cart_shopall(request):
+    product_id = request.POST.get('product_id')
+    quantity = request.POST.get('quantity')
+
+    if not product_id:
+        print("No product ID provided")  # Debug: Check if product ID is missing
+        return JsonResponse({'error': 'No product ID provided'}, status=400)
+
+    try:
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    # Assuming you have a Cart model and user is authenticated
+    cart, created = Cart.objects.get_or_create(user=request.user, product=product, defaults={'quantity': quantity})
+    if not created:
+        cart.quantity += int(quantity)
+        cart.save()
+
+    return JsonResponse({'message': 'Product added to cart successfully'})
+
+# @login_required
+# @require_POST
+def add_to_wishlist_shopall(request):
+    product_id = request.POST.get('product_id')
+
+    if not product_id:
+        print("No product ID provided")  # Debug: Check if product ID is missing
+        return JsonResponse({'error': 'No product ID provided'}, status=400)
+
+    try:
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product does not exist'}, status=400)
+
+    wishlist, created = WishList.objects.get_or_create(user=request.user, product=product)
+    if created:
+        return JsonResponse({'message': 'Product added to wishlist successfully'})
+    else:
+        return JsonResponse({'message': 'Product is already in wishlist'})

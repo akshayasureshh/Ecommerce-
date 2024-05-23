@@ -58,9 +58,6 @@ urlpatterns = [
     path('password-reset/',views.PasswordReset,name='password-reset'),
     path('password-reset-complete/',views.pwcomplete,name='password_reset_complete'),
 
-   
-
-    path('add_to_cart_index/', views.add_to_cart_index, name='add_to_cart_index'),
     path('add_to_cart_wishlist/', views.add_to_cart_wishlist, name='add_to_cart_wishlist'),
 
     
@@ -86,10 +83,30 @@ urlpatterns = [
     path('userprofile/',views.userprofile,name='userprofile'),
 
     path('add-to-cart-newarrivals/', views.add_to_cart_newarrival, name='add_to_cart_newarrivals'),
-    path('add-to-wishlist-newarrivals/',views.add_to_wishlist_newarrivals,name='add_to_wishlist_newarrivals'),
 
     path('add_to_cart_productdetail/',views.add_to_cart_productdetail,name='add_to_cart_productdetail'),
     path('add_to_wishlist_productdetail/',views.add_to_wishlist_productdetail,name='add_to_wishlist_productdetail'),
+
+    path('add_to_cart_tabmen/', views.add_to_cart_tabmen, name='add_to_cart_tabmen'),
+    path('add_to_wishlist_tabmen/', views.add_to_wishlist_tabmen, name='add_to_wishlist_tabmen'),
+
+    path('add_to_cart_tabwomen/', views.add_to_cart_tabwomen, name='add_to_cart_tabwomen'),
+    path('add_to_wishlist_tabwomen/', views.add_to_wishlist_tabwomen, name='add_to_wishlist_tabwomen'),
+     
+    path('add_to_cart_tabchild/', views.add_to_cart_tabchild, name='add_to_cart_tabchild'),
+    path('add_to_wishlist_tabchild/', views.add_to_wishlist_tabchild, name='add_to_wishlist_tabchild'),
+
+    path('add_to_cart_taball/', views.add_to_cart_taball, name='add_to_cart_taball'),
+    path('add_to_wishlist_taball/', views.add_to_wishlist_taball, name='add_to_wishlist_taball'),
+
+    path('add_to_wishlist_newarrivals/',views.add_to_wishlist_newarrivals,name='add_to_wishlist_newarrivals'),
+
+    
+    path('add_to_cart_shopall/', views.add_to_cart_shopall, name='add_to_cart_shopall'),
+    path('add_to_wishlist_shopall/', views.add_to_wishlist_shopall, name='add_to_wishlist_shopall'),
+
+
+
 
     
 

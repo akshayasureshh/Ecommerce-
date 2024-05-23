@@ -107,6 +107,9 @@
       <link rel="stylesheet" href="{% static 'css/plugins/owl.carousel.min.css' %}" />
    <link rel="stylesheet" href="{% static 'css/plugins/owl.theme.default.min.css' %}" />
 
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <!-- Background css -->
 
 
@@ -116,6 +119,64 @@
 
     
 {% block main-content %}
+
+
+
+    <!-- Ec breadcrumb start -->
+    <div class="sticky-header-next-sec  ec-breadcrumb section-space-mb">
+      <div class="container">
+          <div class="row">
+              <div class="col-12">
+                  <div class="row ec_breadcrumb_inner">
+                      <div class="col-md-6 col-sm-12">
+                          <h2 class="ec-breadcrumb-title">Shop</h2>
+                      </div>
+                      <div class="col-md-6 col-sm-12">
+                          <!-- ec-breadcrumb-list start -->
+                          <ul class="ec-breadcrumb-list">
+                              <li class="ec-breadcrumb-item"><a href="index.html">Home</a></li>
+                              <li class="ec-breadcrumb-item active">Shop</li>
+                          </ul>
+                          <!-- ec-breadcrumb-list end -->
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- Ec breadcrumb end -->
+{% comment %} 
+  <!-- Ec Shop page -->
+  <section class="ec-page-content section-space-p">
+      <div class="container">
+          <div class="row">
+              <div class="ec-shop-rightside col-lg-9 order-lg-last col-md-12 order-md-first margin-b-30">
+                  <!-- Shop Top Start -->
+                  <div class="ec-pro-list-top d-flex">
+                      <div class="col-md-6 ec-grid-list">
+                          <div class="ec-gl-btn">
+                              <button class="btn btn-grid active"><i class="fi-rr-apps"></i></button>
+                              <button class="btn btn-list"><i class="fi-rr-list"></i></button>
+                          </div>
+                      </div>
+                      <div class="col-md-6 ec-sort-select">
+                          <span class="sort-by">Sort by</span>
+                          <div class="ec-select-inner">
+                              <select name="ec-select" id="ec-select">
+                                  <option selected disabled>Position</option>
+                                  <option value="1">Relevance</option>
+                                  <option value="2">Name, A to Z</option>
+                                  <option value="3">Name, Z to A</option>
+                                  <option value="4">Price, low to high</option>
+                                  <option value="5">Price, high to low</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Shop Top End -->
+
+ {% endcomment %}
+
 
                 <div class="container mt-8">
                     <!-- Shop content Start -->
@@ -140,10 +201,12 @@
                                                 <div class="ec-pro-actions">
                                                     <!-- <a href="compare.html" class="ec-btn-group compare"
                                                         title="Compare"><i class="fi fi-rr-arrows-repeat"></i></a> -->
-                                                    <button title="Add To Cart" class="add-to-cart"><i
-                                                            class="fi-rr-shopping-basket"></i> Add To Cart</button>
-                                                    <a class="ec-btn-group wishlist" title="Wishlist"><i
-                                                            class="fi-rr-heart"></i></a>
+                                                        <button title="Add To Cart" class="add-to-cart add-to-cart-shopall" data-product-id="{{ pro.id }}">
+                                                          <i class="fi-rr-shopping-basket"></i> Add To Cart
+                                                      </button>
+                                                      <a class="ec-btn-group wishlist wishlist-shopall" title="Wishlist" data-product-id="{{ pro.id }}">
+                                                          <i class="fi-rr-heart"></i>
+                                                      </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -252,6 +315,81 @@
     </section>
     <!-- End Shop page -->
 
+
+<script>
+  $(document).ready(function() {
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    // Add click event listener to "Add To Cart" buttons
+    $('.add-to-cart-shopall').on('click', function() {
+        const productId = $(this).data('product-id');
+        const quantity = 1;
+
+        console.log("Product ID:", productId); // Debug: Check if product ID is being retrieved
+
+        $.ajax({
+            url: "{% url 'add_to_cart_shopall' %}",
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken // Include CSRF token
+            },
+            data: {
+                'product_id': productId,
+                'quantity': quantity
+            },
+            success: function(response) {
+                alert('Product added to cart successfully!');
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText); // Debug: Log the response text
+                alert('Failed to add product to cart');
+            }
+        });
+    });
+
+    // Add click event listener to "Add To Wishlist" buttons
+    $('.wishlist-shopall').on('click', function() {
+        const productId = $(this).data('product-id');
+
+        console.log("Product ID:", productId); // Debug: Check if product ID is being retrieved
+
+        $.ajax({
+            url: "{% url 'add_to_wishlist_shopall' %}",
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken // Include CSRF token
+            },
+            data: {
+                'product_id': productId,
+            },
+            success: function(response) {
+                alert('Product added to wishlist successfully!');
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText); // Debug: Log the response text
+                alert('Failed to add product to wishlist');
+            }
+        });
+    });
+});
+
+    </script>
 
 
 {% endblock main-content %}

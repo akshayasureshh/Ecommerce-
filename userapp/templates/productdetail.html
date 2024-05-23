@@ -208,12 +208,49 @@
                                     <div class="ec-pro-content">
                                         <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.id %}">{{product.title}}</a></h5>
                                         <div class="ec-pro-rating">
+                                                
+                                            {% if product.avg_rating == 0 %}
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            
+                                            {% elif product.avg_rating == 1 %}
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                         {% elif product.avg_rating == 2 %}                                                            
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+
+
+                                         {% elif product.avg_rating == 3 %}
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+
+                                         {% elif product.avg_rating == 4 %}
                                             <i class="ecicon eci-star fill"></i>
                                             <i class="ecicon eci-star fill"></i>
                                             <i class="ecicon eci-star fill"></i>
                                             <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
+
+                                         {% elif product.avg_rating == 5 %}
+                                         <i class="ecicon eci-star fill"></i>
+                                         <i class="ecicon eci-star fill"></i>
+                                         <i class="ecicon eci-star fill"></i>
+                                         <i class="ecicon eci-star fill"></i>
+                                         <i class="ecicon eci-star fill"></i>
+                                         
+                                         {% endif %}
+                                        
+                                    </div>
                                         <div class="ec-pro-list-desc">{{product.description}}
                                         </div>
                                         <span class="ec-price">
@@ -239,13 +276,11 @@
                                             <div class="ec-pro-size">
                                                 <span class="ec-pro-opt-label">Size</span>
                                                 <ul class="ec-opt-size">
-                                                    <li class="active"><a href="#" class="ec-opt-sz"
-                                                            data-old="$25.00" data-new="$20.00"
-                                                            data-tooltip="Small">S</a></li>
-                                                    <li><a href="#" class="ec-opt-sz" data-old="$27.00"
-                                                            data-new="$22.00" data-tooltip="Medium">M</a></li>
-                                                    <li><a href="#" class="ec-opt-sz" data-old="$35.00"
-                                                            data-new="$30.00" data-tooltip="Extra Large">XL</a></li>
+                                                    {% for size in product_sizes %}
+                                                        <li class="{% if forloop.first %}active{% endif %}">
+                                                            <a href="#" class="ec-opt-sz" data-tooltip="{{ size }}">{{product.custom_size}}{{ size }}</a>
+                                                        </li>
+                                                    {% endfor %}
                                                 </ul>
                                             </div>
                                         </div>
@@ -253,20 +288,26 @@
                                 </div>
                             </div>
                             {% endfor %}
-                           
-
-                    <!-- Ec Pagination Start -->
-                    <div class="ec-pro-pagination">
-                        <span>Showing 1-12 of 21 item(s)</span>
-                        <ul class="ec-pro-pagination-inner">
-                            <li><a class="active" href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li><a class="next" href="#">Next <i class="ecicon eci-angle-right"></i></a></li>
-                        </ul>
-                    </div>
+                       
+                            <!-- Pagination Controls -->
+                            <div class="ec-pro-pagination">
+                                <span>Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} item(s)</span>
+                                <ul class="ec-pro-pagination-inner">
+                                    {% if page_obj.has_previous %}
+                                        <li><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                                    {% endif %}
+                                    {% for num in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == num %}
+                                            <li><a class="active" href="?page={{ num }}">{{ num }}</a></li>
+                                        {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+                                            <li><a href="?page={{ num }}">{{ num }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
                     <!-- Ec Pagination End -->
                 </div>
                 <!--Shop content End -->

@@ -152,19 +152,32 @@ def productsAdd(request):
 
 
 
-
 def Productlist(request):
     products = Product.objects.all()
+    paginator = Paginator(products, 10)  # Show 10 products per page
 
-    return render(request,'productlist.html',{'ProductsDisplay':products})
-    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    print(page_obj)
+
+    context ={
+        'ProductsDisplay': products,
+        'page_obj': page_obj,
+
+    }
+
+    return render(request, 'productlist.html', context)
 
 
 def Productgrid(request):
     products = Product.objects.all()
-    return render(request,'productgrid.html',{'ProductsDisplay':products})
+    paginator = Paginator(products, 12)  # Show 12 products per page or adjust as needed
 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
+    return render(request, 'productgrid.html', {'page_obj': page_obj})
 
 
 def Backgroundslider(request):
@@ -196,16 +209,18 @@ def Childslider(request):
 
 
 def Review(request):
-    
     reviews = Rating.objects.all()
     
     for review in reviews:
         avg_rating = Rating.objects.filter(product=review.product).aggregate(Avg('rating'))['rating__avg']
         review.avg_rating = round(avg_rating) if avg_rating is not None else 0
-        print("this is rating :",review.avg_rating)
-
-    return render(request, 'reviews.html', { 'reviews': reviews})
-
+        print("this is rating :", review.avg_rating)
+    
+    paginator = Paginator(reviews, 5)  # Show 10 reviews per page or adjust as needed
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'reviews.html', { 'page_obj': page_obj })
 
 
 
@@ -222,30 +237,26 @@ def userlist(request):
     data=User.objects.all()
     return render(request, "users-list.html",{ 'data': data })
 
-
 def neworder(request):
-    data = OrderPlaced.objects.all()
-    datas = Order.objects.all()
+    order_placed_list = OrderPlaced.objects.all()
+    order_list = Order.objects.all()
 
+    paginator_order_placed = Paginator(order_placed_list, 10)  # Show 10 OrderPlaced per page
+    paginator_orders = Paginator(order_list, 10)  # Show 10 Orders per page
+
+    page_number_order_placed = request.GET.get('page_order_placed')
+    page_number_orders = request.GET.get('page_orders')
+
+    page_obj_order_placed = paginator_order_placed.get_page(page_number_order_placed)
+    page_obj_orders = paginator_orders.get_page(page_number_orders)
     
-    # Paginate the products
-    paginator = Paginator(datas, 12)  # Show 12 products per page
-    page_number = request.GET.get('page')
-    try:
-        datas = paginator.page(page_number)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        datas = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        datas = paginator.page(paginator.num_pages)
-        
     context = {
-        'data': data,
-        'datas': datas,
+        'page_obj_order_placed': page_obj_order_placed,
+        'page_obj_orders': page_obj_orders,
     }
 
     return render(request, "new_order.html", context)
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -284,13 +295,13 @@ def orderhistory(request):
     return render(request,'order_history.html',{'data' : data})
 
 
-def ProductDetail(request):
+
+def ProductDetail(request, pk):
     print("inside fun")
-    latest_product = Product.objects.order_by('id').first()  
+    latest_product = Product.objects.get(pk=pk)
     print(latest_product)
 
     return render(request, 'productdetailadmin.html', {'latest_product': latest_product})
-
 
 
 def product_edit_view(request, product_id):
@@ -423,3 +434,32 @@ def delete_item_list(request, item_id):
     
         return redirect(Productlist)  
     return render(request, 'productlist.html')
+
+
+def delete_item_review(request, item_id):
+    if request.method == 'POST':
+        
+        try:
+            item = Rating.objects.get(id=item_id)
+            item.delete()
+        except Rating.DoesNotExist:
+            # Handle the case where the item doesn't exist
+            pass
+    
+        return redirect(Review)  
+    return render(request, 'review.html')
+
+
+
+def delete_item_grid(request, item_id):
+    if request.method == 'POST':
+        
+        try:
+            item = Product.objects.get(id=item_id)
+            item.delete()
+        except Product.DoesNotExist:
+            # Handle the case where the item doesn't exist
+            pass
+    
+        return redirect(Productgrid)  
+    return render(request, 'productgrid.html')

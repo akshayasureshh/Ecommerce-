@@ -637,166 +637,67 @@
                     <div class="ec-sidebar-slider">
                         <div class="ec-sb-slider-title">Best Sellers</div>
                         <div class="ec-sb-pro-sl">
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/1_1.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Beautiful Teddy Bear</a></h5>
-                                        <div class="ec-pro-rating">
+                            {% for i in most_ordered_products %}
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <div style="display: flex; align-items: center; margin-right: 10px;">
+                                    <a href="product-left-sidebar.html" class="sidekka_pro_img">
+                                        <img src="{{i.product.product_image.url}}" alt="product" style="height:80px;width:60px;"/>
+                                    </a>
+                                </div>
+                                <div>
+                                    <h5 style="margin-bottom: 5px;">
+                                        <a href="product-left-sidebar.html">{{i.product.title}}</a>
+                                    </h5>
+                                    <div style="margin-bottom: 5px;">
+                                        {% if i.product.avg_rating2 == 0 %}
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                        {% elif i.product.avg_rating2 == 1 %}
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                        {% elif i.product.avg_rating2 == 2 %}
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                        {% elif i.product.avg_rating2 == 3 %}
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o"></i>
+                                        {% elif i.product.avg_rating2 == 4 %}
                                             <i class="ecicon eci-star fill"></i>
                                             <i class="ecicon eci-star fill"></i>
                                             <i class="ecicon eci-star fill"></i>
                                             <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
+                                            <i class="ecicon eci-star-o"></i>
+                                        {% elif i.product.avg_rating2 == 5 %}
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill"></i>
+                                        {% endif %}
                                     </div>
+                                    <span>Rs.{{i.product.price}}</span>
                                 </div>
                             </div>
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/2_1.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Gym Backpack</a></h5>
-                                        <div class="ec-pro-rating">
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/3_1.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Beautiful Purse for Women</a></h5>
-                                        <div class="ec-pro-rating">
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/4_1.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Wool Felt Long Brim Hat</a></h5>
-                                        <div class="ec-pro-rating">
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/5_1.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Black Leather Belt</a></h5>
-                                        <div class="ec-pro-rating">
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/6_2.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Beautiful Tee for Women</a></h5>
-                                        <div class="ec-pro-rating">
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/7_1.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">Cotton Shirt for Men</a></h5>
-                                        <div class="ec-pro-rating">
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ec-sb-pro-sl-item">
-                                    <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
-                                            src="assets/images/product-image/8_2.jpg" alt="product" /></a>
-                                    <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">I Watch for Men</a></h5>
-                                        <div class="ec-pro-rating">
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star"></i>
-                                        </div>
-                                        <span class="ec-price">
-                                            <span class="old-price">$100.00</span>
-                                            <span class="new-price">$80.00</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+                        {% endfor %}
+                        
+                        
+                        
+                        
+                        
+                        
+                            
                         </div>
                     </div>
                 </div>

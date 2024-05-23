@@ -15,7 +15,8 @@ urlpatterns = [
     path('productedit/<int:product_id>/', product_edit_view, name='product_edit'),
     path('productlist/',views.Productlist, name='productlist'),
     path('productgrid/',views.Productgrid,name='product-grid'),
-    path('productdetail/',views.ProductDetail,name='productdetail'),
+    # path('productdetail/',views.ProductDetail,name='productdetail'),
+    path('productdetail/<int:pk>/', views.ProductDetail, name='productdetail'),
     path('backgroundslider/',views.Backgroundslider,name='backgroundslider'),
     path('childslider/',views.Childslider,name='childslider'),
     path('review/',views.Review,name='review'),
@@ -31,6 +32,9 @@ urlpatterns = [
     path('orderhistory/',views.orderhistory,name='orderhistory'),
 
     path('deletelist/<int:item_id>/',views.delete_item_list,name='deletelist'),
+    path('deletelistreview/<int:item_id>',views.delete_item_review,name='deletelistreview'),
+    path('deletelistgrid/<int:item_id>/',views.delete_item_grid,name='deletelistgrid'),
+
     
 ] 
 

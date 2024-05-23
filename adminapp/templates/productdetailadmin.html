@@ -69,17 +69,17 @@
                                         <div class="single-pro-img">
                                             <div class="single-product-scroll">
                                                 <div class="single-product-cover">
-                                                    <div class="single-slide zoom-image-hover">
+                                                    <div class="single-slide ">
                                                         <img class="img-responsive"
-                                                            src="{{latest_product.product_image.url}}" alt="">
+                                                            src="{{latest_product.product_image.url}}" alt="" style="height:100px;width:100px">
                                                     </div>
                                                     <div class="single-slide zoom-image-hover">
                                                         <img class="img-responsive"
-                                                            src="{{latest_product.product_image1.url}}" alt="">
+                                                            src="{{latest_product.product_image1.url}}" alt="" style="height:100px;width:100px">
                                                     </div>
                                                     <div class="single-slide zoom-image-hover">
                                                         <img class="img-responsive"
-                                                            src="{{latest_product.product_image2.url}}" alt="">
+                                                            src="{{latest_product.product_image12.url}}" alt="">
                                                     </div>
                                                     <div class="single-slide zoom-image-hover">
                                                         <img class="img-responsive"
@@ -93,6 +93,10 @@
                                                 <div class="single-nav-thumb">
                                                     <div class="single-slide">
                                                         <img class="img-responsive"
+                                                            src="{{latest_product.product_image.url}}" alt="">
+                                                    </div>
+                                                    <div class="single-slide">
+                                                        <img class="img-responsive"
                                                             src="{{latest_product.product_image1.url}}" alt="">
                                                     </div>
                                                     <div class="single-slide">
@@ -107,10 +111,6 @@
                                                         <img class="img-responsive"
                                                             src="{{latest_product.product_image4.url}}" alt="">
                                                     </div>
-                                                    <div class="single-slide">
-                                                        <img class="img-responsive"
-                                                            src="{{latest_product.product_image5.url}}" alt="">
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -119,7 +119,7 @@
                                 <div class="col-xl-5 col-lg-6">
                                     <div class="row product-overview">
                                         <div class="col-12">
-                                            <h5 class="product-title">Pure Leather Purse for Woman</h5>
+                                            <h5 class="product-title">{{latest_product.title}}</h5>
                                             <p class="product-rate">
                                                 <i class="mdi mdi-star is-rated"></i>
                                                 <i class="mdi mdi-star is-rated"></i>
@@ -127,15 +127,10 @@
                                                 <i class="mdi mdi-star is-rated"></i>
                                                 <i class="mdi mdi-star"></i>
                                             </p>
-                                            <p class="product-desc">Lorem Ipsum is simply dummy text of the
-                                                printing and typesetting industry. Lorem Ipsum has been the
-                                                industry's standard dummy text ever since the 1990.</p>
-                                            <p class="product-desc">Lorem Ipsum is simply dummy text of the
-                                                printing and typesetting industry. Lorem Ipsum has been the
-                                                industry's standard dummy text ever since the 1990. Lorem Ipsum
-                                                is simply dummy text of the printing and typesetting industry.
+                                            <p class="product-desc">{{latest_product.description}}</p>
+                                            <p class="product-desc">{{latest_product.full_detail}}
                                             </p>
-                                            <div class="ec-ofr">
+                                            {% comment %} <div class="ec-ofr">
                                                 <h6>Available offers</h6>
                                                 <ul>
                                                     <li><b>Special Price :</b> Get extra 16% off (price
@@ -148,9 +143,9 @@
                                                     <li><b>Bank Offer :</b> Flat $50 off on first ekka Pay Later
                                                         order of $200 and above <a href="#">T&C</a></li>
                                                 </ul>
-                                            </div>
-                                            <p class="product-price">Price: $120</p>
-                                            <p class="product-sku">SKU#: WH12</p>
+                                            </div> {% endcomment %}
+                                            <p class="product-price">Price: {{latest_product.price}}</p>
+                                            {% comment %} <p class="product-sku">SKU#: WH12</p> {% endcomment %}
                                             <ul class="product-size">
                                                 <li class="size"><span>S</span></li>
                                                 <li class="size"><span>M</span></li>
@@ -173,7 +168,7 @@
                                             <div class="product-stock">
                                                 <div class="stock">
                                                     <p class="title">Available</p>
-                                                    <p class="text">180</p>
+                                                    <p class="text">{{latest_product.quantity}}</p>
                                                 </div>
                                                 <div class="stock">
                                                     <p class="title">Pending</p>
@@ -192,7 +187,7 @@
                                         <div class="card-body text-center">
                                             <a href="javascript:0" class="text-secondary d-inline-block">
                                                 <div class="image mb-3">
-                                                    <img src="assets/img/user/u-xl-4.jpg"
+                                                    <img src="{% static 'images/user/u-xl-4.jpg' %}"
                                                         class="img-fluid rounded-circle" alt="Avatar Image">
                                                 </div>
 

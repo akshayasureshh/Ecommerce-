@@ -71,14 +71,14 @@
                                             
 											<tbody>
 												
-                                                {% for order in data %}
+                                                {% for order in page_obj_order_placed %}
 												
 												<tr>
 													
 													<td>{{order.id}}</td>
 													<td><img class="product-img tbl-img" src="{{order.product.product_image.url}}" alt="product"></td>
 													<td>{{order.product.title}}</td>
-													<td>{% for i in datas %}
+													<td>{% for i in page_obj_orders %}
 														{% if i.id == order.order_id %}
 														<strong>{{i.user}}</strong>
 														{% endif %}
@@ -88,14 +88,14 @@
 													<td>{{order.quantity}}</td>
 													{% comment %} <td>Rs.{{i.amount}}</td> {% endcomment %}
 													<td>
-														{% for i in datas %}
+														{% for i in page_obj_orders %}
 															{% if i.id == order.order_id %}
 																Rs.{{ i.amount }}
 															{% endif %}
 														{% endfor %}
 													</td>
 													<td>
-														{% for i in datas %}
+														{% for i in page_obj_orders %}
 														{% if i.id == order.order_id %}
 																{{ i.payment_method }}
 															{% endif %}
@@ -103,7 +103,7 @@
 													</td>
 													{% comment %} <td><span class="mb-2 mr-2 badge badge-secondary">{{order.status}}</span> {% endcomment %}
 														<td>
-															{% for i in datas %}
+															{% for i in page_obj_orders %}
 															{% if i.id == order.order_id %}
 															<span class="mb-2 mr-2 badge badge-secondary">
 																<input type="hidden" name="order_id" value="{{ i.order_id }}">
@@ -123,14 +123,14 @@
 																</select>
 															</span>
 														</td>
-													<td>{% for i in datas %}
+													<td>{% for i in page_obj_orders %}
 														{% if i.id == order.order_id %}
 															{{ i.ordered_date }}
 														{% endif %}
 													{% endfor %}
 												</td>
 												<td>
-													{% for i in datas %}
+													{% for i in page_obj_orders %}
 														{% if i.id == order.order_id %}
 													<input type="date" id="delivery_date" name="delivery_date" value="{{ i.delivery_expected_date|date:'Y-m-d' }}">
 												    {% endif %}
@@ -182,6 +182,10 @@
 											
                                             
 										</table>
+
+										
+
+
 									</div>
 								</div>
 							</div>
@@ -190,21 +194,50 @@
 						</div>
 					</div>
 					
-					<nav aria-label="...">
-						<ul class="pagination">
-						  <li class="page-item {% if data.has_previous %} {% else %}disabled{% endif %}">
-							<a class="page-link" href="?page={{ data.previous_page_number }}" tabindex="-1">Previous</a>
-						  </li>
-						  {% for num in data.paginator.page_range %}
-							<li class="page-item {% if num == data.number %}active{% endif %}">
-							  <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+					<nav aria-label="OrderPlaced Page navigation">
+						<ul class="pagination pagination-separated pagination-separated-rounded">
+							{% if page_obj_order_placed.has_previous %}
+							<li class="page-item">
+								<a class="page-link" href="?page_order_placed={{ page_obj_order_placed.previous_page_number }}" aria-label="Previous">
+									<span aria-hidden="true" class="mdi mdi-chevron-left mr-1"></span> Prev
+									<span class="sr-only">Previous</span>
+								</a>
 							</li>
-						  {% endfor %}
-						  <li class="page-item {% if data.has_next %} {% else %}disabled{% endif %}">
-							<a class="page-link" href="?page={{ data.next_page_number }}">Next</a>
-						  </li>
+							{% else %}
+							<li class="page-item disabled">
+								<a class="page-link" href="#" aria-label="Previous">
+									<span aria-hidden="true" class="mdi mdi-chevron-left mr-1"></span> Prev
+									<span class="sr-only">Previous</span>
+								</a>
+							</li>
+							{% endif %}
+
+							{% for num in page_obj_order_placed.paginator.page_range %}
+							{% if page_obj_order_placed.number == num %}
+							<li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+							{% else %}
+							<li class="page-item"><a class="page-link" href="?page_order_placed={{ num }}">{{ num }}</a></li>
+							{% endif %}
+							{% endfor %}
+
+							{% if page_obj_order_placed.has_next %}
+							<li class="page-item">
+								<a class="page-link" href="?page_order_placed={{ page_obj_order_placed.next_page_number }}" aria-label="Next">
+									Next <span aria-hidden="true" class="mdi mdi-chevron-right ml-1"></span>
+									<span class="sr-only">Next</span>
+								</a>
+							</li>
+							{% else %}
+							<li class="page-item disabled">
+								<a class="page-link" href="#" aria-label="Next">
+									Next <span aria-hidden="true" class="mdi mdi-chevron-right ml-1"></span>
+									<span class="sr-only">Next</span>
+								</a>
+							</li>
+							{% endif %}
 						</ul>
-					  </nav>
+					</nav>
+
                     
 				</div> <!-- End Content -->
 			</div> <!-- End Content Wrapper -->
