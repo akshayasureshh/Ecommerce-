@@ -36,7 +36,23 @@ def categorypage(request):
             data.sort_description = sort_description
             data.product_tag = product_tags
             data.save()
-    return render(request, 'category.html')
+
+    cate = Category.objects.all()
+    sub = SubCategory.objects.all()
+    
+
+    product_counts = {}
+    for subcategory in sub:
+        product_counts[subcategory.id] = Product.objects.filter(categories=subcategory).count()
+        print(product_counts)
+    
+
+    context={
+        'cate':cate,
+        'subcate' : sub,
+        'product_counts': product_counts,
+    }
+    return render(request, 'category.html',context)
 
 
 
