@@ -71,14 +71,14 @@
                                             
 											<tbody>
 												
-                                                {% for order in page_obj_order_placed %}
+                                                {% for order in orders %}
 												
 												<tr>
 													
 													<td>{{order.id}}</td>
 													<td><img class="product-img tbl-img" src="{{order.product.product_image.url}}" alt="product"></td>
 													<td>{{order.product.title}}</td>
-													<td>{% for i in page_obj_orders %}
+													<td>{% for i in ordered_list %}
 														{% if i.id == order.order_id %}
 														<strong>{{i.user}}</strong>
 														{% endif %}
@@ -88,14 +88,14 @@
 													<td>{{order.quantity}}</td>
 													{% comment %} <td>Rs.{{i.amount}}</td> {% endcomment %}
 													<td>
-														{% for i in page_obj_orders %}
+														{% for i in ordered_list %}
 															{% if i.id == order.order_id %}
 																Rs.{{ i.amount }}
 															{% endif %}
 														{% endfor %}
 													</td>
 													<td>
-														{% for i in page_obj_orders %}
+														{% for i in ordered_list %}
 														{% if i.id == order.order_id %}
 																{{ i.payment_method }}
 															{% endif %}
@@ -103,7 +103,7 @@
 													</td>
 													{% comment %} <td><span class="mb-2 mr-2 badge badge-secondary">{{order.status}}</span> {% endcomment %}
 														<td>
-															{% for i in page_obj_orders %}
+															{% for i in ordered_list %}
 															{% if i.id == order.order_id %}
 															<span class="mb-2 mr-2 badge badge-secondary">
 																<input type="hidden" name="order_id" value="{{ i.order_id }}">
@@ -123,14 +123,14 @@
 																</select>
 															</span>
 														</td>
-													<td>{% for i in page_obj_orders %}
+													<td>{% for i in ordered_list %}
 														{% if i.id == order.order_id %}
 															{{ i.ordered_date }}
 														{% endif %}
 													{% endfor %}
 												</td>
 												<td>
-													{% for i in page_obj_orders %}
+													{% for i in ordered_list %}
 														{% if i.id == order.order_id %}
 													<input type="date" id="delivery_date" name="delivery_date" value="{{ i.delivery_expected_date|date:'Y-m-d' }}">
 												    {% endif %}

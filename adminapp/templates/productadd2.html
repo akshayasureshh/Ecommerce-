@@ -243,7 +243,7 @@
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'product-grid' %}">
+										<a class="sidenav-item-link" href="{% url 'product_grid' %}">
 											<span class="nav-text">Grid Product</span>
 										</a>
 									</li>
@@ -279,11 +279,11 @@
 											<span class="nav-text">Order Detail</span>
 										</a>
 									</li>
-									<li class="">
+									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="invoice.html">
 											<span class="nav-text">Invoice</span>
 										</a>
-									</li>
+									</li> {% endcomment %}
 								</ul>
 							</div>
 						</li>
@@ -297,16 +297,16 @@
 						</li>
 
 						<!-- Brands -->
-						<li>
+						{% comment %} <li>
 							<a class="sidenav-item-link" href="brand-list.html">
 								<i class="mdi mdi-tag-faces"></i>
 								<span class="nav-text">Brands</span>
 							</a>
 							<hr>
-						</li>
+						</li> {% endcomment %}
 
 						<!-- Authentication -->
-						<li class="has-sub">
+						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-login"></i>
 								<span class="nav-text">Authentication</span> <b class="caret"></b>
@@ -325,10 +325,10 @@
 									</li>
 								</ul>
 							</div>
-						</li>
+						</li> {% endcomment %}
 
 						<!-- Icons -->
-						<li class="has-sub">
+						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-diamond-stone"></i>
 								<span class="nav-text">Icons</span> <b class="caret"></b>
@@ -352,10 +352,10 @@
 									</li>
 								</ul>
 							</div>
-						</li>
+						</li> {% endcomment %}
 
 						<!-- Other Pages -->
-						<li class="has-sub">
+						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-image-filter-none"></i>
 								<span class="nav-text">Other Pages</span> <b class="caret"></b>
@@ -367,7 +367,7 @@
 									</li>
 								</ul>
 							</div>
-						</li>
+						</li> {% endcomment %}
 					</ul>
 				</div>
 			</div>

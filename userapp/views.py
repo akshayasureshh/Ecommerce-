@@ -27,6 +27,9 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.core.files.storage import default_storage
+from userapp.utils import decrypt_data
+from userapp.utils import encrypt_data
+from cryptography.fernet import InvalidToken
 
 # Create your views here.
 
@@ -182,8 +185,9 @@ def home(request):
         product.total_quantity = most_ordered['total_quantity']
         print("Product Found:", product) 
 
-    
-
+    #     # Encrypt category IDs
+    # for sub_category in data:
+    #     sub_category.encrypted_id = encrypt_data(str(sub_category.id))
 
     context = {
         'SubCate': data,
@@ -206,10 +210,10 @@ def home(request):
         'most_ordered' : product,
         # 'subcategories_with_products': subcategories_with_products,
     }
-      # Append each size_list to sizes list
-
-    # Assign the sizes list to the context dictionary outside the loop
     
+
+    
+
 
     return render(request, 'index2.html', context)
 
@@ -321,53 +325,82 @@ def user_logout(request):
     return redirect('login')
 
 
+def productdetail(request, categoryID):
+    # try:
+    #     categoryID = decrypt_data(encrypted_category_id)
+    # except Exception as e:
+    #     # Log or print the exception for debugging purposes
+    #     print(f"Decryption error: {e}")
+    #     return HttpResponse('Error: Invalid encrypted data. Please try again.')
 
-def productdetail(request,categoryID):
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
-
     products = Product.objects.filter(categories=categoryID)
     totalitem = 0
     wishitem = 0
+
     if request.user.is_authenticated:
         totalitem = len(Cart.objects.filter(user=request.user))
-        wishitem=len(WishList.objects.filter(user=request.user))
+        wishitem = len(WishList.objects.filter(user=request.user))
 
+    # Sorting logic
+    sort = request.GET.get('sort', 'relevance')
+    if sort == 'name_asc':
+        products = products.order_by('title')
+    elif sort == 'name_desc':
+        products = products.order_by('-title')
+    elif sort == 'price_asc':
+        products = products.order_by('price')
+    elif sort == 'price_desc':
+        products = products.order_by('-price')
     else:
-        totalitem = 0
-        wishitem = 0
+        products = products.order_by('id')  # Default sorting by relevance (or any other default logic)
 
-    # Fetch sizes
-    for product in products:
-        product_size = product.size
-        print(product_size)
-
-    paginator = Paginator(products, 12)  # Show 12 products per page
+    paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-
     for product in products:
-        print("product id : ", product.id)
         avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
-
         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
-        print(product.avg_rating)
+    
+    sizes = []
+
+    # Iterate over each product to extract sizes
+    for product in products:
+        if product.size:
+            sizes.extend(product.size)
+    
+    user=request.user
+    cart=Cart.objects.filter(user=user)
+    print("the cart item is",cart)
+    amount=0
+    amount2 = 0
+    for p in cart:
+        value = p.quantity*p.product.price
+        amount= amount + value
+        amount2=amount
+        
+    totalamount=amount+40
+    print(totalamount)
+       
 
     context = {
         'products': products,
-        'SubCate':data,
-        'Category' : parent_categories,
-        'totalitem':totalitem,
-        'wishitem':wishitem,
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
         'page_obj': page_obj,
-        'product_sizes': product_size,
-
-          
-
+        'sizes': sizes,
+        'sort': sort,
+        'cart' : cart,
+        'amount2' : amount2,
+        'totalamount2' : totalamount,
+    
     }
 
-    return render(request,'productdetail.html',context)
+    return render(request, 'productdetail.html', context)
 
 @require_POST
 def add_to_cart_productdetail(request):
@@ -463,6 +496,20 @@ def singleproduct(request, id):
         i.product.avg_rating2 = round(avg_rating2) if avg_rating2 is not None else 0
         print("This is rating:", i.product.avg_rating2)
 
+    user=request.user
+    cart=Cart.objects.filter(user=user)
+    print("the cart item is",cart)
+    amount=0
+    amount2 = 0
+    for p in cart:
+        value = p.quantity*p.product.price
+        amount= amount + value
+        amount2=amount
+        
+    totalamount=amount+40
+    print(totalamount)
+       
+
 
     # for product in relatedproduct:
     #     print("product id : ", product.id)
@@ -483,6 +530,9 @@ def singleproduct(request, id):
         'colors': colors,
         'avg_rating': avg_rating,
         'most_ordered_products': most_ordered_products,
+        'cart' : cart,
+        'amount2' : amount2,
+        'totalamount2' : totalamount,
     
 
     })
@@ -712,6 +762,7 @@ def show_wishlist(request):
     cart=Cart.objects.filter(user=user)
     print("the cart item is",cart)
     amount=0
+    amount2 = 0
     for p in cart:
         value = p.quantity*p.product.price
         amount= amount + value
@@ -914,6 +965,8 @@ class checkout(View):
                     product_id=product_id,
                     quantity=quantity
                 )
+
+                Cart.objects.filter(user=user).delete()
 
             # Redirect to COD confirmation page or display success message
             return redirect('cod_confirmation')
@@ -1677,6 +1730,10 @@ def userprofile(request):
     
     # Define default background image URL
     default_background_image = "{% static '/images/banner/8.jpg' %}"
+
+    customer = None
+    if request.user.is_authenticated:
+        customer = Customer.objects.filter(user=request.user).first()
 
     if request.method == 'POST':
         # Retrieve data from the form

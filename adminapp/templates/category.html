@@ -151,8 +151,10 @@
                                                     </button>
 
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">Edit</a>
-                                                        <a class="dropdown-item" href="#">Delete</a>
+                                                        <form method='post' action="{% url 'deletelistcate' i.id %}">
+                                                            {% csrf_token %}
+                                                        <a class="dropdown-item" href="#"><button name="delete_list" type="submit">Delete</button></a>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </td>

@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'product-grid' %}">
+										<a class="sidenav-item-link" href="{% url 'product_grid' %}">
 											<span class="nav-text">Grid Product</span>
 										</a>
 									</li>
@@ -1272,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', function () {
 																	<label for="sizeCheckboxes">Select Sizes:</label>
 																	<div id="sizeCheckboxes" class="d-flex">
 																		<div class="form-check">
-																			<input class="form-check-input" type="checkbox" name="size" value="s" id="sizeS" value="{{product.size}}">
+																			<input class="form-check-input" type="checkbox" name="size" value="s" id="sizeS">
 																			<label class="form-check-label" for="sizeS">S</label>
 																		</div>
 																		
@@ -1295,11 +1295,6 @@ document.addEventListener('DOMContentLoaded', function () {
 																			<input class="form-check-input" type="checkbox" name="size" value="xxl" id="sizeXXL">
 																			<label class="form-check-label" for="sizeXXL">XXL</label>
 																		</div>
-																		
-																		<!-- <div class="form-check">
-																			<input class="form-check-input" type="checkbox" name="size" value="mm" id="sizeMM">
-																			<label class="form-check-label" for="sizeMM">Select custom size in mm</label>
-																		</div> -->
 																	</div>
 																</div>
 																<!-- Hidden input field to store selected sizes -->
@@ -1309,7 +1304,7 @@ document.addEventListener('DOMContentLoaded', function () {
 																	<div id="customSizeField">
 																		
 																		<label for="customSizeInput">Custom Size:</label>
-																		<input type="text" class="form-control" id="customSizeInput" name="customsize">
+																		<input type="text" class="form-control" id="customSizeInput" name="customsize" value="{{product.custom_size}}">
 																	</div>
 																</div>
 															
@@ -1334,14 +1329,14 @@ document.addEventListener('DOMContentLoaded', function () {
 														
 														
 														<div class="col-md-12">
-															<label class="form-label">Ful Detail</label>
-															<textarea name="fulldetail" class="form-control" rows="4" value="{{product.full_detail}}"></textarea>
+															<label class="form-label">Full Detail</label>
+															<textarea name="fulldetail"  class="form-control" rows="4" value="{{ product.full_detail }}" >{{product.full_detail}}</textarea>
 														</div>
 														<div class="col-md-12">
 															<label class="form-label">Product Tags <span>( Type and
 																	make comma to separate tags )</span></label>
 															<input type="text" class="form-control" id="group_tag"
-																name="group_tag" value="" placeholder=""
+																name="group_tag" value="{{ product.product_tag }}" placeholder=""
 																data-role="tagsinput" />
 														
 															</div>
@@ -1367,6 +1362,13 @@ document.addEventListener('DOMContentLoaded', function () {
 								
 								</div>
 							</form>
+							{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
                             
 							</div>
 						</div>

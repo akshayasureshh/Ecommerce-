@@ -4,6 +4,7 @@ from .import  views
 from django.conf import settings
 from django.conf.urls.static import static
 from . views import product_edit_view
+# from .utils import encrypt_value
 
 
 urlpatterns = [
@@ -12,11 +13,10 @@ urlpatterns = [
     path('category/',views.categorypage,name='category'),
     path('subcategory/',views.subcategory,name="subcategory"),
     path('productadd/',views.productsAdd,name= 'product_add'),
-    path('productedit/<int:product_id>/', product_edit_view, name='product_edit'),
+    path('productedit/<str:encrypted_product_id>/', views.product_edit_view, name='product_edit'),
     path('productlist/',views.Productlist, name='productlist'),
-    path('productgrid/',views.Productgrid,name='product-grid'),
-    # path('productdetail/',views.ProductDetail,name='productdetail'),
-    path('productdetail/<int:pk>/', views.ProductDetail, name='productdetail'),
+    path('productgrid/',views.Productgrid,name='product_grid'),
+    # path('productdetail/<str:encrypted_pk>/', views.ProductDetail, name='productdetail'),
     path('backgroundslider/',views.Backgroundslider,name='backgroundslider'),
     path('childslider/',views.Childslider,name='childslider'),
     path('review/',views.Review,name='review'),
@@ -31,9 +31,16 @@ urlpatterns = [
 
     path('orderhistory/',views.orderhistory,name='orderhistory'),
 
-    path('deletelist/<int:item_id>/',views.delete_item_list,name='deletelist'),
+    # path('deletelist/<int:item_id>/',views.delete_item_list,name='deletelist'),
+    path('deletelist/<str:encrypted_item_id>/', views.delete_item_list, name='deletelist'),
     path('deletelistreview/<int:item_id>',views.delete_item_review,name='deletelistreview'),
     path('deletelistgrid/<int:item_id>/',views.delete_item_grid,name='deletelistgrid'),
+    path('deletelistsub/<int:item_id>/',views.delete_item_sub,name='deletelistsub'),
+    path('deletelistcate/<int:item_id>/',views.delete_item_cate,name='deletelistcate'),
+
+    
+
+    
 
     
 ] 

@@ -64,7 +64,7 @@
                                     <tbody>
                                         {% for product in page_obj %}
                                         <tr>
-                                            <td><a href="{% url 'productdetail' product.id %}"><img class="tbl-thumb" src="{{product.product_image.url}}" alt="Product Image" /></td>
+                                            <td><a href="#"><img class="tbl-thumb" src="{{product.product_image.url}}" alt="Product Image" /></td>
                                             <td>{{product.title}}</td>
                                             <td>{{product.price}}</td>
                                             <!-- <td>25% OFF</td>
@@ -84,8 +84,8 @@
                                                     </button>
 
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{% url 'product_edit' product.id %}">Edit</a>
-                                                        <form method='post' action="{% url 'deletelist' product.id %}">
+                                                        <a class="dropdown-item" href="{% url 'product_edit' product.encrypted_id %}">Edit</a>
+                                                        <form method='post' action="{% url 'deletelist' product.encrypted_id %}">
                                                             {% csrf_token %}
                                                         <a class="dropdown-item" href="#"><button name="delete_list" type="submit">Delete</button></a>
                                                         </form>

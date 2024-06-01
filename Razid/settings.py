@@ -65,6 +65,24 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Razid.urls'
 
+# TEMPLATES = [
+#     {
+#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#         'DIRS': [r'C:\Users\THINK PAD\Desktop\Razid Solutions\Razid\adminapp\templates'],
+#         'APP_DIRS': True,
+#         'OPTIONS': {
+#             'context_processors': [
+#                 'django.template.context_processors.debug',
+#                 'django.template.context_processors.request',
+#                 'django.contrib.auth.context_processors.auth',
+#                 'django.contrib.messages.context_processors.messages',
+#                 'adminapp.context_processors.add_encoded_urls',
+                
+#             ],
+#         },
+#     },
+# ]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -76,11 +94,14 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                
+                # 'adminapp.context_processors.add_encoded_urls',
             ],
         },
     },
 ]
+
+ENCRYPTION_KEY = b'i4p4P7R6SR-BE4_r_O72oHsKK5C09l4SH8kAxsoL8Fk='
+FERNET_KEY = 'fbiMQhvjHQAKur1teNsQ6NIognxqgdUqo0VMCBWSmhk='
 
 WSGI_APPLICATION = 'Razid.wsgi.application'
 

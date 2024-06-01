@@ -159,19 +159,20 @@
                             <button class="btn btn-list-50"><i class="fi-rr-list"></i></button>
                         </div>
                     </div>
-                    <div class="col-md-6 ec-sort-select">
-                        <span class="sort-by">Sort by</span>
-                        <div class="ec-select-inner">
-                            <select name="ec-select" id="ec-select">
-                                <option selected disabled>Position</option>
-                                <option value="1">Relevance</option>
-                                <option value="2">Name, A to Z</option>
-                                <option value="3">Name, Z to A</option>
-                                <option value="4">Price, low to high</option>
-                                <option value="5">Price, high to low</option>
-                            </select>
+                    <form method="get">
+                        <div class="col-md-6 ec-sort-select">
+                            <span class="sort-by">Sort by</span>
+                            <div class="ec-select-inner">
+                                <select name="sort" id="ec-select" onchange="this.form.submit()">
+                                    <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Position</option>
+                                    <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name, A to Z</option>
+                                    <option value="name_desc" {% if sort == 'name_desc' %}selected{% endif %}>Name, Z to A</option>
+                                    <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price, low to high</option>
+                                    <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price, high to low</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
                 <!-- Shop Top End -->
 
@@ -254,8 +255,8 @@
                                         <div class="ec-pro-list-desc">{{product.description}}
                                         </div>
                                         <span class="ec-price">
-                                            <span class="old-price">$27.00</span>
-                                            <span class="new-price">${{product.price}}</span>
+                                            {% comment %} <span class="old-price">$27.00</span> {% endcomment %}
+                                            <span class="new-price">Rs.{{product.price}}</span>
                                         </span>
                                         <div class="ec-pro-option">
                                             <!-- <div class="ec-pro-color">
@@ -276,11 +277,12 @@
                                             <div class="ec-pro-size">
                                                 <span class="ec-pro-opt-label">Size</span>
                                                 <ul class="ec-opt-size">
-                                                    {% for size in product_sizes %}
-                                                        <li class="{% if forloop.first %}active{% endif %}">
-                                                            <a href="#" class="ec-opt-sz" data-tooltip="{{ size }}">{{product.custom_size}}{{ size }}</a>
-                                                        </li>
-                                                    {% endfor %}
+                                                    {% for size in sizes %}
+                                                    <li class="">
+                                                        <a href="#" class="ec-opt-sz">{{ size }}</a>
+
+                                                    </li>
+                                                {% endfor %}
                                                 </ul>
                                             </div>
                                         </div>
