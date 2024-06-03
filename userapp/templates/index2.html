@@ -279,15 +279,15 @@
         </div>
         <div class="row margin-minus-b-15 margin-minus-t-15">
             <div id="ec-cat-slider" class="ec-cat-slider owl-carousel">
-            {% for sliders in child_slider %}
+            {% for sliders in products %}
             <div class="ec_cat_content ec_cat_content_1" >
                 <div class="ec_cat_inner ec_cat_inner-1" >
                     <div class="ec-category-image">
-                        <img src="{{ sliders.image.url }}" class="svg_img" alt="drink" style="width: 46px; height: 46px;"/>
+                        <img src="{{ sliders.product_image.url }}" class="svg_img" alt="drink" style="width: 100%; height: 100%;object-fit: fill;border-radius: inherit;"/>
                     </div>
                     <div class="ec-category-desc">
-                        <h3>{{sliders.name}} <span title="Category Items">(53)</span></h3>
-                        <a href="shop-left-sidebar-col-3.html" class="cat-show-all">Show All <i class="ecicon eci-angle-double-right"
+                        <h3>{{sliders.title}} <span title="Category Items"></span></h3>
+                        <a href="{% url 'singleproduct' sliders.id %}" class="cat-show-all">Show All <i class="ecicon eci-angle-double-right"
                                 aria-hidden="true"></i></a>
                     </div>
                 </div>
@@ -1341,7 +1341,7 @@
 <!--services Section End -->
 
 <!--  offer Section Start -->
-<section class="section ec-offer-section section-space-p section-space-m">
+<section class="section ec-offer-section section-space-p section-space-m" style="background-image: {% static 'images/bg/display-bg-0.png' %};">
     <h2 class="d-none">Offer</h2>
     <div class="container">
         <div class="row justify-content-end">

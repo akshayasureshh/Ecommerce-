@@ -196,23 +196,23 @@
                                         <div class="single-nav-thumb">
                                             <div class="single-slide">
                                                 <img class="img-responsive" src="{{product.product_image.url}}"
-                                                    alt="">
+                                                    alt="" style="width: 150px; height: 100px;">
                                             </div>
                                             <div class="single-slide">
                                                 <img class="img-responsive" src="{{product.product_image1.url}}"
-                                                    alt="">
+                                                    alt="" style="width: 150px; height: 100px;">
                                             </div>
                                             <div class="single-slide">
                                                 <img class="img-responsive" src="{{product.product_image2.url}}"
-                                                    alt="">
+                                                    alt="" style="width: 150px; height: 100px;">
                                             </div>
                                             <div class="single-slide">
                                                 <img class="img-responsive" src="{{product.product_image3.url}}"
-                                                    alt="">
+                                                    alt="" style="width: 150px; height: 100px;">
                                             </div>
                                             <div class="single-slide">
                                                 <img class="img-responsive" src="{{product.product_image4.url}}"
-                                                    alt="" >
+                                                    alt="" style="width: 150px; height: 100px;">
                                             </div>
                                         </div>
                                     </div>
@@ -381,31 +381,26 @@
                                         </div>
                                         &nbsp;<br/>&nbsp;
                                         {% if admin_choice == "yes" %}
-                                        <div  class="ec-upload-form">
-                                            <form action="{% url 'imageupload' product.id %}" method="post" enctype="multipart/form-data">
-                                                {% csrf_token %}
-                                                
-                                                <div class="ec-ratting-input ">
-                                                    <h4>Enter your text here:</h4> 
-                                                    {% comment %} <textarea name="your-text"
-                                                        placeholder="Enter Your Text"></textarea> {% endcomment %}
-                                                         
-                                                    <input type="text" name="your-text" placeholder="Enter Your Text" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                                                    &nbsp;<br/>
-                                                    <h4>Select Image:</h4>
-                                                    {% comment %} <input type="file" id="image" name="upload-image" accept="image/*"> {% endcomment %}
-                                                    <input type="file" id="image" name="upload-image" accept="image/*" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; ">
-                                                     &nbsp;<br/>&nbsp;
-                                                    <button class="btn btn-primary" type="submit"
-                                                    value="Submit">Submit</button>
-                                                    
-                                                </div>
-                                                <div class="ec-upload-form form-submit">
-                                                    
-                                                </div>
-                                            </form>
-                                        </div>
+                                            <div class="ec-upload-form">
+                                                <form action="{% url 'imageupload' product.id %}" method="post" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <div class="ec-ratting-input">
+                                                        <h4>Enter your text here:</h4> 
+                                                        <input type="text" name="your-text" placeholder="Enter Your Text" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                                                        <br/>
+                                                        <h4>Select Image:</h4>
+                                                        <input type="file" id="image" name="upload-image" accept="image/*" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                                                        <br/>
+                                                        <br/>
+                                                        <button class="btn btn-primary" type="submit" value="Submit">Submit</button>
+                                                    </div>
+                                                </form>
+                                                {% if error %}
+                                                    <p style="color:red;">{{ error }}</p>
+                                                {% endif %}
+                                            </div>
                                         {% endif %}
+
 
 
                                     </div>

@@ -134,7 +134,7 @@
                       <div class="col-md-6 col-sm-12">
                           <!-- ec-breadcrumb-list start -->
                           <ul class="ec-breadcrumb-list">
-                              <li class="ec-breadcrumb-item"><a href="index.html">Home</a></li>
+                              <li class="ec-breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
                               <li class="ec-breadcrumb-item active">Shop</li>
                           </ul>
                           <!-- ec-breadcrumb-list end -->
@@ -288,13 +288,13 @@
                                     {% comment %} <li><a class="active" href="?page=1">First</a></li> {% endcomment %}
                                     <li><a href="?page={{ products.previous_page_number }}">Previous</a></li>
                                 {% endif %}
-                                {% comment %} {% for num in products.paginator.page_range %} {% endcomment %}
-                                    {% comment %} {% if products.number == num %} {% endcomment %}
-                                        {% comment %} <li><span class="active">{{ num }}</span></li> {% endcomment %}
-                                    {% comment %} {% else %} {% endcomment %}
-                                        {% comment %} <li><a href="?page={{ num }}">{{ num }}</a></li> {% endcomment %}
-                                    {% comment %} {% endif %} {% endcomment %}
-                                {% comment %} {% endfor %} {% endcomment %}
+                                {% for num in products.paginator.page_range %}
+                                    {% if products.number == num %}
+                                        <li><span class="active">{{ num }}</span></li>
+                                    {% else %}
+                                        <li><a href="?page={{ num }}">{{ num }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
                                 {% if products.has_next %}
                                     <li><a class="ecicon eci-angle-right" href="?page={{ products.next_page_number }}">Next</a></li>
                                     

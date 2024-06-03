@@ -130,6 +130,11 @@
                             <div class="row">
                                 <form action="#">
                                     <div class="table-content cart-table-content">
+                                        {% if cart_message %}
+                                        <p style="font-size: 24px; text-align: center; margin: 40px ; color: #333;">
+                                            {{ cart_message }}<a href="{% url 'login' %}" >click here to login</a>
+                                        </p>
+                                    {% else %}
                                         <table>
                                             <thead>
                                                 <tr>
@@ -166,6 +171,7 @@
                                                 
                                             </tbody>
                                         </table>
+                                       
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-12">
@@ -264,6 +270,7 @@
 
                                 </div>
                             </div>
+                            {% endif %}
                         </div>
                         <!-- Sidebar Summary Block -->
                     </div>

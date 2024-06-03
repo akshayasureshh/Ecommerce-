@@ -106,6 +106,9 @@ urlpatterns = [
     path('add_to_cart_shopall/', views.add_to_cart_shopall, name='add_to_cart_shopall'),
     path('add_to_wishlist_shopall/', views.add_to_wishlist_shopall, name='add_to_wishlist_shopall'),
 
+    path('checkoutimage/',views.checkoutimage.as_view(),name='checkoutimage'),
+
+
 
 
 

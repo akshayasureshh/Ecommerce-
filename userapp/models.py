@@ -7,6 +7,8 @@ import uuid
 from django.utils import timezone
 import random
 from datetime import timedelta
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 
 
 # Create your models here.
@@ -222,3 +224,41 @@ class ImageUpload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_imageuplaod',null=True)
     text = models.TextField(max_length=1000)
     image =  models.ImageField(upload_to="user-images/")
+    order_id = models.CharField(max_length=20, unique=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
+    address_id =  models.TextField(null=True)
+    ordered_date = models.DateTimeField(auto_now_add=True, null=True)
+    amount = models.FloatField(null=True)
+    payment_method = models.CharField(max_length=20,null=True)
+    status = models.CharField(max_length=50, default='Order Placed')
+    delivery_expected_date = models.DateField(null=True)
+    quantity = models.PositiveIntegerField(default=1,null=True)
+
+
+
+   
+    
+
+    def save(self, *args, **kwargs):
+        if not self.order_id:
+            # Generate alphanumeric order ID using UUID version 4
+            self.order_id = self.generate_order_id()
+
+        if not self.ordered_date:
+            self.ordered_date = timezone.now()  # Set ordered_date if not already set
+
+        # Set delivery expected date as 7 days from ordered date
+        if not self.delivery_expected_date:
+            self.delivery_expected_date = self.ordered_date + timedelta(days=7)
+
+        if self.image:
+            # Replace forward slashes with backslashes in the image path
+            self.image = self.image.name.replace('/', '\\')
+
+        super().save(*args, **kwargs)
+
+
+    def generate_order_id(self):
+        return uuid.uuid4().hex[:10]
+
+    

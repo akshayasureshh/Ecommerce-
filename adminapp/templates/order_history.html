@@ -90,8 +90,8 @@
 															</button>
 
 															<div class="dropdown-menu">
-																<a class="dropdown-item" href="#">Detail</a>
-																<a class="dropdown-item" href="#">Track</a>
+																{% comment %} <a class="dropdown-item" href="#">Detail</a> {% endcomment %}
+																<a class="dropdown-item" href="{% url 'orderdetail2' i.id  %}">Track</a>
 																<a class="dropdown-item" href="#">Cancel</a>
 															</div>
 														</div>

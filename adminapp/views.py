@@ -289,7 +289,7 @@ def userlist(request):
 
 def neworder(request):
     order_placed_list = OrderPlaced.objects.all().order_by('-id')
-    order_list = Order.objects.exclude(status='delivered').order_by('-id')
+    order_list = Order.objects.all().order_by('-id')
 
 
 
@@ -310,6 +310,51 @@ def neworder(request):
     }
 
     return render(request, "new_order.html", context)
+
+
+def neworderimage(request):
+    order_placed_list = OrderPlaced.objects.all().order_by('-id')
+    order_list = Order.objects.all().order_by('-id')
+    
+
+
+    # paginator_order_placed = Paginator(order_placed_list, 10)  # Show 10 OrderPlaced per page
+    # paginator_orders = Paginator(order_list, 10)  # Show 10 Orders per page
+
+    # page_number_order_placed = request.GET.get('page_order_placed')
+    # page_number_orders = request.GET.get('page_orders')
+
+    # page_obj_order_placed = paginator_order_placed.get_page(page_number_order_placed)
+    # page_obj_orders = paginator_orders.get_page(page_number_orders)
+    
+    context = {
+        # 'page_obj_order_placed': page_obj_order_placed,
+        # 'page_obj_orders': page_obj_orders,
+        'orders' : order_placed_list,
+        'ordered_list' : order_list,
+    }
+
+    return render(request, "imageorders.html", context)
+
+
+def update_order_status_two(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        order_id = request.POST.get('order_id')
+        new_status = request.POST.get('status')
+        delivery_date = request.POST.get('delivery_date')  # Extract delivery date from POST data
+
+        try:
+            order = Order.objects.get(order_id=order_id)
+            order.status = new_status
+            order.delivery_expected_date = delivery_date  # Update delivery date
+            order.save()
+            return JsonResponse({'success': True})
+        except Order.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Order not found'})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
 
 
 import logging
@@ -343,6 +388,17 @@ def order_detail(request):
 
     }
     return render(request, 'order_detail.html',context)
+
+
+def order_detail2(request, order_id):
+    detail = get_object_or_404(Order, id=order_id)
+    details = OrderPlaced.objects.filter(order=detail)
+
+    context = {
+        'detail': detail,
+        'details': details,
+    }
+    return render(request, 'orderdetail2.html', context)
 
 def orderhistory(request):
     data = Order.objects.all()

@@ -784,10 +784,10 @@
                 {% for item in cart %}
                 <ul class="eccart-pro-items">
                     <li>
-                        <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
+                        <a href="{% url 'singleproduct' item.product.id %}" class="sidekka_pro_img"><img
                                 src="{{item.product.product_image.url}}" alt="product" style="height: 200;width: 200;"></a>
                         <div class="ec-pro-content">
-                            <a href="product-left-sidebar.html" class="cart_pro_title">{{item.product.title}}</a>
+                            <a href="{% url 'singleproduct' item.product.id %}" class="cart_pro_title">{{item.product.title}}</a>
                             <span class="cart-price"><span>Rs.{{item.product.price}}</span> x 1</span>
                             <!-- <div class="qty-plus-minus"> -->
                                 <!-- <input class="qty-input" type="text" name="ec_qtybtn" value="1" /> -->
@@ -1168,12 +1168,14 @@
 
     <!-- Recent Purchase Popup  -->
     <div class="recent-purchase">
-        <img src="assets/images/product-image/1.jpg" alt="payment image">
+        <img src="{% static 'images/product-image/1.jpg' %}" alt="payment image">
+        
         <div class="detail">
             <p>Someone in new just bought</p>
-            <h6>stylish baby shoes</h6>
+            <h6>{{products.title}}</h6>
             <p>10 Minutes ago</p>
         </div>
+        
         <a href="javascript:void(0)" class="icon-btn recent-close">×</a>
     </div>
     <!-- Recent Purchase Popup end -->
@@ -1207,7 +1209,7 @@
                             <div class="d-flex bd-highlight">
                                 <!-- Profile Picture -->
                                 <div class="ec-img-cont">
-                                    <img src="assets/images/whatsapp/profile_01.jpg" class="ec-user-img"
+                                    <img src="{% static 'images/whatsapp/profile_01.jpg' %}" class="ec-user-img"
                                         alt="Profile image">
                                     <span class="ec-status-icon"></span>
                                 </div>
@@ -1233,7 +1235,7 @@
         <div class="ec-right-bottom">
             <div class="ec-box">
                 <div class="ec-button rotateBackward">
-                    <img class="whatsapp" src="assets/images/common/whatsapp.png" alt="whatsapp icon">
+                    <img class="whatsapp" src="{% static 'images/common/whatsapp.png' %}" alt="whatsapp icon">
                 </div>
             </div>
         </div>

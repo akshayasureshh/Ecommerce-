@@ -18,7 +18,7 @@ urlpatterns = [
     path('productgrid/',views.Productgrid,name='product_grid'),
     # path('productdetail/<str:encrypted_pk>/', views.ProductDetail, name='productdetail'),
     path('backgroundslider/',views.Backgroundslider,name='backgroundslider'),
-    path('childslider/',views.Childslider,name='childslider'),
+    # path('childslider/',views.Childslider,name='childslider'),
     path('review/',views.Review,name='review'),
      
     path('crop-image/', views.upload_and_crop, name='upload_and_crop'),
@@ -27,7 +27,13 @@ urlpatterns = [
     path('neworder/',views.neworder,name= "neworder"),
     path('update_order_status/', views.update_order_status, name='update_order_status'),
 
+    path('neworder2/',views.neworderimage,name= "neworder2"),
+    path('update_order_status_two/', views.update_order_status_two, name='update_order_status_two'),
+
+
+
     path('orderdetail/',views.order_detail,name='orderdetail'),
+    path('orderdetail2/<int:order_id>/', views.order_detail2, name='orderdetail2'),
 
     path('orderhistory/',views.orderhistory,name='orderhistory'),
 

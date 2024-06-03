@@ -30,7 +30,7 @@ from django.core.files.storage import default_storage
 from userapp.utils import decrypt_data
 from userapp.utils import encrypt_data
 from cryptography.fernet import InvalidToken
-
+import os
 # Create your views here.
 
 # def home(request):
@@ -93,7 +93,7 @@ def home(request):
     wishlist = {}
     cart = []
     amount2 = 0
-    totalamount2 = 0
+    totalamount = 0
     
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
@@ -101,7 +101,7 @@ def home(request):
         cart = Cart.objects.filter(user=request.user)
         amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
         amount2 = amount
-        totalamount2 = amount + 40
+        totalamount = amount + 40
         user = request.user
         
     else:
@@ -231,6 +231,7 @@ def remove_from_wishlist(request, product_id):
     wishlist.products.remove(product)
     return redirect('home')
 
+
 def toggle_wishlist(request, product_id):
     if request.method == 'POST' and request.is_ajax():
         product = get_object_or_404(Product, pk=product_id)
@@ -338,10 +339,26 @@ def productdetail(request, categoryID):
     products = Product.objects.filter(categories=categoryID)
     totalitem = 0
     wishitem = 0
-
+    cart = []
+    amount2 = 0
+    totalamount = 0
+    
     if request.user.is_authenticated:
-        totalitem = len(Cart.objects.filter(user=request.user))
-        wishitem = len(WishList.objects.filter(user=request.user))
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+        cart = Cart.objects.filter(user=request.user)
+        amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+        amount2 = amount
+        totalamount = amount + 40
+        user = request.user
+        
+    else:
+        totalitem = 0
+        wishitem = 0
+        user = None
+        cart = []
+    
+
 
     # Sorting logic
     sort = request.GET.get('sort', 'relevance')
@@ -371,18 +388,17 @@ def productdetail(request, categoryID):
         if product.size:
             sizes.extend(product.size)
     
-    user=request.user
-    cart=Cart.objects.filter(user=user)
-    print("the cart item is",cart)
-    amount=0
-    amount2 = 0
-    for p in cart:
-        value = p.quantity*p.product.price
-        amount= amount + value
-        amount2=amount
+    # user=request.user
+    # cart=Cart.objects.filter(user=user)
+    # print("the cart item is",cart)
+    
+    # for p in cart:
+    #     value = p.quantity*p.product.price
+    #     amount= amount + value
+    #     amount2=amount
         
-    totalamount=amount+40
-    print(totalamount)
+    # totalamount=amount+40
+    # print(totalamount)
        
 
     context = {
@@ -480,9 +496,26 @@ def singleproduct(request, id):
     wishlist = WishList.objects.filter(Q(product=product) & Q(user=request.user.pk))
     totalitem = 0
     wishitem = 0
+    cart = []
+    amount2 = 0
+    totalamount = 0
+    
     if request.user.is_authenticated:
-        totalitem = len(Cart.objects.filter(user=request.user))
-        wishitem=len(WishList.objects.filter(user=request.user))   
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+        cart = Cart.objects.filter(user=request.user)
+        amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+        amount2 = amount
+        totalamount = amount + 40
+        user = request.user
+        
+    else:
+        totalitem = 0
+        wishitem = 0
+        user = None
+        cart = []
+    
+
 
     if product:
         avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
@@ -496,18 +529,18 @@ def singleproduct(request, id):
         i.product.avg_rating2 = round(avg_rating2) if avg_rating2 is not None else 0
         print("This is rating:", i.product.avg_rating2)
 
-    user=request.user
-    cart=Cart.objects.filter(user=user)
-    print("the cart item is",cart)
-    amount=0
-    amount2 = 0
-    for p in cart:
-        value = p.quantity*p.product.price
-        amount= amount + value
-        amount2=amount
+    # user=request.user
+    # cart=Cart.objects.filter(user=user)
+    # print("the cart item is",cart)
+    # amount=0
+    # amount2 = 0
+    # for p in cart:
+    #     value = p.quantity*p.product.price
+    #     amount= amount + value
+    #     amount2=amount
         
-    totalamount=amount+40
-    print(totalamount)
+    # totalamount=amount+40
+    # print(totalamount)
        
 
 
@@ -540,24 +573,34 @@ def singleproduct(request, id):
 
     return render(request, 'singleproduct.html', context)
 
-def imageupload(request,product_pk):
+def imageupload(request, product_pk):
     user_id = request.user.id
     product_id = product_pk
-    if request.method=='POST':
-        text=request.POST['your-text']
-        image = request.FILES['upload-image']
-        product = get_object_or_404(Product, pk=product_id)
-        data = ImageUpload.objects.create(
-            user_id=user_id,
-            product=product,
-            text=text,
-            image=image,
-        )
+    if request.method == 'POST':
+        text = request.POST.get('your-text')
+        image = request.FILES.get('upload-image')
 
-    return redirect(singleproduct, product_id)
+        if text and image:
+            product = get_object_or_404(Product, pk=product_id)
+            ImageUpload.objects.create(
+                user_id=user_id,
+                product=product,
+                text=text,
+                image=image,
+            )
+            return redirect('checkoutimage')
+        else:
+            # Handle the error case where text or image is missing
+            return render(request, 'upload_image.html', {
+                'error': 'Text and image are required.',
+                'product': product,
+            })
 
+    # Render the form again if not a POST request or if there was an error
+    product = get_object_or_404(Product, pk=product_id)
+    return render(request, 'upload_image.html', {'product': product})
 
-
+@login_required(login_url='login') 
 def review(request, product_pk):
     user_id = request.user.id
     product_id = product_pk
@@ -614,52 +657,51 @@ def add_to_cart(request):
 
 
 # @login_required
+
 def show_cart(request):
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
-    user=request.user
-    cart=Cart.objects.filter(user=user)
     latest_products = Product.objects.order_by('-id')[:4]
-    amount=0
-    for p in cart:
-        value = p.quantity*p.product.price
-        amount= amount + value
-        amount2=amount
-        
-    totalamount=amount+40
+    
     totalitem = 0
     wishitem = 0
-    if request.user.is_authenticated:
-        totalitem = len(Cart.objects.filter(user=request.user))
-        wishitem=len(WishList.objects.filter(user=request.user))
+    cart = []
+    amount = 0
+    totalamount = 0
+    cart_message = ""
     
-    for product in latest_products:
-        print("product id : ", product.id)
-        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
-
-        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
-        print("this is rating :",product.avg_rating)
-
-
-    data = SubCategory.objects.all()
-    parent_categories = Category.objects.all()
-    context = {
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+        cart = Cart.objects.filter(user=request.user)
         
+        if cart:
+            amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+            totalamount = amount + 40  # Assuming shipping cost or similar
+        else:
+            cart_message = "Your cart is empty."
+    else:
+        cart_message = "You need to be logged in to view your cart."
+
+    for product in latest_products:
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+
+    context = {
         'SubCate': data,
         'Category': parent_categories,
-        'totalitem':totalitem,
-        'wishitem':wishitem,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
         'latest_products': latest_products,
-        'cart' : cart,
-        'totalamount' :  totalamount,
-        'amount' : amount,
+        'cart': cart,
+        'totalamount': totalamount,
+        'amount': amount,
+        'cart_message': cart_message,
     }
-    return render(request,'cart2.html',context)
+    return render(request, 'cart2.html', context)
 
 
-
-
-# @login_required
+@login_required(login_url='login') 
 def plus_cart(request):
     if request.method=="GET":
         prod_id=request.GET['prod_id']
@@ -688,7 +730,7 @@ def plus_cart(request):
 
 
 
-# @login_required
+@login_required(login_url='login') 
 def minus_cart(request):
     if request.method=="GET":
         prod_id=request.GET['prod_id']
@@ -744,49 +786,49 @@ def remove_cart(request):
 
 
 
-
-
-# @login_required
 def show_wishlist(request):
-    user=request.user
     totalitem = 0
     wishitem = 0
+    cart = []
+    amount2 = 0
+    totalamount = 0
+    wishlist_message = ""
+
     if request.user.is_authenticated:
-        totalitem = len(Cart.objects.filter(user=request.user))
-        wishitem = len(WishList.objects.filter(user=request.user))
-    product = WishList.objects.filter(user=user)
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+        cart = Cart.objects.filter(user=request.user)
+        amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+        amount2 = amount
+        totalamount = amount + 40
+        user = request.user
+    else:
+        totalitem = 0
+        wishitem = 0
+        user = None
+        cart = []
+        wishlist_message = "You need to be logged in to view your wishlist."
+
+    product = WishList.objects.filter(user=user) if user else []
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
 
-    user=request.user
-    cart=Cart.objects.filter(user=user)
-    print("the cart item is",cart)
-    amount=0
-    amount2 = 0
-    for p in cart:
-        value = p.quantity*p.product.price
-        amount= amount + value
-        amount2=amount
-        
-    totalamount=amount+40
-    print(totalamount)
-    
     context = {
         'SubCate': data,
         'Category': parent_categories,
-        'totalitem':totalitem,
-        'wishitem':wishitem,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
         'products': product,
-        'cart' : cart,
-        'amount2' : amount2,
-        'totalamount2' : totalamount,
-
+        'cart': cart,
+        'amount2': amount2,
+        'totalamount2': totalamount,
+        'wishlist_message': wishlist_message,
     }
-    return render(request,'wishlist.html',context)
+    return render(request, 'wishlist.html', context)
 
 
 
-
+@login_required(login_url='login') 
 def plus_wishlist(request,id):
     products=Product.objects.get(id=id)
     print(request.user)
@@ -796,6 +838,7 @@ def plus_wishlist(request,id):
     return redirect(singleproduct, id)
 
 
+@login_required(login_url='login') 
 def minus_wishlist(request,id):
     print("inside minus")
    
@@ -937,6 +980,8 @@ class checkout(View):
         return render(request, 'checkout.html', context)
 
     def post(self, request):
+        data = SubCategory.objects.all()
+        parent_categories = Category.objects.all()
         if 'cod' in request.POST:
             user = request.user
             cust_id = request.POST.get('custid')
@@ -974,7 +1019,12 @@ class checkout(View):
             # Handle online payment logic (Razorpay or any other payment gateway)
             pass
 
+
         return render(request, 'checkout.html', locals())
+    
+
+
+
 
 def cod_confirmation(request):
     return render(request,'cod_orderplaced.html')
@@ -1020,6 +1070,8 @@ def search_view(request):
         if request.user.is_authenticated:
             totalitem = Cart.objects.filter(user=request.user).count()
             wishitem = WishList.objects.filter(user=request.user).count()
+
+        no_results_message = "No items found matching your search." 
         
         context = {
         
@@ -1028,6 +1080,7 @@ def search_view(request):
         'totalitem':totalitem,
         'wishitem':wishitem,
         'product': product,
+        'no_results_message': no_results_message,
     }
 
         return render(request, 'search.html', context)
@@ -1185,9 +1238,27 @@ def shopall(request):
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
 
+    totalitem = 0
+    wishitem = 0
+    wishlist = {}
+    cart = []
+    amount2 = 0
+    totalamount = 0
+    
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
-        wishitem = WishList.objects.filter(user=request.user).count() 
+        wishitem = WishList.objects.filter(user=request.user).count()
+        cart = Cart.objects.filter(user=request.user)
+        amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+        amount2 = amount
+        totalamount = amount + 40
+        user = request.user
+        
+    else:
+        totalitem = 0
+        wishitem = 0
+        user = None
+        cart = [] 
 
     for product in products:
         print("product id : ", product.id)
@@ -1197,7 +1268,7 @@ def shopall(request):
         print(product.avg_rating)
    
     # Paginate the products
-    paginator = Paginator(products, 12)  # Show 12 products per page
+    paginator = Paginator(products, 10)  # Show 12 products per page
     page_number = request.GET.get('page')
     try:
         products = paginator.page(page_number)
@@ -1215,6 +1286,9 @@ def shopall(request):
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
+        'cart': cart,
+        'amount2': amount2,
+        'totalamount2': totalamount,
     }
     return render(request, 'shopall.html', context)
 
@@ -1505,7 +1579,7 @@ def delete_item(request, item_id):
 
 
 
-# @login_required
+@login_required(login_url='login') 
 def add_to_cart_wishlist(request):
     user = request.user
     print("lalala",user)
@@ -1554,7 +1628,7 @@ def add_to_cart_wishlist(request):
 
 
 
-# @login_required
+@login_required(login_url='login') 
 def plus_cart_base(request):
     if request.method=="GET":
         prod_id=request.GET['prod_id']
@@ -1583,7 +1657,7 @@ def plus_cart_base(request):
 
 
 
-# @login_required
+@login_required(login_url='login') 
 def minus_cart_base(request):
     if request.method=="GET":
         prod_id=request.GET['prod_id']
@@ -1827,6 +1901,7 @@ def userprofile(request):
     return render(request, 'userprofile2.html', context)
 
 
+@login_required(login_url='login') 
 def add_to_cart_newarrival(request):
     user = request.user
     product_id = request.GET.get('prod_id')
@@ -1854,7 +1929,8 @@ def add_to_cart_newarrival(request):
     # Redirect back to the home page
     return redirect(reverse('home'))
 
-# @login_required
+
+@login_required(login_url='login') 
 def add_to_cart_tabmen(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -1882,7 +1958,8 @@ def add_to_cart_tabmen(request):
     # Return a success response
     return JsonResponse({'message': 'Product added to cart successfully'})
 
-# @login_required
+
+@login_required(login_url='login') 
 def add_to_wishlist_tabmen(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -1909,7 +1986,7 @@ def add_to_wishlist_tabmen(request):
 
 
 
-# @login_required
+@login_required(login_url='login') 
 def add_to_cart_tabwomen(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -1937,7 +2014,8 @@ def add_to_cart_tabwomen(request):
     # Return a success response
     return JsonResponse({'message': 'Product added to cart successfully'})
 
-# @login_required
+
+@login_required(login_url='login') 
 def add_to_wishlist_tabwomen(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -1967,7 +2045,7 @@ def add_to_wishlist_tabwomen(request):
 
 
 
-# @login_required
+@login_required(login_url='login') 
 def add_to_cart_tabchild(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -1995,7 +2073,9 @@ def add_to_cart_tabchild(request):
     # Return a success response
     return JsonResponse({'message': 'Product added to cart successfully'})
 
-# @login_required
+
+
+@login_required(login_url='login') 
 def add_to_wishlist_tabchild(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -2023,7 +2103,7 @@ def add_to_wishlist_tabchild(request):
 
 
 
-# @login_required
+@login_required(login_url='login') 
 def add_to_cart_taball(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -2051,7 +2131,9 @@ def add_to_cart_taball(request):
     # Return a success response
     return JsonResponse({'message': 'Product added to cart successfully'})
 
-# @login_required
+
+
+@login_required(login_url='login') 
 def add_to_wishlist_taball(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -2076,8 +2158,7 @@ def add_to_wishlist_taball(request):
         return JsonResponse({'error': 'Authentication required'}, status=403)
 
 
-# @login_required
-# @require_POST
+@login_required(login_url='login') 
 def add_to_wishlist_newarrivals(request):
     product_id = request.POST.get('product_id')
 
@@ -2097,8 +2178,7 @@ def add_to_wishlist_newarrivals(request):
 
 
 
-# @login_required
-# @require_POST
+@login_required(login_url='login') 
 def add_to_cart_shopall(request):
     product_id = request.POST.get('product_id')
     quantity = request.POST.get('quantity')
@@ -2120,8 +2200,10 @@ def add_to_cart_shopall(request):
 
     return JsonResponse({'message': 'Product added to cart successfully'})
 
-# @login_required
-# @require_POST
+
+
+
+@login_required(login_url='login') 
 def add_to_wishlist_shopall(request):
     product_id = request.POST.get('product_id')
 
@@ -2139,3 +2221,77 @@ def add_to_wishlist_shopall(request):
         return JsonResponse({'message': 'Product added to wishlist successfully'})
     else:
         return JsonResponse({'message': 'Product is already in wishlist'})
+    
+
+from urllib.parse import urlparse
+
+class checkoutimage(View):
+    def get(self, request):
+        totalitem = 0
+        wishitem = 0
+        if request.user.is_authenticated:
+            totalitem = len(Cart.objects.filter(user=request.user))
+            wishitem = len(WishList.objects.filter(user=request.user))
+
+        user = request.user
+        add = Customer.objects.filter(user=user)
+        imageupload = ImageUpload.objects.filter(user=user).order_by('-ordered_date').first()
+
+        famount = 0
+        totalamount = 0
+        if imageupload:
+            value = imageupload.quantity * imageupload.product.price
+            famount = famount + value
+            print(imageupload.product.price)
+            print(imageupload.quantity)  # Corrected to print quantity
+
+        totalamount = famount + 40
+
+        context = {
+            'user': user,
+            'totalitem': totalitem,
+            'wishitem': wishitem,
+            'add': add,
+            'imageupload': imageupload,
+            'totalamount': totalamount,
+            'famount': famount,
+        }
+
+        return render(request, 'checkoutimage.html', context)
+
+    
+    
+
+    def post(self, request):
+        user = request.user
+        cust_id = request.POST.get('custid')
+        tot_amount = request.POST.get('totamount')
+        address_id = request.POST.get('cust')
+        text = request.POST.get('text')
+        image_url = request.POST.get('image_url')
+        print(image_url)
+
+        if text and image_url:
+            # Parse the image URL to get the file name
+            image_path = urlparse(image_url).path
+            image_filename = os.path.basename(image_path)
+
+            # Check if an entry exists with the same user and image URL
+            image_upload = ImageUpload.objects.filter(user=user, image=image_filename).first()
+
+            if image_upload:
+                # Update the existing entry
+                image_upload.text = text
+                image_upload.customer_id = cust_id
+                image_upload.amount = tot_amount
+                image_upload.payment_method = 'COD'
+                image_upload.address_id = address_id
+                image_upload.save()
+                # Redirect to COD confirmation page or display success message
+                return redirect('cod_confirmation')
+            else:
+                # Handle the case where no matching entry is found
+                return HttpResponse("Image not found in the database.")
+
+        # Handle the case where text or image URL is missing
+        return HttpResponse("Text and image URL are required.")
