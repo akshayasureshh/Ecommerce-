@@ -1,5 +1,7 @@
 {% extends 'base2.html' %}
 {% load static %}
+{% load custom_filters %}
+
 {% block title %}Home{% endblock %}
 {% block extra_head %}
 
@@ -200,7 +202,7 @@
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
-                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' pro.product.id %}">{{pro.product.title}}</a></h5>
+                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' pro.product.id pro.product.slug %}">{{pro.product.title}}</a></h5>
                                             {% comment %} <div class="ec-pro-rating">
                                                 
                                                 {% if pro.avg_rating == 0 %}

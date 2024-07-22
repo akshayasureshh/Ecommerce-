@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'djoser',
     'userapp',
     'crispy_forms',
-    'crispy_bootstrap5'
+    'crispy_bootstrap5',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #  'userapp.middleware.EncryptURLMiddleware',
 ]
 
 ROOT_URLCONF = 'Razid.urls'
@@ -104,6 +106,11 @@ ENCRYPTION_KEY = b'i4p4P7R6SR-BE4_r_O72oHsKK5C09l4SH8kAxsoL8Fk='
 FERNET_KEY = 'fbiMQhvjHQAKur1teNsQ6NIognxqgdUqo0VMCBWSmhk='
 
 WSGI_APPLICATION = 'Razid.wsgi.application'
+
+
+EASEBUZZ_MERCHANT_KEY = '10PBP71ABZ2'
+EASEBUZZ_SALT = 'ABC55E8IBW'
+EASEBUZZ_ENV = 'test' 
 
 
 # Database
@@ -257,3 +264,13 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Increase upload limits
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
+
+
+
+
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+
+DJANGO_SECRET_KEY = env('DJANGO_SECRET_KEY')

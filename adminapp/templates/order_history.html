@@ -99,6 +99,34 @@
 												</tr>
 												{% endif %}
 												{% endfor %}
+												{% for i in imageupload %}
+        {% if i.status == 'Delivered' %}
+        <tr>
+            <td>{{ i.order_id }}</td>
+            <td>{{ i.user }}</td>
+            <td>{{ i.user.email }}</td>
+            <td>{{ i.quantity }}</td>
+            <td>{{ i.amount }}</td>
+            <td>{{ i.payment_method }}</td>
+            <td><span class="mb-2 mr-2 badge badge-secondary">{{ i.status }}</span></td>
+            <td>{{ i.ordered_date }}</td>
+            <td>
+                <div class="btn-group mb-1">
+                    <button type="button" class="btn btn-outline-success">Info</button>
+                    <button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false" data-display="static">
+                        <span class="sr-only">Info</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'orderdetail2' i.id %}">Track</a>
+                        <a class="dropdown-item" href="#">Cancel</a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endif %}
+    {% endfor %}
 												
 
 											</tbody>

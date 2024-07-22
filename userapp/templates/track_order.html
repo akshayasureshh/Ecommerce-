@@ -1,5 +1,7 @@
 {% extends 'base2.html' %}
 {% load static %}
+{% load custom_filters %}
+
 {% block title %}Home{% endblock %}
 {% block extra_head %}
 
@@ -122,51 +124,53 @@
     <div class="container">
         <!-- Track Order Content Start -->
         {% for order in orders %}
-        <div class="ec-trackorder-content col-md-12">
-            <div class="ec-trackorder-inner">
-                <div class="ec-trackorder-top">
-                    <h2 class="ec-order-id">Order #{{ order.order_id }}</h2>
-                    <div class="ec-order-detail">
-                        <!-- Render expected arrival date based on order status -->
-                        <div>Expected arrival {{ order.delivery_expected_date|date:"d-m-Y" }}</div>
-                        <div>{{ order.product }} <span>{{ order.product_code }}</span></div>
+        {% if order.status != 'Delivered' %}
+            <div class="ec-trackorder-content col-md-12">
+                <div class="ec-trackorder-inner">
+                    <div class="ec-trackorder-top">
+                        <h2 class="ec-order-id">Order #{{ order.order_id }}</h2>
+                        <div class="ec-order-detail">
+                            <!-- Render expected arrival date based on order status -->
+                            <div>Expected arrival {{ order.delivery_expected_date|date:"d-m-Y" }}</div>
+                            <div>{{ order.product }} <span>{{ order.product_code }}</span></div>
+                        </div>
                     </div>
-                </div>
-                <div class="ec-trackorder-bottom">
-                    <div class="ec-progress-track">
-                      <ul id="ec-progressbar">
-                        <li class="step0 {% if order.status == 'Pending' or order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
-                            <span class="ec-track-icon"> <img src="{% static 'images/icons/track_1.png' %}" alt="track_order"></span>
-                            <span class="ec-progressbar-track"></span>
-                            <span class="ec-track-title">Order pending</span>
-                        </li>
-                        <li class="step0 {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
-                            <span class="ec-track-icon"> <img src="{% static 'images/icons/track_2.png' %}" alt="track_order"></span>
-                            <span class="ec-progressbar-track"></span>
-                            <span class="ec-track-title">Order processing</span>
-                        </li>
-                        <li class="step0 {% if order.status == 'Shipped' or order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
-                            <span class="ec-track-icon"> <img src="{% static 'images/icons/track_3.png' %}" alt="track_order"></span>
-                            <span class="ec-progressbar-track"></span>
-                            <span class="ec-track-title">Order shipped</span>
-                        </li>
-                        <li class="step0 {% if order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
-                            <span class="ec-track-icon"> <img src="{% static 'images/icons/track_4.png' %}" alt="track_order"></span>
-                            <span class="ec-progressbar-track"></span>
-                            <span class="ec-track-title">Order enroute</span>
-                        </li>  
-                        <li class="step0 {% if order.status == 'Delivered' %} active {% endif %}">
-                            <span class="ec-track-icon"> <img src="{% static 'images/icons/track_5.png' %}" alt="track_order"></span>
-                            <span class="ec-progressbar-track"></span>
-                            <span class="ec-track-title">Order delivered</span>
-                        </li>
-                    </ul>
-                    
+                    <div class="ec-trackorder-bottom">
+                        <div class="ec-progress-track">
+                          <ul id="ec-progressbar">
+                            <li class="step0 {% if order.status == 'Pending' or order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
+                                <span class="ec-track-icon"> <img src="{% static 'images/icons/track_1.png' %}" alt="track_order"></span>
+                                <span class="ec-progressbar-track"></span>
+                                <span class="ec-track-title">Order pending</span>
+                            </li>
+                            <li class="step0 {% if order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
+                                <span class="ec-track-icon"> <img src="{% static 'images/icons/track_2.png' %}" alt="track_order"></span>
+                                <span class="ec-progressbar-track"></span>
+                                <span class="ec-track-title">Order processing</span>
+                            </li>
+                            <li class="step0 {% if order.status == 'Shipped' or order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
+                                <span class="ec-track-icon"> <img src="{% static 'images/icons/track_3.png' %}" alt="track_order"></span>
+                                <span class="ec-progressbar-track"></span>
+                                <span class="ec-track-title">Order shipped</span>
+                            </li>
+                            <li class="step0 {% if order.status == 'Enroute' or order.status == 'Delivered' %} active {% endif %}">
+                                <span class="ec-track-icon"> <img src="{% static 'images/icons/track_4.png' %}" alt="track_order"></span>
+                                <span class="ec-progressbar-track"></span>
+                                <span class="ec-track-title">Order enroute</span>
+                            </li>  
+                            <li class="step0 {% if order.status == 'Delivered' %} active {% endif %}">
+                                <span class="ec-track-icon"> <img src="{% static 'images/icons/track_5.png' %}" alt="track_order"></span>
+                                <span class="ec-progressbar-track"></span>
+                                <span class="ec-track-title">Order delivered</span>
+                            </li>
+                        </ul>
+                        
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+        {% endif %}
+    {% endfor %}
         <!-- Track Order Content end -->
     </div>
 </section>

@@ -109,10 +109,12 @@
 																<input type="hidden" name="order_id" value="{{ i.order_id }}">
 																<select name="status" class="form-select edit-status">
 																	
+															{% if i.id == order.order_id and i.status != "Delivered" %}
 																	
 																	<option value="{{ i.status }}" {% if order.status == i.status %} selected {% endif %}>
 																		{{ i.status }}
 																	</option>
+																	{% endif %}
 																	{% endif %}
 																	{% endfor %}
 																	<option value="Pending">Pending</option>

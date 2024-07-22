@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from adminapp .models import Product
-from .utils import generate_order_id
+from .utility import generate_order_id
 from django.utils.crypto import get_random_string
 import uuid
 from django.utils import timezone
@@ -102,6 +102,15 @@ class Payment(models.Model):
     razorpay_payment_status=models.CharField(max_length=100,blank=True,null=True)
     razorpay_payment_id=models.CharField(max_length=100,blank=True,null=True)
     paid=models.BooleanField(default=False)
+
+
+class Payments(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.FloatField()
+    easebuzz_payment_status = models.CharField(max_length=100, blank=True, null=True)
+    easebuzz_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    paid = models.BooleanField(default=False)
+
 
 
 class Order(models.Model):

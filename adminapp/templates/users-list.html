@@ -63,7 +63,7 @@
                                 <table id="responsive-data-table" class="table">
                                     <thead>
                                         <tr>
-                                            <th>Profile</th>
+                                            {% comment %} <th>Profile</th> {% endcomment %}
                                             <th>Name</th>
                                             <th>Email</th>
                                         
@@ -78,7 +78,7 @@
                                     <tbody>
                                         {% for i in data %}
                                         <tr>
-                                            <td><i class="fi-rr-user"></i></td>
+                                            {% comment %} <td><i class="fi-rr-user"></i></td> {% endcomment %}
                                             <td>{{i.username}}</td>
                                             <td>{{i.email}}</td>
                                            

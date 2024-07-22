@@ -1,6 +1,8 @@
 {% extends 'base2.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load custom_filters %}
+
 {% block title %}Home{% endblock %}
 {% block extra_head %}
 
@@ -143,6 +145,8 @@
                                          <li><a href="{% url 'wishlist' %}">Wishlist</a></li>
                                          <li><a href="{% url 'showcart' %}">Cart</a></li>
                                          <li><a href="{% url 'trackorder'  %}">Track Order</a></li>
+                                         <li><a href="{% url 'orderhistory'  %}">order history</a></li>
+
                                          <li><a href="{% url 'invoice' %}">Invoice</a></li>
 
                                          

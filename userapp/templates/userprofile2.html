@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
+{% load custom_filters %}
+
 <html lang="en">
 
 <head>
@@ -332,7 +334,7 @@
                             </a>
                             
                             <ul>
-                                <li><a href="{% url 'home' %}">Home</a></li>
+                                <li><a href="/user/{{ 'home'|encrypt }}/">Home</a></li>
                                 <li class="dropdown position-static"><a href="javascript:void(0)">Products</a>
                                     <ul class="mega-menu d-block">
                                         
@@ -440,7 +442,7 @@
             <div class="ec-menu-inner">
                 <div class="ec-menu-content">
                     <ul>
-                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="/user/{{ 'home'|encrypt }}/">Home</a></li>
                         <li><a href="javascript:void(0)">Categories</a>
                             <ul class="sub-menu">
                                 <li>
@@ -570,6 +572,8 @@
                                         <li><a href="user-history.html">User History</a></li>
                                         <li><a href="{% url 'wishlist' %}">Wishlist</a></li>
                                         <li><a href="{% url 'trackorder' %}">Track Order</a></li>
+                                         <li><a href="{% url 'orderhistory'  %}">order history</a></li>
+
                                         <li><a href="user-invoice.html">User Invoice</a></li>
                                     </ul>
                                 </li>
@@ -599,6 +603,8 @@
                                 <li><a href="{% url 'login' %}">Login</a></li>
                                 <li><a href="{% url 'register' %}">Register</a></li>
                                 <li><a href="{% url 'trackorder' %}">Track Order</a></li>
+                                         <li><a href="{% url 'orderhistory'  %}">order history</a></li>
+
                                 <li><a href="terms-condition.html">Terms Condition</a></li>
                                 <li><a href="privacy-policy.html">Privacy Policy</a></li>
                             </ul>
@@ -801,6 +807,8 @@
                                        <li><a href="{% url 'showcart' %}">Cart</a></li>
                                        <li><a href="{% url 'checkout' %}">Checkout</a></li>
                                        <li><a href="{% url 'trackorder' %}">Track Order</a></li>
+                                         <li><a href="{% url 'orderhistory'  %}">order history</a></li>
+
                                        <li><a href="{% url 'invoice' %}">Invoice</a></li>
                                    </ul>
                                </div>

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import *
 from django.views import View
 from django.http import JsonResponse
-from userapp . models import Rating,User,OrderPlaced,Order
+from userapp . models import Rating,User,OrderPlaced,Order,ImageUpload
 from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from .forms import ImageUploadForm
@@ -15,11 +15,43 @@ from django.urls import reverse
 from django.http import Http404
 from .utils import encrypt
 from django.contrib import messages
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
+from django.core.mail import send_mail
+import random
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Q
+from django.db import IntegrityError
+
+
 
 # from .utils import encode_url, decode_url 
 
 # Create your views here.
 
+def adminlogin(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        # Authenticate the user
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            if user.is_superuser:
+                # Log in the user
+                login(request, user)
+                return redirect('adminhome')
+            else:
+                # User is not a superuser
+                return redirect('login_admin')
+        else:
+            # Authentication failed
+            return redirect('login_admin')
+    
+    return render(request, 'login_admin.html')
 
 def home(request):
     orders = Order.objects.all()
@@ -257,21 +289,24 @@ def Childslider(request):
         data.save()
     return render(request,'addchildsider.html')
 
-
 def Review(request):
     reviews = Rating.objects.all()
-    
+
+    # Step 1: Calculate average rating for each product
+    avg_ratings = Rating.objects.values('product').annotate(avg_rating=Avg('rating'))
+    avg_ratings_dict = {item['product']: round(item['avg_rating']) if item['avg_rating'] is not None else 0 for item in avg_ratings}
+
+    # Step 2: Assign average rating to each review
     for review in reviews:
-        avg_rating = Rating.objects.filter(product=review.product).aggregate(Avg('rating'))['rating__avg']
-        review.avg_rating = round(avg_rating) if avg_rating is not None else 0
+        review.avg_rating = avg_ratings_dict.get(review.product_id, 0)
         print("this is rating :", review.avg_rating)
-    
-    paginator = Paginator(reviews, 5)  # Show 10 reviews per page or adjust as needed
+
+    # Step 3: Paginate the reviews
+    paginator = Paginator(reviews, 5)  # Show 5 reviews per page or adjust as needed
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    return render(request, 'reviews.html', { 'page_obj': page_obj })
 
+    return render(request, 'reviews.html', {'page_obj': page_obj})
 
 
 def upload_and_crop(request):
@@ -311,49 +346,41 @@ def neworder(request):
 
     return render(request, "new_order.html", context)
 
-
 def neworderimage(request):
-    order_placed_list = OrderPlaced.objects.all().order_by('-id')
-    order_list = Order.objects.all().order_by('-id')
+    order_placed_list = ImageUpload.objects.all()
+    paginator = Paginator(order_placed_list, 10)  # Show 10 orders per page.
     
-
-
-    # paginator_order_placed = Paginator(order_placed_list, 10)  # Show 10 OrderPlaced per page
-    # paginator_orders = Paginator(order_list, 10)  # Show 10 Orders per page
-
-    # page_number_order_placed = request.GET.get('page_order_placed')
-    # page_number_orders = request.GET.get('page_orders')
-
-    # page_obj_order_placed = paginator_order_placed.get_page(page_number_order_placed)
-    # page_obj_orders = paginator_orders.get_page(page_number_orders)
+    page_number = request.GET.get('page_order_placed')
+    page_obj_order_placed = paginator.get_page(page_number)
     
     context = {
-        # 'page_obj_order_placed': page_obj_order_placed,
-        # 'page_obj_orders': page_obj_orders,
-        'orders' : order_placed_list,
-        'ordered_list' : order_list,
+        'page_obj_order_placed': page_obj_order_placed,
     }
 
     return render(request, "imageorders.html", context)
 
-
+@csrf_exempt
+@require_POST
 def update_order_status_two(request):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         order_id = request.POST.get('order_id')
         new_status = request.POST.get('status')
-        delivery_date = request.POST.get('delivery_date')  # Extract delivery date from POST data
+        delivery_date = request.POST.get('delivery_date')
+
+        print("Order ID:", order_id)
+        print("New Status:", new_status)
+        print("Delivery Date:", delivery_date)
 
         try:
-            order = Order.objects.get(order_id=order_id)
+            order = ImageUpload.objects.get(id=order_id)
             order.status = new_status
-            order.delivery_expected_date = delivery_date  # Update delivery date
+            order.delivery_expected_date = delivery_date
             order.save()
             return JsonResponse({'success': True})
         except Order.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Order not found'})
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request'})
-
 
 
 
@@ -400,10 +427,15 @@ def order_detail2(request, order_id):
     }
     return render(request, 'orderdetail2.html', context)
 
+
 def orderhistory(request):
     data = Order.objects.all()
-    return render(request,'order_history.html',{'data' : data})
-
+    imageupload = ImageUpload.objects.all()
+    context = {
+        'data': data,
+        'imageupload': imageupload
+    }
+    return render(request, 'order_history.html', context)
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
@@ -617,3 +649,151 @@ def delete_item_cate(request, item_id):
         return redirect(subcategory)  
     return render(request, 'category.html')
 
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+def sendotp(request):
+    if request.method == 'POST':
+        user_email = request.POST.get('email')
+        
+        if user_email:
+            try:
+                # Generate OTP
+                otp = generate_otp()
+
+                # Send OTP to the provided email address
+                send_mail(
+                    'Your OTP',
+                    f'Your OTP is: {otp}',
+                    'sender@example.com',  # Update with your email address
+                    [user_email],
+                    fail_silently=False,
+                )
+
+                # Store OTP in session
+                request.session['otp'] = otp  
+
+                # Redirect to OTP verification page
+                return redirect('otpverify')  
+            except Exception as e:
+                logger.error(f"Error sending OTP email: {e}")
+                messages.error(request, 'There was an error sending the OTP. Please try again later.')
+        else:
+            messages.error(request, 'Please enter a valid email address.')
+    
+    # If not a POST request or email is not provided, render the send OTP page
+    return render(request, 'sendotp.html')
+
+def generate_otp():
+    # Generate a 6-digit OTP
+    return ''.join(random.choices('0123456789', k=6))
+
+def otpverify(request):
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        stored_otp = request.session.get('otp')
+        
+        # Check if OTP has expired
+        if 'otp_generated_time' in request.session:
+            otp_generated_time = request.session['otp_generated_time']
+            if timezone.now() > otp_generated_time + timedelta(seconds=60):
+                request.session.flush()
+                messages.error(request, 'OTP has expired. Please request a new one.')
+                # return redirect('send_otp')
+
+        if entered_otp == stored_otp:
+            return render(request, 'resetpassword.html')  
+        else:
+            messages.error(request, 'Invalid OTP. Please try again.')
+
+        # Calculate the remaining time for OTP expiration
+        remaining_time = 0
+        if 'otp_generated_time' in request.session:
+            otp_generated_time = request.session['otp_generated_time']
+            remaining_time = max(0, 60 - (timezone.now() - otp_generated_time).total_seconds())
+
+   
+    return render(request,'otpverify.html')
+
+
+def resetpw(request):
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        if new_password == confirm_password:
+            user = request.user
+            if user.is_authenticated:
+                # If user is authenticated, update their password
+                user.set_password(new_password)
+                user.save()
+                
+                # Clear the stored OTP from the session if it exists
+                if 'otp' in request.session:
+                    del request.session['otp']
+                    
+                # messages.success(request, 'Password reset successful. You can now log in with your new password.')
+                return redirect('login_admin')
+            else:
+                # If user is not authenticated, get their username or email
+                username_or_email = request.POST.get('username_or_email')
+                user = None
+                try:
+                    # Check if the username or email provided exists in the database
+                    user = User.objects.get(Q(username=username_or_email) | Q(email=username_or_email))
+                except User.DoesNotExist:
+                    messages.error(request, 'User not found.')
+                if user:
+                    # Set the new password for the user and save
+                    user.set_password(new_password)
+                    user.save()
+                    
+                    # Clear the stored OTP from the session if it exists
+                    if 'otp' in request.session:
+                        del request.session['otp']
+                    
+                    # messages.success(request, 'Password reset successful. You can now log in with your new password.')
+                    return redirect('login_admin')
+                else:
+                    messages.error(request, 'User not found.')
+        else:
+            messages.error(request, 'Passwords do not match.')
+    return render(request,'resetpassword.html')
+
+from django.views.decorators.http import require_http_methods
+
+# @login_required
+@require_http_methods(["GET"])
+def list_static_pages(request):
+    static_pages = StaticPage.objects.all()
+    return render(request, 'static_page_list.html', {'static_pages': static_pages})
+
+# @login_required
+@require_http_methods(["GET", "POST"])
+def edit_static_page(request, page):
+    static_page = get_object_or_404(StaticPage, page=page)
+    if request.method == 'POST':
+        static_page.content = request.POST.get('content')
+        static_page.save()
+        return redirect(reverse('static_page_list'))
+
+    return render(request, 'edit_static_page.html', {'page': static_page})
+
+
+# @login_required
+@require_http_methods(["GET", "POST"])
+def create_static_page(request):
+    if request.method == 'POST':
+        page_type = request.POST.get('page')
+        content = request.POST.get('content')
+
+        try:
+            static_page = StaticPage.objects.create(page=page_type, content=content)
+            return redirect(reverse('static_page_list'))
+        except IntegrityError:
+            error_message = f"The page '{page_type}' already exists."
+            return render(request, 'create_static_page.html', {'error_message': error_message, 'page_type': page_type, 'content': content})
+
+    return render(request, 'create_static_page.html')

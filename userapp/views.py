@@ -27,10 +27,12 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.core.files.storage import default_storage
-from userapp.utils import decrypt_data
-from userapp.utils import encrypt_data
 from cryptography.fernet import InvalidToken
 import os
+import hashlib
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+# from .utils.url import get_encrypted_url
 # Create your views here.
 
 # def home(request):
@@ -76,147 +78,275 @@ import os
 #     }
 #     return render(request, 'index2.html', context)
 
+from .utils.encryption import encrypt_data, decrypt_data
 
-def home(request):
-    context = {}
-    data = SubCategory.objects.all()
-    parent_categories = Category.objects.all()
-    parent_slider = BackgroundSliders.objects.all()
-    child_slider = ChildSliders.objects.all()
-    products = Product.objects.all()
-    print("iteration problem:", products)
-    newarrival = Product.objects.latest('id')
-    latest_products = Product.objects.order_by('-id')[:4]
-    most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')
-    totalitem = 0
-    wishitem = 0
-    wishlist = {}
-    cart = []
-    amount2 = 0
-    totalamount = 0
+
+
+# def home(request):
+#     # decrypted_name = decrypt_data(encrypted_name) if encrypted_name else None
+
+#     # if decrypted_name == 'home':
+#     #     # Existing home view logic
+#     #     context = {}    
+#     data = SubCategory.objects.all()
+#     parent_categories = Category.objects.all()
+#     parent_slider = BackgroundSliders.objects.all()
+#     child_slider = ChildSliders.objects.all()
+#     products = Product.objects.all()
+#     print("iteration problem:", products)
+#     newarrival = Product.objects.latest('id')
+#     latest_products = Product.objects.order_by('-id')[:4]
+#     most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')
+#     totalitem = 0
+#     wishitem = 0
+#     wishlist = {}
+#     cart = []
+#     amount2 = 0
+#     totalamount = 0
     
-    if request.user.is_authenticated:
-        totalitem = Cart.objects.filter(user=request.user).count()
-        wishitem = WishList.objects.filter(user=request.user).count()
-        cart = Cart.objects.filter(user=request.user)
-        amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
-        amount2 = amount
-        totalamount = amount + 40
-        user = request.user
+#     if request.user.is_authenticated:
+#         totalitem = Cart.objects.filter(user=request.user).count()
+#         wishitem = WishList.objects.filter(user=request.user).count()
+#         cart = Cart.objects.filter(user=request.user)
+#         amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+#         amount2 = amount
+#         totalamount = amount + 40
+#         user = request.user
         
-    else:
-        totalitem = 0
-        wishitem = 0
-        user = None
-        cart = []
+#     else:
+#         totalitem = 0
+#         wishitem = 0
+#         user = None
+#         cart = []
     
 
 
        
-    for product in products:
-        wishlist = WishList.objects.filter(product=product, user=request.user.pk).exists()
+#     for product in products:
+#         wishlist = WishList.objects.filter(product=product, user=request.user.pk).exists()
 
     
-    # Calculate total quantity count for each category
-    category_quantities = {}
-    for category in parent_categories:
-        category_products = products.filter(categories__parent_category=category)
-        category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
-        category_quantities[category.name] = category_total_quantity
+#     # Calculate total quantity count for each category
+#     category_quantities = {}
+#     for category in parent_categories:
+#         category_products = products.filter(categories__parent_category=category)
+#         category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+#         category_quantities[category.name] = category_total_quantity
     
 
-    for product in latest_products:
-        print("product id : ", product.id)
-        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+#     for product in latest_products:
+#         print("product id : ", product.id)
+#         avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
 
-        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
-        print("this is rating :",product.avg_rating)
+#         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+#         print("this is rating :",product.avg_rating)
 
 
-    for i in most_ordered_products:
-        print("Most ordered product ID:", i.product.id)
-        avg_rating2 = Rating.objects.filter(product=i.product).aggregate(Avg('rating'))['rating__avg']
-        i.product.avg_rating2 = round(avg_rating2) if avg_rating2 is not None else 0
-        print("This is rating:", i.product.avg_rating2)
+#     for i in most_ordered_products:
+#         print("Most ordered product ID:", i.product.id)
+#         avg_rating2 = Rating.objects.filter(product=i.product).aggregate(Avg('rating'))['rating__avg']
+#         i.product.avg_rating2 = round(avg_rating2) if avg_rating2 is not None else 0
+#         print("This is rating:", i.product.avg_rating2)
 
 
     
-    for product in products:
-        print("product idwdsde : ", product.id)
-        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+#     for product in products:
+#         print("product idwdsde : ", product.id)
+#         avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
 
-        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
-        print("this is ratingwdadwdw :",product.avg_rating)
+#         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+#         print("this is ratingwdadwdw :",product.avg_rating)
     
-    # user=request.user
-    # cart=Cart.objects.filter(user=user)
-    print("the cart item is",cart)
-    amount=0
-    for p in cart:
-        value = p.quantity*p.product.price
-        amount= amount + value
-        amount2=amount
+#     # user=request.user
+#     # cart=Cart.objects.filter(user=user)
+#     print("the cart item is",cart)
+#     amount=0
+#     for p in cart:
+#         value = p.quantity*p.product.price
+#         amount= amount + value
+#         amount2=amount
         
-    totalamount=amount+40
-    print(totalamount)
+#     totalamount=amount+40
+#     print(totalamount)
     
 
-    for product in products:
-        if product.size and product.size[0] != '':
-            try:
-                size_list = json.loads(product.size[0])
-                context['sizes'] = size_list
-            except json.JSONDecodeError:
-                # Handle the case where size is not a valid JSON string
-                pass
+#     for product in products:
+#         if product.size and product.size[0] != '':
+#             try:
+#                 size_list = json.loads(product.size[0])
+#                 context['sizes'] = size_list
+#             except json.JSONDecodeError:
+#                 # Handle the case where size is not a valid JSON string
+#                 pass
     
-    most_ordered = (OrderPlaced.objects
-                    .values('product')
-                    .annotate(total_quantity=Sum('quantity'))
-                    .order_by('-total_quantity')
-                    .first())
+#     most_ordered = (OrderPlaced.objects
+#                     .values('product')
+#                     .annotate(total_quantity=Sum('quantity'))
+#                     .order_by('-total_quantity')
+#                     .first())
     
-    print("Most Ordered:", most_ordered)  # Debugging statement
+#     print("Most Ordered:", most_ordered)  # Debugging statement
     
-    product = None
-    if most_ordered:
-        product_id = most_ordered['product']
-        product = Product.objects.get(id=product_id)
-        product.total_quantity = most_ordered['total_quantity']
-        print("Product Found:", product) 
+#     product = None
+#     if most_ordered:
+#         product_id = most_ordered['product']
+#         product = Product.objects.get(id=product_id)
+#         product.total_quantity = most_ordered['total_quantity']
+#         print("Product Found:", product) 
 
-    #     # Encrypt category IDs
-    # for sub_category in data:
-    #     sub_category.encrypted_id = encrypt_data(str(sub_category.id))
+#     #     # Encrypt category IDs
+#     # for sub_category in data:
+#     #     sub_category.encrypted_id = encrypt_data(str(sub_category.id))
 
-    context = {
-        'SubCate': data,
-        'Category': parent_categories,
-        'parent_slider': parent_slider,
-        'child_slider': child_slider,
-        'products': products,
-        'totalitem': totalitem,
-        'wishitem': wishitem,
-        'newarrival': newarrival,
-        'category_quantities': category_quantities,  
-        'latest_products': latest_products,
-        'wishlist': wishlist,
-        # 'sizes': sizes,
-        # 'wishlist_products': wishlist_products,
-        'cart' : cart,
-        'amount2' : amount2,
-        'totalamount2' : totalamount,
-        'most_ordered_products': most_ordered_products,
-        'most_ordered' : product,
-        # 'subcategories_with_products': subcategories_with_products,
-    }
-    
-
+#     context = {
+#         'SubCate': data,
+#         'Category': parent_categories,
+#         'parent_slider': parent_slider,
+#         'child_slider': child_slider,
+#         'products': products,
+#         'totalitem': totalitem,
+#         'wishitem': wishitem,
+#         'newarrival': newarrival,
+#         'category_quantities': category_quantities,  
+#         'latest_products': latest_products,
+#         'wishlist': wishlist,
+#         # 'sizes': sizes,
+#         # 'wishlist_products': wishlist_products,
+#         'cart' : cart,
+#         'amount2' : amount2,
+#         'totalamount2' : totalamount,
+#         'most_ordered_products': most_ordered_products,
+#         'most_ordered' : product,
+#         # 'subcategories_with_products': subcategories_with_products,
+#     }
     
 
+    
 
-    return render(request, 'index2.html', context)
 
+#     return render(request, 'index2.html', context)
+
+
+from .utils.encryption import encrypt_data, decrypt_data
+from urllib.parse import quote, unquote
+
+
+def home(request):
+    encrypted_name = encrypt_data('home')
+    print("Encrypted Name:", encrypted_name)  # Debugging statement
+    encoded_encrypted_name = quote(encrypted_name)
+    print("Encoded Encrypted Name:", encoded_encrypted_name)  # Debugging statement
+    return redirect(reverse('home_with_encrypted_name', args=[encoded_encrypted_name]))
+
+def home_with_encrypted_name(request, encrypted_name):
+    decoded_encrypted_name = unquote(encrypted_name)
+    print("Decoded Encrypted Name:", decoded_encrypted_name)  # Debugging statement
+    decrypted_name = decrypt_data(decoded_encrypted_name)
+    print("Decrypted Name:", decrypted_name)  # Debugging statement
+
+    if decrypted_name == 'home':
+        context = {}
+        data = SubCategory.objects.all()
+        parent_categories = Category.objects.all()
+        parent_slider = BackgroundSliders.objects.all()
+        child_slider = ChildSliders.objects.all()
+        products = Product.objects.all()
+        newarrival = Product.objects.latest('id')
+        latest_products = Product.objects.order_by('-id')[:4]
+        most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')
+        encrypted_subcategories = {subcategory.id: encrypt_data(str(subcategory.id)) for subcategory in data}
+        totalitem = 0
+        wishitem = 0
+        wishlist = {}
+        cart = []
+        amount2 = 0
+        totalamount = 0
+
+        if request.user.is_authenticated:
+            totalitem = Cart.objects.filter(user=request.user).count()
+            wishitem = WishList.objects.filter(user=request.user).count()
+            cart = Cart.objects.filter(user=request.user)
+            amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
+            amount2 = amount
+            totalamount = amount + 40
+            user = request.user
+        else:
+            totalitem = 0
+            wishitem = 0
+            user = None
+            cart = []
+
+        for product in products:
+            wishlist = WishList.objects.filter(product=product, user=request.user.pk).exists()
+
+        # Calculate total quantity count for each category
+        category_quantities = {}
+        for category in parent_categories:
+            category_products = products.filter(categories__parent_category=category)
+            category_total_quantity = category_products.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+            category_quantities[category.name] = category_total_quantity
+
+        for product in latest_products:
+            avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+            product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+
+        for i in most_ordered_products:
+            avg_rating2 = Rating.objects.filter(product=i.product).aggregate(Avg('rating'))['rating__avg']
+            i.product.avg_rating2 = round(avg_rating2) if avg_rating2 is not None else 0
+
+        for product in products:
+            avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+            product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+
+        amount = 0
+        for p in cart:
+            value = p.quantity * p.product.price
+            amount = amount + value
+            amount2 = amount
+        totalamount = amount + 40
+
+        for product in products:
+            if product.size and product.size[0] != '':
+                try:
+                    size_list = json.loads(product.size[0])
+                    context['sizes'] = size_list
+                except json.JSONDecodeError:
+                    pass
+
+        most_ordered = (OrderPlaced.objects
+                        .values('product')
+                        .annotate(total_quantity=Sum('quantity'))
+                        .order_by('-total_quantity')
+                        .first())
+
+        product = None
+        if most_ordered:
+            product_id = most_ordered['product']
+            product = Product.objects.get(id=product_id)
+            product.total_quantity = most_ordered['total_quantity']
+
+        context = {
+            'SubCate': data,
+            'Category': parent_categories,
+            'parent_slider': parent_slider,
+            'child_slider': child_slider,
+            'products': products,
+            'totalitem': totalitem,
+            'wishitem': wishitem,
+            'newarrival': newarrival,
+            'category_quantities': category_quantities,
+            'latest_products': latest_products,
+            'wishlist': wishlist,
+            'cart': cart,
+            'amount2': amount2,
+            'totalamount2': totalamount,
+            'most_ordered_products': most_ordered_products,
+            'most_ordered': product,
+            'encrypted_subcategories': encrypted_subcategories,
+        }
+        return render(request, 'index2.html', context)
+    else:
+        return render(request, '404.html', status=404)
 
 
 def add_to_wishlist(request, product_id):
@@ -326,13 +456,15 @@ def user_logout(request):
     return redirect('login')
 
 
-def productdetail(request, categoryID):
-    # try:
-    #     categoryID = decrypt_data(encrypted_category_id)
-    # except Exception as e:
-    #     # Log or print the exception for debugging purposes
-    #     print(f"Decryption error: {e}")
-    #     return HttpResponse('Error: Invalid encrypted data. Please try again.')
+def productdetail(request, encrypted_category_id):
+    try:
+        categoryID = decrypt_data(encrypted_category_id)
+        if categoryID is None:
+            raise ValueError("Decryption returned None")
+    except Exception as e:
+        print(f"Decryption error: {e}")
+        return HttpResponse('Error: Invalid encrypted data. Please try again.')
+
 
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
@@ -399,6 +531,9 @@ def productdetail(request, categoryID):
         
     # totalamount=amount+40
     # print(totalamount)
+
+        # Encrypting product IDs for further use
+    encrypted_products = {product.id: encrypt_data(str(product.id)) for product in products}
        
 
     context = {
@@ -413,6 +548,7 @@ def productdetail(request, categoryID):
         'cart' : cart,
         'amount2' : amount2,
         'totalamount2' : totalamount,
+        'encrypted_products': encrypted_products,
     
     }
 
@@ -473,12 +609,12 @@ def add_to_wishlist_productdetail(request):
 
 
 from django.http import Http404
-def singleproduct(request, id):
+def singleproduct(request, id,slug):
     context = {}
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
     relatedproduct = Product.objects.all()
-    product = Product.objects.get(id=id)
+    product = Product.objects.get(id=id,slug=slug)
     most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')
 
     admin_choice = product.admin_choice
@@ -577,8 +713,12 @@ def imageupload(request, product_pk):
     user_id = request.user.id
     product_id = product_pk
     if request.method == 'POST':
+        print('inside')
         text = request.POST.get('your-text')
         image = request.FILES.get('upload-image')
+        print('the image is',image)
+        print('the image is',text)
+
 
         if text and image:
             product = get_object_or_404(Product, pk=product_id)
@@ -620,7 +760,7 @@ def review(request, product_pk):
 
         print("Review saved successfully!")
 
-        return redirect(singleproduct, product_id)
+        return redirect(singleproduct, id=product.id, slug=product.slug)
     
     # product = get_object_or_404(Product, pk=product_id)
     
@@ -653,7 +793,7 @@ def add_to_cart(request):
     # Create a Cart object for the user and product
     Cart(user=user, product=product).save()
 
-    return redirect(singleproduct, product_id)
+    return redirect(singleproduct, id=product.id, slug=product.slug)
 
 
 # @login_required
@@ -827,30 +967,23 @@ def show_wishlist(request):
     return render(request, 'wishlist.html', context)
 
 
+@login_required(login_url='login') 
+def plus_wishlist(request, id):
+    product = get_object_or_404(Product, id=id)
+    user = request.user
+    WishList.objects.create(user=user, product=product)
+    
+    # Redirect to singleproduct with both id and slug
+    return redirect('singleproduct', id=product.id, slug=product.slug)
 
 @login_required(login_url='login') 
-def plus_wishlist(request,id):
-    products=Product.objects.get(id=id)
-    print(request.user)
-    user=request.user
-    WishList.objects.create(user=user,product=products)
+def minus_wishlist(request, id):
+    product = get_object_or_404(Product, id=id)
+    user = request.user
+    WishList.objects.filter(user=user, product=product).delete()
     
-    return redirect(singleproduct, id)
-
-
-@login_required(login_url='login') 
-def minus_wishlist(request,id):
-    print("inside minus")
-   
-    try:
-        product=Product.objects.get(id=id)
-    except Product.DoesNotExist:
-        print("Not exists")
-    user=request.user
-    WishList.objects.filter(user=user,product=product).delete()
-    
-    return redirect(singleproduct, id)
-
+    # Redirect to singleproduct with both id and slug
+    return redirect('singleproduct', id=product.id, slug=product.slug)
 
 
 
@@ -925,6 +1058,103 @@ def minus_wishlist(request,id):
 
 from django.shortcuts import redirect
 
+# class checkout(View):
+#     def get(self, request):
+#         user = request.user
+#         cart = Cart.objects.filter(user=user)
+#         data = SubCategory.objects.all()
+#         parent_categories = Category.objects.all()
+#         totalitem = 0
+#         wishitem = 0
+#         if request.user.is_authenticated:
+#             totalitem = len(Cart.objects.filter(user=request.user))
+#             wishitem = len(WishList.objects.filter(user=request.user))
+
+#         user = request.user
+#         add = Customer.objects.filter(user=user)
+#         cart_items = Cart.objects.filter(user=user)
+
+#         famount = 0
+#         for p in cart_items:
+#             value = p.quantity * p.product.price
+#             famount = famount + value
+#         totalamount = famount + 40
+#         razoramount = int(totalamount * 100)
+#         client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+#         data = {"amount": razoramount, "currency": "INR", "receipt": "order_rcptid_12"}
+#         payment_response = client.order.create(data=data)
+#         order_id = payment_response['id']
+#         order_status = payment_response['status']
+#         if order_status == 'created':
+#             payment = Payment(
+#                 user=user,
+#                 amount=totalamount,
+#                 razorpay_order_id=order_id,
+#                 razorpay_payment_status=order_status
+#             )
+#             payment.save()
+
+#         context = {
+#             'user': user,
+#             'cart': cart,
+#             'data': data,
+#             'parent_categories': parent_categories,
+#             'totalitem': totalitem,
+#             'wishitem': wishitem,
+#             'add': add,
+#             'cart_items': cart_items,
+#             'famount': famount,
+#             'totalamount': totalamount,
+#             'razoramount': razoramount,
+#             'order_id': order_id,
+#             'order_status': order_status
+#         }
+
+#         return render(request, 'checkout.html', context)
+
+#     def post(self, request):
+#         data = SubCategory.objects.all()
+#         parent_categories = Category.objects.all()
+#         if 'cod' in request.POST:
+#             user = request.user
+#             cust_id = request.POST.get('custid')
+#             tot_amount = request.POST.get('totamount')
+
+#             # Retrieve the selected address ID from the form data
+#             address_id = request.POST.get('cust')
+
+#             # Create a single order for all products in the cart
+#             order = Order.objects.create(
+#                 user=user,
+#                 customer_id=cust_id,
+#                 amount=tot_amount,
+#                 payment_method='COD',
+#                 address_id=address_id  # Save the selected address ID with the order
+#             )
+
+#             # Get product IDs and quantities from the submitted form data
+#             product_ids = request.POST.getlist('product_ids[]')
+#             quantities = request.POST.getlist('quantities[]')
+
+#             # Create OrderPlaced objects for each item in the cart
+#             for product_id, quantity in zip(product_ids, quantities):
+#                 OrderPlaced.objects.create(
+#                     order=order,
+#                     product_id=product_id,
+#                     quantity=quantity
+#                 )
+
+#                 Cart.objects.filter(user=user).delete()
+
+#             # Redirect to COD confirmation page or display success message
+#             return redirect('cod_confirmation')
+#         else:
+#             # Handle online payment logic (Razorpay or any other payment gateway)
+#             pass
+
+
+#         return render(request, 'checkout.html', locals())
+    
 class checkout(View):
     def get(self, request):
         user = request.user
@@ -937,29 +1167,68 @@ class checkout(View):
             totalitem = len(Cart.objects.filter(user=request.user))
             wishitem = len(WishList.objects.filter(user=request.user))
 
-        user = request.user
         add = Customer.objects.filter(user=user)
         cart_items = Cart.objects.filter(user=user)
 
         famount = 0
         for p in cart_items:
             value = p.quantity * p.product.price
-            famount = famount + value
+            famount += value
         totalamount = famount + 40
-        razoramount = int(totalamount * 100)
-        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-        data = {"amount": razoramount, "currency": "INR", "receipt": "order_rcptid_12"}
-        payment_response = client.order.create(data=data)
-        order_id = payment_response['id']
-        order_status = payment_response['status']
-        if order_status == 'created':
-            payment = Payment(
-                user=user,
-                amount=totalamount,
-                razorpay_order_id=order_id,
-                razorpay_payment_status=order_status
-            )
-            payment.save()
+
+        txnid = str(uuid.uuid4())
+        easebuzz_url = "https://testpay.easebuzz.in/payment/initiateLink" if settings.EASEBUZZ_ENV == 'test' else "https://pay.easebuzz.in/payment/initiateLink"
+        
+        customer = Customer.objects.filter(user=user).first()
+        phone_number = customer.mobile if customer else ''
+
+        params = {
+            'key': settings.EASEBUZZ_MERCHANT_KEY,
+            'txnid': txnid,
+            'amount': str(totalamount),  # Ensure amount is a string
+            'firstname': user.username,
+            'email': user.email,
+            'phone': phone_number,
+            'productinfo': "Order Payment",
+            'surl': request.build_absolute_uri(reverse('payment_success')),
+            'furl': request.build_absolute_uri(reverse('payment_failure')),
+            'udf1': '',
+            'udf2': '',
+            'udf3': '',
+            'udf4': '',
+            'udf5': ''
+        }
+
+        # Create the hash
+        hash_string = "{key}|{txnid}|{amount}|{productinfo}|{firstname}|{email}|{udf1}|{udf2}|{udf3}|{udf4}|{udf5}|{salt}".format(
+            key=settings.EASEBUZZ_MERCHANT_KEY,
+            txnid=txnid,
+            amount=params['amount'],
+            productinfo=params['productinfo'],
+            firstname=params['firstname'],
+            email=params['email'],
+            udf1=params['udf1'],
+            udf2=params['udf2'],
+            udf3=params['udf3'],
+            udf4=params['udf4'],
+            udf5=params['udf5'],
+            salt=settings.EASEBUZZ_SALT
+        )
+        hash_value = hashlib.sha512(hash_string.encode('utf-8')).hexdigest()
+        params['hash'] = hash_value
+
+        # Log the parameters and hash for debugging
+        print("Parameters being sent to Easebuzz:", params)
+        print("Hash String:", hash_string)
+        print("Generated Hash:", hash_value)
+
+        # Save the payment details in the database
+        payment = Payments(
+            user=user,
+            amount=totalamount,
+            easebuzz_payment_status='created'
+        )
+        payment.save()
 
         context = {
             'user': user,
@@ -972,38 +1241,30 @@ class checkout(View):
             'cart_items': cart_items,
             'famount': famount,
             'totalamount': totalamount,
-            'razoramount': razoramount,
-            'order_id': order_id,
-            'order_status': order_status
+            'easebuzz_url': easebuzz_url,
+            'params': params
         }
 
         return render(request, 'checkout.html', context)
 
     def post(self, request):
-        data = SubCategory.objects.all()
-        parent_categories = Category.objects.all()
         if 'cod' in request.POST:
             user = request.user
             cust_id = request.POST.get('custid')
             tot_amount = request.POST.get('totamount')
-
-            # Retrieve the selected address ID from the form data
             address_id = request.POST.get('cust')
 
-            # Create a single order for all products in the cart
             order = Order.objects.create(
                 user=user,
                 customer_id=cust_id,
                 amount=tot_amount,
                 payment_method='COD',
-                address_id=address_id  # Save the selected address ID with the order
+                address_id=address_id
             )
 
-            # Get product IDs and quantities from the submitted form data
             product_ids = request.POST.getlist('product_ids[]')
             quantities = request.POST.getlist('quantities[]')
 
-            # Create OrderPlaced objects for each item in the cart
             for product_id, quantity in zip(product_ids, quantities):
                 OrderPlaced.objects.create(
                     order=order,
@@ -1013,16 +1274,54 @@ class checkout(View):
 
                 Cart.objects.filter(user=user).delete()
 
-            # Redirect to COD confirmation page or display success message
-            return redirect('cod_confirmation')
-        else:
-            # Handle online payment logic (Razorpay or any other payment gateway)
-            pass
 
+                send_invoice(order, orders,  tot_amount)
+
+            return redirect('cod_confirmation')
 
         return render(request, 'checkout.html', locals())
     
+# views.py (continued)
+def payment_success(request):
+    params = request.POST
+    txnid = params['txnid']
+    amount = params['amount']
+    status = params['status']
+    hash_received = params['hash']
 
+    hash_string = "{key}|{txnid}|{amount}|{productinfo}|{firstname}|{email}|{udf1}|{udf2}|{udf3}|{udf4}|{udf5}|{salt}".format(
+        key=settings.EASEBUZZ_MERCHANT_KEY,
+        txnid=txnid,
+        amount=amount,
+        productinfo="Order Payment",
+        firstname=params['firstname'],
+        email=params['email'],
+        udf1='',
+        udf2='',
+        udf3='',
+        udf4='',
+        udf5='',
+        salt=settings.EASEBUZZ_SALT
+    )
+    hash_calculated = hashlib.sha512(hash_string.encode('utf-8')).hexdigest()
+
+    if hash_calculated != hash_received:
+        return render(request, 'cod_orderplaced.html')
+
+    try:
+        payment = Payments.objects.get(easebuzz_payment_id=txnid)
+        payment.easebuzz_payment_status = 'success' if status == 'success' else 'failed'
+        payment.paid = True if status == 'success' else False
+        payment.save()
+    except Payments.DoesNotExist:
+        return render(request, 'cod_orderplaced.html')
+
+    return render(request, 'cod_orderplaced.html')
+
+def payment_failure(request):
+    return render(request, 'cod_orderplaced.html')
+
+    
 
 
 
@@ -1057,35 +1356,95 @@ def payment_done(request):
     return redirect("home")
 
 
-
 def search_view(request):
     if request.method == 'GET':
         search_query = request.GET.get('search_query', '')
-        product = Product.objects.filter(title__icontains=search_query) 
+        
+        # Filter products by search query
+        products = Product.objects.filter(title__icontains=search_query) 
 
-        data = SubCategory.objects.all()
-        parent_categories = Category.objects.all()
+        # Filter subcategories by search query
+        subcategories = SubCategory.objects.filter(name__icontains=search_query)
+        
+        # Filter categories by search query
+        categories = Category.objects.filter(name__icontains=search_query)
+
         totalitem = 0
         wishitem = 0
         if request.user.is_authenticated:
             totalitem = Cart.objects.filter(user=request.user).count()
             wishitem = WishList.objects.filter(user=request.user).count()
 
-        no_results_message = "No items found matching your search." 
-        
+        no_results_message = ""
+        if not products.exists() and not subcategories.exists() and not categories.exists():
+            no_results_message = "No items found matching your search."
+
         context = {
-        
-        'SubCate': data,
-        'Category': parent_categories,
-        'totalitem':totalitem,
-        'wishitem':wishitem,
-        'product': product,
-        'no_results_message': no_results_message,
-    }
+            'SubCate': subcategories,
+            'Category': categories,
+            'totalitem': totalitem,
+            'wishitem': wishitem,
+            'product': products,
+            'no_results_message': no_results_message,
+        }
 
         return render(request, 'search.html', context)
     return render(request, 'index2.html')
 
+
+def category_products_view(request, category_id):
+    category = Category.objects.get(id=category_id)
+    products = Product.objects.filter(category=category)
+
+    totalitem = 0
+    wishitem = 0
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+
+    context = {
+        'category': category,
+        'products': products,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+    }
+
+    return render(request, 'category_products.html', context)
+
+def subcategory_products_view(request, subcategory_id):
+    subcategory = SubCategory.objects.get(id=subcategory_id)
+    products = Product.objects.filter(subcategory=subcategory)
+
+    totalitem = 0
+    wishitem = 0
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+
+    context = {
+        'subcategory': subcategory,
+        'products': products,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+    }
+
+    return render(request, 'subcategory_products.html', context)
+
+def products_by_category(request, id, slug):
+    # Retrieve category based on id and slug
+    category = get_object_or_404(Category, id=id, slug=slug)
+    # Retrieve products related to this category
+    products = Product.objects.filter(categories=category)
+    # Render your template or return JSON response as needed
+    return render(request, 'category_products.html', {'products': products, 'category': category})
+
+def products_by_subcategory(request, id, slug):
+    # Retrieve subcategory based on id and slug
+    subcategory = get_object_or_404(SubCategory, id=id, slug=slug)
+    # Retrieve products related to this subcategory
+    products = Product.objects.filter(subcategories=subcategory)
+    # Render your template or return JSON response as needed
+    return render(request, 'subcategory_products.html', {'products': products, 'subcategory': subcategory})
 
 
 
@@ -1554,13 +1913,49 @@ def pwcomplete(request):
 
 
 
+# def autosuggest(request):
+#     print("autosuggest",request.GET)
+#     query_original = request.GET.get('term')
+#     queryset = Product.objects.filter(title__icontains=query_original) 
+#     mylist = []
+#     mylist += [x.title for x in queryset]
+#     return JsonResponse(mylist, safe=False)
 def autosuggest(request):
-    print("autosuggest",request.GET)
+    print("autosuggest", request.GET)
     query_original = request.GET.get('term')
-    queryset = Product.objects.filter(title__icontains=query_original) 
-    mylist = []
-    mylist += [x.title for x in queryset]
-    return JsonResponse(mylist, safe=False)
+    
+    # Query products, categories, and subcategories
+    product_queryset = Product.objects.filter(title__icontains=query_original)
+    category_queryset = Category.objects.filter(name__icontains=query_original)
+    subcategory_queryset = SubCategory.objects.filter(name__icontains=query_original)
+    
+    # Create a list of suggestions
+    suggestions = []
+    suggestions += [{'label': x.title, 'type': 'product', 'id': x.id, 'slug': x.slug} for x in product_queryset]
+    suggestions += [{'label': x.name, 'type': 'category', 'id': x.id, 'slug': x.slug} for x in category_queryset]
+    suggestions += [{'label': x.name, 'type': 'subcategory', 'id': x.id, 'slug': x.slug} for x in subcategory_queryset]
+    
+    return JsonResponse(suggestions, safe=False)
+
+
+def products_by_category(request, id, slug):
+    # Retrieve category based on id and slug
+    category = get_object_or_404(Category, id=id, slug=slug)
+    # Retrieve products related to this category
+    products = Product.objects.filter(category=category)
+    # Render your template or return JSON response as needed
+    return render(request, 'category_products.html', {'products': products, 'category': category})
+
+def products_by_subcategory(request, id, slug):
+    # Retrieve subcategory based on id and slug
+    subcategory = get_object_or_404(SubCategory, id=id, slug=slug)
+    # Retrieve products related to this subcategory
+    products = Product.objects.filter(subcategory=subcategory)
+    # Render your template or return JSON response as needed
+    return render(request, 'subcategory_products.html', {'products': products, 'subcategory': subcategory})
+
+
+
 
 
 def delete_item(request, item_id):
@@ -1729,10 +2124,14 @@ def trackorder(request):
 
     return render(request, 'track_order.html', context)
 
+
+@login_required(login_url='login')
 def invoice(request):
+    user = request.user
+
     # Retrieve the latest order for the user, if any
     try:
-        order = Order.objects.filter(user=request.user).latest('ordered_date')
+        order = Order.objects.filter(user=user).latest('ordered_date')
     except Order.DoesNotExist:
         order = None
 
@@ -1741,8 +2140,8 @@ def invoice(request):
 
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
-    totalitem = Cart.objects.filter(user=request.user).count()
-    wishitem = WishList.objects.filter(user=request.user).count()
+    totalitem = Cart.objects.filter(user=user).count()
+    wishitem = WishList.objects.filter(user=user).count()
 
     subtotal = 0
     if order:
@@ -1776,10 +2175,10 @@ def invoice(request):
         elements = []
         
         # Create PDF table
-        data = [['Product', 'Quantity', 'Price', 'Amount']]
+        data = [['Product', 'Quantity', 'Price']]
         for order_item in orders:
             if order_item.order_id == order.id:
-                data.append([order_item.product.title, order_item.quantity, order_item.product.price, order_item.amount])
+                data.append([order_item.product.title, order_item.quantity, order_item.product.price])
         table = Table(data)
         table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -2287,6 +2686,8 @@ class checkoutimage(View):
                 image_upload.payment_method = 'COD'
                 image_upload.address_id = address_id
                 image_upload.save()
+
+                send_invoice(image_upload)
                 # Redirect to COD confirmation page or display success message
                 return redirect('cod_confirmation')
             else:
@@ -2295,3 +2696,69 @@ class checkoutimage(View):
 
         # Handle the case where text or image URL is missing
         return HttpResponse("Text and image URL are required.")
+
+
+def orderhis(request):
+    orders = Order.objects.filter(user=request.user)
+    orderplaced = OrderPlaced.objects.all()
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    totalitem = Cart.objects.filter(user=request.user).count()
+    wishitem = WishList.objects.filter(user=request.user).count()
+
+    context = {
+        
+        'SubCate': data,
+        'Category': parent_categories,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'orders': orders,
+        'orderplaced' : orderplaced,
+    }
+    return render(request,'orderhistory.html',context)
+
+
+from django.core.mail import EmailMultiAlternatives
+import logging
+# Configure logging
+logger = logging.getLogger(__name__)
+
+def send_invoice(order, orders, total_amount):
+    try:
+        # Convert total_amount to a float if it's a string
+        total_amount = float(total_amount)
+        subtotal = total_amount - 40  # Assuming 40 is a fixed extra cost
+
+        subject = 'Your Invoice'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = [order.user.email]
+
+        context = {
+            'order': order,
+            'orders': orders,
+            'totalamount': total_amount,
+            'subtotal': subtotal
+        }
+
+        html_content = render_to_string('invoice_email.html', context)
+
+        logger.info(f'Sending email to {to_email} with subject "{subject}"')
+
+        email = EmailMultiAlternatives(subject, '', from_email, to_email)
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+
+        logger.info('Invoice email sent successfully.')
+    except Exception as e:
+        logger.error(f'Error sending invoice email: {e}')
+
+import smtplib
+
+try:
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login('w3digitalagency21@gmail.com', 'yedx kflb ujyk lncf')
+    server.quit()
+    print('SMTP connection successful')
+except Exception as e:
+    print(f'Error connecting to SMTP server: {e}')

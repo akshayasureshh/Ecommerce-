@@ -74,7 +74,7 @@
 						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-account-group-outline"></i>
-								<span class="nav-text">Slider homepage images</span> <b class="caret"></b>
+								<span class="nav-text">Slider banner</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
@@ -202,7 +202,7 @@
 										
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'neworder2' %}">
+										<a class="sidenav-item-link" href="{% url 'neworder_image' %}">
 											<span class="nav-text">Orders with image uploads</span>
 										</a>
 									</li>
@@ -219,13 +219,33 @@
 						</li>
 
 						<!-- Brands -->
-						<!-- <li>
-							<a class="sidenav-item-link" href="brand-list.html">
-								<i class="mdi mdi-tag-faces"></i>
-								<span class="nav-text">Brands</span>
+						<li class="has-sub">
+							<a class="sidenav-item-link" href="javascript:void(0)">
+								<i class="mdi mdi-palette-advanced"></i>
+								<span class="nav-text">Custom Pages</span> <b class="caret"></b>
 							</a>
-							<hr>
-						</li> -->
+							<div class="collapse">
+								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'create_static_page' %}">
+											<span class="nav-text">Create Pages</span>
+										</a>
+									</li>
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'static_page_list' %}">
+											<span class="nav-text">Manage Pages</span>
+										</a>
+									</li>
+									<!-- <li class="">
+										<a class="sidenav-item-link" href="{% url 'product_grid' %}">
+											<span class="nav-text">Grid Product</span>
+										</a>
+									</li> -->
+									
+								</ul>
+							</div>
+						</li>
+			
 
 						<!-- Authentication -->
 						<!-- <li class="has-sub">

@@ -1,5 +1,7 @@
 {% extends 'base2.html' %}
 {% load static %}
+{% load custom_filters %}
+
 {% block title %}Home{% endblock %}
 {% block extra_head %}
 
@@ -131,7 +133,7 @@
                     <div class="col-md-6 col-sm-12">
                         <!-- ec-breadcrumb-list start -->
                         <ul class="ec-breadcrumb-list">
-                            <li class="ec-breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                            <li class="ec-breadcrumb-item"><a href="/user/{{ 'home'|encrypt }}/">Home</a></li>
                             <li class="ec-breadcrumb-item active">Shop</li>
                         </ul>
                         <!-- ec-breadcrumb-list end -->
@@ -163,7 +165,7 @@
                         <div class="col-md-6 ec-sort-select">
                             <span class="sort-by">Sort by</span>
                             <div class="ec-select-inner">
-                                <select name="sort" id="ec-select" onchange="this.form.submit()">
+                                <select name="sort" id="ec-select" onchange="this.form.submit()" >
                                     <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Position</option>
                                     <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name, A to Z</option>
                                     <option value="name_desc" {% if sort == 'name_desc' %}selected{% endif %}>Name, Z to A</option>
@@ -185,7 +187,7 @@
                                 <div class="ec-product-inner">
                                     <div class="ec-pro-image-outer">
                                         <div class="ec-pro-image">
-                                            <a href="{% url 'singleproduct' product.id %}" class="image">
+                                            <a href="{% url 'singleproduct' product.id product.slug %}" class="image">
                                                 <img class="main-image" src="{{product.product_image.url}}"
                                                     alt="Product" style="width: 365px; height: 410px;" />
                                                 <img class="hover-image" src="{{product.product_image.url}}"
@@ -207,7 +209,7 @@
                                         </div>
                                     </div>
                                     <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.id %}">{{product.title}}</a></h5>
+                                        <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.id product.slug %}">{{product.title}}</a></h5>
                                         <div class="ec-pro-rating">
                                                 
                                             {% if product.avg_rating == 0 %}
@@ -316,7 +318,7 @@
             </div>
             <!-- Sidebar Area Start -->
             <div class="filter-sidebar-overlay"></div>
-            <div class="ec-shop-leftside filter-sidebar">
+            {% comment %} <div class="ec-shop-leftside filter-sidebar">
                 <div class="ec-sidebar-heading">
                     <h1>Filter Products By</h1>
                     <a class="filter-cls-btn" href="javascript:void(0)">×</a>
@@ -496,7 +498,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> {% endcomment %}
 
         </div>
     </div>

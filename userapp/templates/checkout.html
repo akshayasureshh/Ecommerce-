@@ -1,5 +1,7 @@
 {% extends 'base2.html' %}
 {% load static %}
+{% load custom_filters %}
+
 {% block title %}Home{% endblock %}
 {% block extra_head %}
 
@@ -221,7 +223,8 @@
               <input type="hidden" name="quantities[]" value="{{ item.quantity }}">
               {% endfor %}
               <div class="text-end">
-                  <button id="rzp-button1" name="paid" type="submit" class="btn btn-primary mt-3 px-5 fw-bold">Online Payment</button>
+                  <!-- <button id="rzp-button1" name="paid" type="submit" class="btn btn-primary mt-3 px-5 fw-bold">Online Payment</button> -->
+                  <button id="easebuzz-button" type="button" class="btn btn-primary mt-3 px-5 fw-bold">Online Payment</button>
                   <button type="submit" name="cod" class="btn btn-primary mt-3 px-5 fw-bold">Cash on Delivery</button>
               </div>
               <br/><br/>
@@ -231,13 +234,21 @@
      </div>
 
 </div>
-  <script src="https//checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- <script src="https//checkout.razorpay.com/v1/checkout.js"></script> -->
+  <script>
+    document.getElementById('easebuzz-button').onclick = function(e){
+        document.getElementById('myform').action = "{{ easebuzz_url }}";
+        document.getElementById('myform').submit();
+    }
+    </script>
 
 {% endblock main-content %}
 
 
 
 {% block payment-gateway %}
+
+
 <!-- <script src="https//checkout.razorpay.com/v1/checkout.js"></script>
 <script>
   var options = {
@@ -303,7 +314,7 @@ document.getElementById('rzp-button1').onclick = function(e){
     e.preventDefault();
 }
 </script> -->
-
+<!-- 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 var options = {
@@ -349,5 +360,5 @@ document.getElementById('rzp-button1').onclick = function(e){
     rzp1.open();
     e.preventDefault();
 }
-</script>
+</script> -->
 {% endblock payment-gateway %}

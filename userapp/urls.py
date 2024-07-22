@@ -5,19 +5,19 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_view
 from . forms import MyPasswordResetForm,MySetPasswordForm
 from django.contrib.auth import views as auth_views
-from .views import toggle_wishlist,resend_otp
+from .views import toggle_wishlist,resend_otp,payment_success, payment_failure,products_by_category, products_by_subcategory,home_with_encrypted_name,home
 
 
 
 urlpatterns = [
-
-    path('home/',views.home,name='home'),
+    path('', views.home, name='home'),
+    path('//<str:encrypted_name>/', views.home_with_encrypted_name, name='home_with_encrypted_name'),
     path('register/',views.register,name='register'),
-    path('login/',views.user_login,name='login'),
+    path('login/',views.user_login,name='login_user'),
     path('logout/', views.user_logout, name='logout'),
-    path('product-detail/<int:categoryID>/',views.productdetail,name='product-detail'),
+    path('product-detail/<str:encrypted_category_id>/', views.productdetail, name='product-detail'),
     # path('product-detail/<str:encrypted_category_id>/', views.productdetail, name='product-detail'),
-    path('singleproduct/<int:id>/', views.singleproduct, name='singleproduct'),
+    path('singleproduct/<int:id>/<slug:slug>/', views.singleproduct, name='singleproduct'),
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
     path('cart/',views.show_cart,name='showcart'),
     path('pluscart/',views.plus_cart,name="plus_cart"),
@@ -34,6 +34,9 @@ urlpatterns = [
     path('imageupload/<int:product_pk>/', views.imageupload, name='imageupload'),
 
     path('checkout/',views.checkout.as_view(),name='checkout'),
+
+    path('payment-success/', payment_success, name='payment_success'),
+    path('payment-failure/', payment_failure, name='payment_failure'),
 
     path('paymentdone/',views.payment_done,name='paymentdone'),
 
@@ -107,6 +110,18 @@ urlpatterns = [
     path('add_to_wishlist_shopall/', views.add_to_wishlist_shopall, name='add_to_wishlist_shopall'),
 
     path('checkoutimage/',views.checkoutimage.as_view(),name='checkoutimage'),
+
+    path('orderhistory/',views.orderhis,name='orderhistory'),
+
+    path('category/<int:category_id>/', views.category_products_view, name='category_products'),
+    path('subcategory/<int:subcategory_id>/', views.subcategory_products_view, name='subcategory_products'),
+
+    path('category/<int:id>/<slug:slug>/', views.products_by_category, name='category_products'),
+    path('subcategory/<int:id>/<slug:slug>/', views.products_by_subcategory, name='subcategory_products'),
+
+    path('category/<int:id>/<slug:slug>/', products_by_category, name='category_products'),
+    path('subcategory/<int:id>/<slug:slug>/', products_by_subcategory, name='subcategory_products'),
+
 
 
 

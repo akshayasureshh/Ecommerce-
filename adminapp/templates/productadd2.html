@@ -32,6 +32,18 @@
 {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.js"></script> {% endcomment %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.min.css" rel="stylesheet">
+ <style>
+        #imagePreview {
+            max-width: 100%; /* Ensure the image scales properly */
+            display: block; /* Ensure the image is block-level for proper sizing */
+            margin: 0 auto; /* Center the image */
+        }
+        #croppedPreview {
+            display: block;
+            max-width: 100%;
+            margin: 20px auto;
+        }
+    </style>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 		var image = document.getElementById('imagePreview');
@@ -50,7 +62,7 @@
 					zoomable: false,
 					autoCropArea: 1, // Crop the entire image by default
 					strict: true, // Ensure the crop box cannot extend beyond the bounds of the image
-					cropBoxResizable: false // Disable resizing the crop box
+					cropBoxResizable: true // Disable resizing the crop box
 				});
 			};
 			reader.readAsDataURL(files[0]);
@@ -297,13 +309,32 @@
 						</li>
 
 						<!-- Brands -->
-						{% comment %} <li>
-							<a class="sidenav-item-link" href="brand-list.html">
-								<i class="mdi mdi-tag-faces"></i>
-								<span class="nav-text">Brands</span>
+						<li class="has-sub">
+							<a class="sidenav-item-link" href="javascript:void(0)">
+								<i class="mdi mdi-palette-advanced"></i>
+								<span class="nav-text">Custom Pages</span> <b class="caret"></b>
 							</a>
-							<hr>
-						</li> {% endcomment %}
+							<div class="collapse">
+								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'create_static_page' %}">
+											<span class="nav-text">Create Pages</span>
+										</a>
+									</li>
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'static_page_list' %}">
+											<span class="nav-text">Manage Pages</span>
+										</a>
+									</li>
+									<!-- <li class="">
+										<a class="sidenav-item-link" href="{% url 'product_grid' %}">
+											<span class="nav-text">Grid Product</span>
+										</a>
+									</li> -->
+									
+								</ul>
+							</div>
+						</li>
 
 						<!-- Authentication -->
 						{% comment %} <li class="has-sub">
@@ -996,7 +1027,7 @@
 										</a>
 									</li>
 									<li class="dropdown-footer">
-										<a class="text-center" href="#"> View All </a>
+										<a class="text-center" href="{% url 'product_grid' %}"> View All </a>
 									</li>
 								</ul>
 							</li>
@@ -1018,7 +1049,7 @@
 								<span><i class="mdi mdi-chevron-right"></i></span>Product</p>
 						</div>
 						<div>
-							<a href="product-list.html" class="btn btn-primary"> View All
+							<a href="{% url 'product_grid' %}" class="btn btn-primary"> View All
 							</a>
 						</div>
 					</div>

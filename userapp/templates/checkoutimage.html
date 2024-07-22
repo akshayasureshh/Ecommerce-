@@ -2,6 +2,8 @@
 {% load static %}
 {% block title %}Home{% endblock %}
 {% block extra_head %}
+{% load custom_filters %}
+
 
 <link rel="canonical" href="https://razid.in/">
 
@@ -222,8 +224,8 @@
                   <input type="hidden" name="totamount" value="{{ totalamount }}">
               </div>
               {% if imageupload %}
-              <input  name="text" value="{{ imageupload.text }}">
-              <input name="image_url" value="{{ imageupload.image.url }}">
+              <input type="hidden"  name="text" value="{{ imageupload.text }}">
+              <input type="hidden" name="image_url" value="{{ imageupload.image.url }}">
               {% endif %}
 
 
@@ -231,7 +233,7 @@
 <p style="color: red;">{{ error }}</p>
 {% endif %}
               <div class="text-end">
-                  {% comment %} <button id="rzp-button1" name="paid" type="submit" class="btn btn-primary mt-3 px-5 fw-bold">Online Payment</button> {% endcomment %}
+                  <button id="rzp-button1" name="paid" type="submit" class="btn btn-primary mt-3 px-5 fw-bold">Online Payment</button>
                   <button type="submit" name="cod" class="btn btn-primary mt-3 px-5 fw-bold">Cash on Delivery</button>
               </div>
               <br/><br/>
@@ -248,71 +250,7 @@
 
 
 {% block payment-gateway %}
-<!-- <script src="https//checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-  var options = {
-    "key": "rzp_test_QOX3KP4iASs3Ve",
-    "amount": "{{razoramount}}",
-    "currency": "INR",
-    "name": "Razid ecommerce site",
-    "description": "Purchase Product",
-    "order_id": "{{order_id}}",
-    "handler": function (response) {
-        console.log("success");
-        var form = document.getElementById("myform");
-        var custidValue = form.elements["custid"].value;
-        var redirectTo = 'http://localhost:8000/paymentdone?order_id=' + response.razorpay_order_id + '&payment_id=' + response.razorpay_payment_id + '&cust_id=' + custidValue;
-        
-    },
-    "theme": {
-        "color": "#3399cc"
-    }
-};
-var rzp1 = new Razorpay(options);
-rzp1.on('payment.failed', function (response) {
-    alert(response.error.description);
-});
-document.getElementById('rzp-button1').onclick = function (e) {
-    rzp1.open();
-    e.preventDefault();
-}
 
-</script> -->
-
-<!-- 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-var options = {
-    "key": "rzp_test_QOX3KP4iASs3Ve", // Enter the Key ID generated from the Dashboard
-    "amount": "{{razoramount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-    "currency": "INR",
-    "name": "Razid ecommerce sitep", //your business name
-    "description": "purchase",
-    "order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-    "callback_url": "http://localhost:8000/paymentdone?order_id=' + response.razorpay_order_id + '&payment_id=' + response.razorpay_payment_id + '&cust_id=' + custidValue/",
-    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-        "name": "Gaurav Kumar", //your customer's name
-        "email": "gaurav.kumar@example.com",
-        "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
-    },
-    "notes": {
-        "address": "Razorpay Corporate Office"     
-    },
-    "theme": {
-        "color": "#3399cc"
-    }
-};
-var rzp1 = new Razorpay(options);
-rzp1.on('payment.failed', function (response) {
-    alert(response.error.description);
-});
-
-var rzp1 = new Razorpay(options);
-document.getElementById('rzp-button1').onclick = function(e){
-    rzp1.open();
-    e.preventDefault();
-}
-</script> -->
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>

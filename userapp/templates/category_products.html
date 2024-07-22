@@ -1,0 +1,38 @@
+<div class="shop-pro-content">
+    <div class="shop-pro-inner">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h3>Products in {{ category.name }}</h3>
+                <div class="row">
+                    {% for prod in products %}
+                        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6 mb-6 pro-gl-content">
+                            <div class="ec-product-inner">
+                                <div class="ec-pro-image-outer">
+                                    <div class="ec-pro-image">
+                                        <a href="{% url 'singleproduct' prod.id %}" class="image">
+                                            <img class="main-image" src="{{ prod.product_image.url }}"
+                                                 alt="Product" style="width: 500px; height: 410px;" />
+                                            <img class="hover-image" src="{{ prod.product_image.url }}"
+                                                 alt="Product" style="width: 500px; height: 410px;" />
+                                        </a>
+                                        <span class="percentage">20%</span>
+                                        <div class="ec-pro-actions">
+                                            <!-- Add any action buttons here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ec-pro-content">
+                                    <h5 class="ec-pro-title"><a href="{% url 'singleproduct' prod.id %}">{{ prod.title }}</a></h5>
+                                    <div class="ec-pro-list-desc">{{ prod.description }}</div>
+                                    <span class="ec-price">
+                                        <span class="new-price">Rs.{{ prod.price }}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

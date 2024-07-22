@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -124,7 +125,7 @@
     <!-- Background css -->
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
+<!-- 
     <script>
      $( function() {
     var availableTags = [
@@ -158,7 +159,55 @@
    
   } );
         
-    </script>
+    </script> -->
+    <script>
+        $(function() {
+            $("#tags").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "{% url 'autosuggest' %}",
+                        data: {
+                            term: request.term
+                        },
+                        dataType: "json",
+                        success: function(data) {
+                            response(data);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    if (ui.item.type === 'product') {
+                        var url = "{% url 'singleproduct' 999 'dummy-slug' %}";  // Dummy initial URL with placeholders
+                        url = url.replace('999', ui.item.id).replace('dummy-slug', ui.item.slug);
+                        window.location.href = url;
+                    } else if (ui.item.type === 'category') {
+                        var url = "{% url 'category_products' 999 'dummy-slug' %}";  // Dummy initial URL with placeholders
+                        url = url.replace('999', ui.item.id).replace('dummy-slug', ui.item.slug);
+                        window.location.href = url;
+                    } else if (ui.item.type === 'subcategory') {
+                        var url = "{% url 'subcategory_products' 999 'dummy-slug' %}";  // Dummy initial URL with placeholders
+                        url = url.replace('999', ui.item.id).replace('dummy-slug', ui.item.slug);
+                        window.location.href = url;
+                    }
+                }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                var label = item.label;
+                if (item.type === 'category') {
+                    label = "Category: " + label;
+                } else if (item.type === 'subcategory') {
+                    label = "Subcategory: " + label;
+                }
+                return $("<li>")
+                    .append("<div>" + label + "</div>")
+                    .appendTo(ul);
+            };
+        });
+        </script>
+        
  
     
 <script>
@@ -295,7 +344,7 @@
                                 <ul class="dropdown-menu dropdown-menu-right">
                                     <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                                     <li><a class="dropdown-item" href="{% url 'userprofile' %}">My profile</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'login_user' %}">Login</a></li>
                                     <li><a class="dropdown-item" href="{% url 'logout' %}">Log out</a></li>
 
                                 </ul>
@@ -336,7 +385,7 @@
                         <!-- Ec Header Logo Start -->
                         <div class="align-self-center">
                             <div class="header-logo">
-                                <a href="{% url 'home' %}"><img src="{% static 'images/logo/logo.png' %}" alt="Site Logo" /><img
+                                <a href="/user/{{ 'home'|encrypt }}/"><img src="{% static 'images/logo/logo.png' %}" alt="Site Logo" /><img
                                         class="dark-logo" src="{% static 'images/logo/dark-logo.png' %}" alt="Site Logo"
                                         style="display: none;" /></a>
                             </div>
@@ -399,7 +448,7 @@
                     <!-- Ec Header Logo Start -->
                     <div class="col">
                         <div class="header-logo">
-                            <a href="{% url 'home' %}"><img src="{% static 'images/logo/logo.png' %}" alt="Site Logo" /><img
+                            <a href="/user/{{ 'home'|encrypt }}/"><img src="{% static 'images/logo/logo.png' %}" alt="Site Logo" /><img
                                     class="dark-logo" src="{% static 'images/logo/dark-logo.png' %}" alt="Site Logo"
                                     style="display: none;" /></a>
                         </div>
@@ -430,7 +479,7 @@
                             </a>
                             
                             <ul>
-                                <li><a href="{% url 'home' %}">Home</a></li>
+                                <li><a href="{% url 'home_with_encrypted_name' encrypted_name='home'|encrypt %}">Home</a></li>
                                 <li class="dropdown position-static"><a href="javascript:void(0)">Products</a>
                                     <ul class="mega-menu d-block">
                                         
@@ -441,7 +490,7 @@
                                                 <li class="menu_title"><a href="javascript:void(0)">{{i.name}}</a></li>
                                                 {% for j in SubCate %}
                                                 {% if j.parent_category.name == i.name %}
-                                                <li><a href="{% url 'product-detail' j.id %}">{{ j.name }}</a></li>                                                
+                                                <li><a href="{% url 'product-detail' encrypted_subcategories|default:j.id %}">{{ j.name }}</a></li>                                                
                                                 {% endif %}
                                                 {% endfor %}
                                                 <!-- </li> -->
@@ -461,7 +510,7 @@
                                                 {% for j in SubCate %}
                                                 <!-- {% for product in products|slice:"4:8" %} -->
                                                 {% if product.categories.name == j.name %}
-                                                <li><a class="p-0" href="{% url 'product-detail' j.id %}"><img
+                                                <li><a class="p-0" href="{% url 'product-detail' encrypted_subcategories|default:j.id %}"><img
                                                             class="img-responsive" src="{{product.product_image.url}}"
                                                             alt="" style="width: 300px; height: 130px;"></a></li>                                                                                                
                                                 {% endif %}
@@ -489,7 +538,7 @@
                                     <ul class="sub-menu">
                                     {% for j in SubCate %}
                                     {% if j.parent_category.name == i.name %}
-                                        <li><a href="{% url 'product-detail' j.id %}">{{ j.name }}</a></li>
+                                        <li><a href="{% url 'product-detail' encrypted_subcategories|default:j.id %}">{{ j.name }}</a></li>
                                     {% endif %}
                                     {% endfor %}
                                     </ul>
@@ -538,7 +587,7 @@
             <div class="ec-menu-inner">
                 <div class="ec-menu-content">
                     <ul>
-                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'home_with_encrypted_name' encrypted_name='home'|encrypt %}">Home</a></li>
                         <li><a href="javascript:void(0)">Categories</a>
                             <ul class="sub-menu">
                                 <li>
@@ -784,10 +833,10 @@
                 {% for item in cart %}
                 <ul class="eccart-pro-items">
                     <li>
-                        <a href="{% url 'singleproduct' item.product.id %}" class="sidekka_pro_img"><img
+                        <a href="{% url 'singleproduct' item.product.id item.product.slug %}" class="sidekka_pro_img"><img
                                 src="{{item.product.product_image.url}}" alt="product" style="height: 200;width: 200;"></a>
                         <div class="ec-pro-content">
-                            <a href="{% url 'singleproduct' item.product.id %}" class="cart_pro_title">{{item.product.title}}</a>
+                            <a href="{% url 'singleproduct' item.product.id item.product.slug %}" class="cart_pro_title">{{item.product.title}}</a>
                             <span class="cart-price"><span>Rs.{{item.product.price}}</span> x 1</span>
                             <!-- <div class="qty-plus-minus"> -->
                                 <!-- <input class="qty-input" type="text" name="ec_qtybtn" value="1" /> -->
@@ -1151,7 +1200,7 @@
                             class="ec-cart-noti ec-header-count cart-count-lable">{% if totalitem > 0 %} {{totalitem}} {% else %} 0 {% endif %}</span></a>
                 </div>
                 <div class="ec-nav-panel-icons">
-                    <a href="{% url 'home' %}" class="ec-header-btn"><i class="fi-rr-home"></i></a>
+                    <a href="/user/{{ 'home'|encrypt }}/" class="ec-header-btn"><i class="fi-rr-home"></i></a>
                 </div>
                 <div class="ec-nav-panel-icons">
                     <a href="{% url 'wishlist' %}" class="ec-header-btn"><i class="fi-rr-heart"></i><span

@@ -388,31 +388,40 @@ button {
 	}
 }
 input {
-	margin: 0;
-	font-family: inherit;
-	font-size: inherit;
-	line-height: inherit;
-	overflow: visible;
-	display: inline-block;
-	line-height: 50px;
-	height: 50px;
-	font-size: 15px;
-	width: $width-100;
-	background: transparent;
-	border-radius: 0;
-	-webkit-border-radius: 0;
-	text-align: $textleft;
-	box-shadow: none;
-	-webkit-box-shadow: none;
-	padding-left: 20px;
-	padding-right: 10px;
-	outline: 0;
-	&:focus {
-		outline: 0px dotted;
-		outline: 0px auto -webkit-focus-ring-color;
-		box-shadow: none;
-	}
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    overflow: visible;
+    display: inline-block;
+    line-height: 50px;
+    height: 50px;
+    font-size: 15px;
+    width: calc(100% - 30px); /* Adjust width to fit within the wrapper */
+    background: transparent;
+    border: 2px solid #ccc; /* Add border */
+    border-radius: 4px; /* Add border radius */
+    text-align: left;
+    box-shadow: none;
+    padding-left: 20px;
+    padding-right: 10px;
+    outline: 0;
 }
+
+.input-wrapper {
+    margin-bottom: 15px; /* Adjust as needed */
+    padding: 10px; /* Adjust as needed */
+    border: 2px solid #ccc; /* Add outer border */
+    border-radius: 4px; /* Add outer border radius */
+    background: #f9f9f9; /* Light background color */
+}
+
+input:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: #66afe9; /* Change border color on focus */
+}
+
 select {
 	margin: 0;
 	font-family: inherit;

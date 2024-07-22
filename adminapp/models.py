@@ -3,7 +3,9 @@ from django.utils.text import slugify
 import uuid
 from django.db.models import JSONField
 import json
+from django.contrib.auth.hashers import make_password, check_password
 from PIL import Image
+from ckeditor.fields import RichTextField
 # Create your models here.
 
 
@@ -211,3 +213,31 @@ class CroppedImage(models.Model):
             output_size = (850,765)
             img.thumbnail(output_size)
             img.save(self.file.path)
+
+
+
+class UserAdmin(models.Model):
+    username = models.CharField(max_length=300)
+    password = models.CharField(max_length=20)
+
+
+    def save(self, *args, **kwargs):
+        if not self.id:  # Only hash the password if the object is new
+            self.password = make_password(self.password)
+        super(UserAdmin, self).save(*args, **kwargs)
+
+
+
+
+class StaticPage(models.Model):
+    PAGE_CHOICES = [
+        ('faq', 'FAQ'),
+        ('about', 'About'),
+        ('contact', 'Contact'),
+    ]
+
+    page = models.CharField(max_length=20, choices=PAGE_CHOICES, unique=True)
+    content = RichTextField()
+
+    def __str__(self):
+        return self.page.capitalize()
