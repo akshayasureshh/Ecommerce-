@@ -136,7 +136,7 @@
                   <div class="col-md-6 col-sm-12">
                       <!-- ec-breadcrumb-list start -->
                       <ul class="ec-breadcrumb-list">
-                          <li class="ec-breadcrumb-item"><a href="/user/{{ 'home'|encrypt }}/">Home</a></li>
+                          <li class="ec-breadcrumb-item"><a href="{% url 'home_with_encrypted_name' encrypted_name=encoded_encrypted_name %}">Home</a></li>
                           <li class="ec-breadcrumb-item active">Shop</li>
                       </ul>
                       <!-- ec-breadcrumb-list end -->
@@ -165,7 +165,7 @@
                               <div class="ec-product-inner">
                                   <div class="ec-pro-image-outer">
                                       <div class="ec-pro-image">
-                                          <a href="{% url 'singleproduct' prod.id prod.slug %}" class="image">
+                                          <a href="{% url 'singleproduct' prod.encrypted_pro_id %}" class="image">
                                               <img class="main-image" src="{{ prod.product_image.url }}"
                                                    alt="Product" style="width: 500px; height: 410px;" />
                                               <img class="hover-image" src="{{ prod.product_image.url }}"
@@ -178,7 +178,7 @@
                                       </div>
                                   </div>
                                   <div class="ec-pro-content">
-                                      <h5 class="ec-pro-title"><a href="{% url 'singleproduct' prod.id prod.slug %}">{{ prod.title }}</a></h5>
+                                      <h5 class="ec-pro-title"><a href="{% url 'singleproduct' prod.encrypted_pro_id %}">{{ prod.title }}</a></h5>
                                       <div class="ec-pro-list-desc">{{ prod.description }}</div>
                                       <span class="ec-price">
                                           <span class="new-price">Rs.{{ prod.price }}</span>
@@ -201,7 +201,7 @@
                               <div class="ec-product-inner">
                                   <div class="ec-pro-image-outer">
                                       <div class="ec-pro-image">
-                                          <a href="{% url 'singleproduct' prod.id prod.slug %}" class="image">
+                                          <a href="{% url 'singleproduct' prod.encrypted_pro_id %}" class="image">
                                               <img class="main-image" src="{{ prod.product_image.url }}"
                                                    alt="Product" style="width: 500px; height: 410px;" />
                                               <img class="hover-image" src="{{ prod.product_image.url }}"
@@ -214,7 +214,7 @@
                                       </div>
                                   </div>
                                   <div class="ec-pro-content">
-                                      <h5 class="ec-pro-title"><a href="{% url 'singleproduct' prod.id prod.slug %}">{{ prod.title }}</a></h5>
+                                      <h5 class="ec-pro-title"><a href="{% url 'singleproduct' prod.encrypted_pro_id %}">{{ prod.title }}</a></h5>
                                       <div class="ec-pro-list-desc">{{ prod.description }}</div>
                                       <span class="ec-price">
                                           <span class="new-price">Rs.{{ prod.price }}</span>
@@ -238,7 +238,7 @@
                                   <div class="ec-product-inner">
                                       <div class="ec-pro-image-outer">
                                           <div class="ec-pro-image">
-                                              <a href="{% url 'singleproduct' prod.id prod.slug %}" class="image">
+                                              <a href="{% url 'singleproduct' prod.encrypted_pro_id %}" class="image">
                                                   <img class="main-image" src="{{ prod.product_image.url }}"
                                                        alt="Product" style="width: 500px; height: 410px;" />
                                                   <img class="hover-image" src="{{ prod.product_image.url }}"
@@ -251,7 +251,7 @@
                                           </div>
                                       </div>
                                       <div class="ec-pro-content">
-                                          <h5 class="ec-pro-title"><a href="{% url 'singleproduct' prod.id prod.slug %}">{{ prod.title }}</a></h5>
+                                          <h5 class="ec-pro-title"><a href="{% url 'singleproduct' prod.encrypted_pro_id %}">{{ prod.title }}</a></h5>
                                           <div class="ec-pro-list-desc">{{ prod.description }}</div>
                                           <span class="ec-price">
                                               <span class="new-price">Rs.{{ prod.price }}</span>

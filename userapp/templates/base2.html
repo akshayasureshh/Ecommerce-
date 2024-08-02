@@ -160,56 +160,56 @@
   } );
         
     </script> -->
+
     <script>
-        $(function() {
-            $("#tags").autocomplete({
-                source: function(request, response) {
-                    $.ajax({
-                        url: "{% url 'autosuggest' %}",
-                        data: {
-                            term: request.term
-                        },
-                        dataType: "json",
-                        success: function(data) {
-                            response(data);
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-                        }
-                    });
+   $(function() {
+   console.log('lalalala inside')
+    $("#tags").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "{% url 'autosuggest' %}",
+                data: {
+                    term: request.term
                 },
-                minLength: 2,
-                select: function(event, ui) {
-                    if (ui.item.type === 'product') {
-                        var url = "{% url 'singleproduct' 999 'dummy-slug' %}";  // Dummy initial URL with placeholders
-                        url = url.replace('999', ui.item.id).replace('dummy-slug', ui.item.slug);
-                        window.location.href = url;
-                    } else if (ui.item.type === 'category') {
-                        var url = "{% url 'category_products' 999 'dummy-slug' %}";  // Dummy initial URL with placeholders
-                        url = url.replace('999', ui.item.id).replace('dummy-slug', ui.item.slug);
-                        window.location.href = url;
-                    } else if (ui.item.type === 'subcategory') {
-                        var url = "{% url 'subcategory_products' 999 'dummy-slug' %}";  // Dummy initial URL with placeholders
-                        url = url.replace('999', ui.item.id).replace('dummy-slug', ui.item.slug);
-                        window.location.href = url;
-                    }
+                dataType: "json",
+                success: function(data) {
+                    response(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
                 }
-            }).autocomplete("instance")._renderItem = function(ul, item) {
-                var label = item.label;
-                if (item.type === 'category') {
-                    label = "Category: " + label;
-                } else if (item.type === 'subcategory') {
-                    label = "Subcategory: " + label;
-                }
-                return $("<li>")
-                    .append("<div>" + label + "</div>")
-                    .appendTo(ul);
-            };
-        });
-        </script>
-        
- 
-    
+            });
+        },
+        minLength: 2,
+        select: function(event, ui) {
+            if (ui.item.type === 'product') {
+                var url = "{% url 'product-detail-encrypted' 'dummy-id' %}";
+                url = url.replace('dummy-id', ui.item.id);
+                window.location.href = url;
+            } else if (ui.item.type === 'category') {
+                var url = "{% url 'category_products' 'dummy-id' %}";
+                url = url.replace('dummy-id', ui.item.id);
+                window.location.href = url;
+            } else if (ui.item.type === 'subcategory') {
+                var url = "{% url 'subcategory_products' 'dummy-id' %}";
+                url = url.replace('dummy-id', ui.item.id);
+                window.location.href = url;
+            }
+        }
+    }).autocomplete("instance")._renderItem = function(ul, item) {
+        var label = item.label;
+        if (item.type === 'category') {
+            label = "Category: " + label;
+        } else if (item.type === 'subcategory') {
+            label = "Subcategory: " + label;
+        }
+        return $("<li>")
+            .append("<div>" + label + "</div>")
+            .appendTo(ul);
+    };
+});
+
+        </script>  
 <script>
 
         $('.plus-cart').click(function(){
@@ -345,7 +345,7 @@
                                     <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                                     <li><a class="dropdown-item" href="{% url 'userprofile' %}">My profile</a></li>
                                     <li><a class="dropdown-item" href="{% url 'login_user' %}">Login</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Log out</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout_user' %}">Log out</a></li>
 
                                 </ul>
                             </div>
@@ -415,9 +415,16 @@
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                                         <li><a class="dropdown-item" href="{% url 'userprofile' %}">My profile</a></li>
-                                        <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
-                                        <li><a class="dropdown-item" href="{% url 'logout' %}">Log out</a></li>
-
+                                        <li><a class="dropdown-item" href="{% url 'login_user' %}">Login</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'logout_user' %}" >
+                                                Log out
+                                            </a>
+                                        </li>
+<!--                                         
+                                        <form id="logout-form" action="{% url 'logout_user' %}" method="POST" style="display: none;">
+                                            {% csrf_token %}
+                                        </form> -->
                                     </ul>
                                 </div>
                                 <!-- Header User End -->
@@ -490,7 +497,11 @@
                                                 <li class="menu_title"><a href="javascript:void(0)">{{i.name}}</a></li>
                                                 {% for j in SubCate %}
                                                 {% if j.parent_category.name == i.name %}
-                                                <li><a href="{% url 'product-detail' encrypted_subcategories|default:j.id %}">{{ j.name }}</a></li>                                                
+                                                <li>
+                                                    <a href="{% url 'product-detail-encrypted' j.encrypted_id %}">{{ j.name }}</a>
+                                                    
+                                                </li>
+                                                                                       
                                                 {% endif %}
                                                 {% endfor %}
                                                 <!-- </li> -->
@@ -510,7 +521,7 @@
                                                 {% for j in SubCate %}
                                                 <!-- {% for product in products|slice:"4:8" %} -->
                                                 {% if product.categories.name == j.name %}
-                                                <li><a class="p-0" href="{% url 'product-detail' encrypted_subcategories|default:j.id %}"><img
+                                                <li><a class="p-0" href="{% url 'product-detail-encrypted' j.encrypted_id %}"><img
                                                             class="img-responsive" src="{{product.product_image.url}}"
                                                             alt="" style="width: 300px; height: 130px;"></a></li>                                                                                                
                                                 {% endif %}
@@ -538,7 +549,7 @@
                                     <ul class="sub-menu">
                                     {% for j in SubCate %}
                                     {% if j.parent_category.name == i.name %}
-                                        <li><a href="{% url 'product-detail' encrypted_subcategories|default:j.id %}">{{ j.name }}</a></li>
+                                        <li><a href="{% url 'product-detail-encrypted' j.encrypted_id %}">{{ j.name }}</a></li>
                                     {% endif %}
                                     {% endfor %}
                                     </ul>
@@ -743,7 +754,7 @@
                                 <li><a href="{% url 'checkout' %}">Checkout</a></li>
                                 <li><a href="compare.html">Compare</a></li>
                                 <li><a href="faq.html">FAQ</a></li>
-                                <li><a href="{% url 'login' %}">Login</a></li>
+                                <li><a href="{% url 'login_user' %}">Login</a></li>
                                 <li><a href="{% url 'register' %}">Register</a></li>
                                 <li><a href="{% url 'trackorder' %}">Track Order</a></li>
                                 <li><a href="terms-condition.html">Terms Condition</a></li>
@@ -833,10 +844,10 @@
                 {% for item in cart %}
                 <ul class="eccart-pro-items">
                     <li>
-                        <a href="{% url 'singleproduct' item.product.id item.product.slug %}" class="sidekka_pro_img"><img
+                        <a href="{% url 'singleproduct' item.product.id  %}" class="sidekka_pro_img"><img
                                 src="{{item.product.product_image.url}}" alt="product" style="height: 200;width: 200;"></a>
                         <div class="ec-pro-content">
-                            <a href="{% url 'singleproduct' item.product.id item.product.slug %}" class="cart_pro_title">{{item.product.title}}</a>
+                            <a href="{% url 'singleproduct' item.product.id  %}" class="cart_pro_title">{{item.product.title}}</a>
                             <span class="cart-price"><span>Rs.{{item.product.price}}</span> x 1</span>
                             <!-- <div class="qty-plus-minus"> -->
                                 <!-- <input class="qty-input" type="text" name="ec_qtybtn" value="1" /> -->
@@ -947,7 +958,7 @@
                                 <h4 class="ec-footer-heading">Information</h4>
                                 <div class="ec-footer-links">
                                     <ul class="align-items-center">
-                                        <li class="ec-footer-link"><a href="about-us.html">About us</a></li>
+                                        <li class="ec-footer-link"><a href="{% url 'about' %}">About us</a></li>
                                         <li class="ec-footer-link"><a href="faq.html">FAQ</a></li>
                                         <li class="ec-footer-link"><a href="{% url 'trackorder' %}">Delivery Information</a>
                                         </li>
@@ -1207,7 +1218,7 @@
                             class="ec-cart-noti">4</span></a>
                 </div>
                 <div class="ec-nav-panel-icons">
-                    <a href="{% url 'login' %}" class="ec-header-btn"><i class="fi-rr-user"></i></a>
+                    <a href="{% url 'login_user' %}" class="ec-header-btn"><i class="fi-rr-user"></i></a>
                 </div>
 
             </div>

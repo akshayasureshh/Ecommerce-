@@ -93,32 +93,17 @@
         color: yellow; /* Set the color to yellow for active stars */
     }
 
-    .ec-sidebar-slider {
-        padding: 20px;
-    }
-    
-    .ec-sb-slider-title {
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    
-    .ec-sb-pro-sl {
-        display: flex;
-        flex-direction: column;
-    }
-    
     .ec-sb-item {
         display: flex;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
     
-    .ec-sb-item .sidekka_pro_img img {
-        height: 80px;
-        width: 60px;
+    .sb-item-img {
+        width: 60px; /* Adjust as needed */
+        height: 60px; /* Ensure consistent size */
         object-fit: cover;
-        margin-right: 10px;
+        margin-right: 10px; /* Space between image and text */
     }
     
     .ec-sb-item-details {
@@ -127,18 +112,26 @@
     }
     
     .ec-sb-item-details h5 {
-        margin: 0 0 5px 0;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.2;
     }
     
     .ec-sb-item-rating {
-        display: flex;
-        margin-bottom: 5px;
+        margin: 5px 0;
     }
     
-    .ec-sb-item-rating i {
-        margin-right: 2px;
+    .ec-sb-item-rating .ecicon {
+        font-size: 12px; /* Adjust star size */
     }
     
+    .ec-sb-item-details span {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+   
 </style>
 
 
@@ -656,7 +649,7 @@
                                             {% for j in SubCate %}
                                             {% if j.parent_category.name == i.name %}
                                             <li>
-                                                <div class="ec-sidebar-sub-item"><a href="{% url 'product-detail' j.id %}">{{j.name}} 
+                                                <div class="ec-sidebar-sub-item"><a href="{% url 'product-detail-encrypted' j.encrypted_id %}">{{j.name}} 
                                                     {% for pro in products %}
                                                 {% if pro.data.name == j.name %}<span
                                                     title="Available Stock">- {{pro.quantity}}</span> 
@@ -683,62 +676,67 @@
                         </div>
                         <!-- Sidebar Category Block -->
                     </div>
-                    <div class="ec-sidebar-slider">
+                    <div class="ec-sidebar-slider" style="margin-top:20px;">
                         <div class="ec-sb-slider-title">Best Sellers</div>
-                        <div class="ec-sb-pro-sl">
+                        <div class="ec-sb-pro-sl" style="">
                             {% for i in most_ordered_products %}
-                            <div class="ec-sb-item">
-                                <a href="product-left-sidebar.html" class="sidekka_pro_img">
-                                    <img src="{{i.product.product_image.url}}" alt="product"/>
+                            <div class="ec-sb-item" style="margin-bottom: 40px;width: 200px; height: 80px;display:flex;">
+                                <a href="{% url 'singleproduct' i.product.id %}" class="sidekka_pro_img" >
+                                    <img src="{{i.product.product_image.url}}" alt="product" style="width: 100px; height: 100px;"/>
                                 </a>
-                                <div class="ec-sb-item-details">
-                                    <h5><a href="product-left-sidebar.html">{{i.product.title}}</a></h5>
-                                    <div class="ec-sb-item-rating">
+                                <div class="ec-sb-item-details" style="margin-left:110px;display: flex; flex-direction: column; justify-content: center; margin-top: -80px;">
+                                    <h5 style="font-size: 14px; line-height: 1.2;">
+                                        <a href="{% url 'singleproduct' i.product.id %}" style="text-decoration: none; color: inherit;">
+                                            {{i.product.title}}
+                                        </a>
+                                    </h5>
+                                    <div class="ec-sb-item-rating" style="margin: 5px 0;">
                                         {% if i.product.avg_rating2 == 0 %}
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
                                         {% elif i.product.avg_rating2 == 1 %}
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
                                         {% elif i.product.avg_rating2 == 2 %}
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
                                         {% elif i.product.avg_rating2 == 3 %}
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star-o"></i>
-                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
                                         {% elif i.product.avg_rating2 == 4 %}
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star-o"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star-o" style="font-size: 12px;"></i>
                                         {% elif i.product.avg_rating2 == 5 %}
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
-                                            <i class="ecicon eci-star fill"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
+                                            <i class="ecicon eci-star fill" style="font-size: 12px;"></i>
                                         {% endif %}
                                     </div>
-                                    <span>Rs.{{i.product.price}}</span>
+                                    <span style="font-size: 14px; font-weight: bold; color: #333;">Rs.{{i.product.price}}</span>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                     
+                                        
                 </div>
                 <!-- Sidebar Area Start -->
             </div>

@@ -119,6 +119,30 @@
     
 {% block main-content %}
 
+ <!-- Ec breadcrumb start -->
+ <div class="sticky-header-next-sec  ec-breadcrumb section-space-mb">
+  <div class="container">
+      <div class="row">
+          <div class="col-12">
+              <div class="row ec_breadcrumb_inner">
+                  <div class="col-md-6 col-sm-12">
+                      <h2 class="ec-breadcrumb-title">Track Order</h2>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                      <!-- ec-breadcrumb-list start -->
+                      <ul class="ec-breadcrumb-list">
+                          <li class="ec-breadcrumb-item"><a href="{% url 'home_with_encrypted_name' encrypted_name=encoded_encrypted_name %}">Home</a></li>
+                          <li class="ec-breadcrumb-item active">Track</li>
+                      </ul>
+                      <!-- ec-breadcrumb-list end -->
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Ec breadcrumb end -->
+
 <!-- Ec Track Order section -->
 <section class="ec-page-content section-space-p">
     <div class="container">

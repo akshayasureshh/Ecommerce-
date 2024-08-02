@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_view
 from . forms import MyPasswordResetForm,MySetPasswordForm
 from django.contrib.auth import views as auth_views
-from .views import toggle_wishlist,resend_otp,payment_success, payment_failure,products_by_category, products_by_subcategory,home_with_encrypted_name,home
+from .views import toggle_wishlist,resend_otp,payment_success, payment_failure,products_by_category, products_by_subcategory
 
 
 
@@ -14,10 +14,11 @@ urlpatterns = [
     path('//<str:encrypted_name>/', views.home_with_encrypted_name, name='home_with_encrypted_name'),
     path('register/',views.register,name='register'),
     path('login/',views.user_login,name='login_user'),
-    path('logout/', views.user_logout, name='logout'),
-    path('product-detail/<str:encrypted_category_id>/', views.productdetail, name='product-detail'),
+    path('logout/', views.user_logout, name='logout_user'),
+    # path('product-detail/<int:category_id>/', views.productdetail, name='product-detail'),
+    path('product-detail/<str:encrypted_category_id>/', views.product_detail_encrypted, name='product-detail-encrypted'),
     # path('product-detail/<str:encrypted_category_id>/', views.productdetail, name='product-detail'),
-    path('singleproduct/<int:id>/<slug:slug>/', views.singleproduct, name='singleproduct'),
+    path('singleproduct/<str:encrypted_product_id>/', views.singleproduct, name='singleproduct'),
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
     path('cart/',views.show_cart,name='showcart'),
     path('pluscart/',views.plus_cart,name="plus_cart"),
@@ -119,11 +120,10 @@ urlpatterns = [
     path('category/<int:id>/<slug:slug>/', views.products_by_category, name='category_products'),
     path('subcategory/<int:id>/<slug:slug>/', views.products_by_subcategory, name='subcategory_products'),
 
-    path('category/<int:id>/<slug:slug>/', products_by_category, name='category_products'),
-    path('subcategory/<int:id>/<slug:slug>/', products_by_subcategory, name='subcategory_products'),
+    path('category/<encrypted_category_id>/', products_by_category, name='category_products'),
+    path('subcategory/<encrypted_subcategory_id>/', products_by_subcategory, name='subcategory_products'),
 
-
-
+    path('about/',views.about,name='about'),
 
 
 

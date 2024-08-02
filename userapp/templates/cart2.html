@@ -251,6 +251,10 @@
                                             <span class="text-left">Delivery Charges</span>
                                             <span class="text-right">Rs.40.00</span>
                                         </div>
+                                        <div>
+                                            <span class="text-left">GST(taxes)</span>
+                                            <span class="text-right" id='gst'>10%</span>
+                                        </div>
                                         {% comment %} <div>
                                             <span class="text-left">Coupan Discount</span>
                                             <span class="text-right"><a class="ec-cart-coupan">Apply Coupan</a></span>
@@ -435,8 +439,9 @@
                 success:function(data){
                 console.log("data=",data);
                 eml.innerText=data.quantity
-                document.getElementById("amount").innerText=data.amount
-                document.getElementById("totalamount").innerText=data.totalamount
+                document.getElementById("amount").innerText = 'Rs.' + data.amount;
+                document.getElementById("totalamount").innerText = 'Rs.' + data.totalamount;
+                {% comment %} document.getElementById("gst").innerText = 'Rs.' + data.gst; {% endcomment %}
                 // document.getElementById("amount2").innerText = data.amount2;
     
                 }
@@ -457,8 +462,9 @@
                 success:function(data){
                     
                     eml.innerText=data.quantity
-                    document.getElementById("amount").innerText=data.amount
-                    document.getElementById("totalamount").innerText=data.totalamount
+                    document.getElementById("amount").innerText = 'Rs.' + data.amount;
+                    document.getElementById("totalamount").innerText = 'Rs.' + data.totalamount;
+                    {% comment %} document.getElementById("gst").innerText = 'Rs.' + data.gst; {% endcomment %}
                     // document.getElementById("amount2").innerText = data.amount2;
     
                 }
@@ -478,6 +484,7 @@
                 success: function(data){
                     // Update the UI
                     $("#amount").text(data.amount);
+                    {% comment %} $("#gst").text(data.gst); {% endcomment %}
                     $("#totalamount").text(data.totalamount);
         
                     // Remove the item from the cart

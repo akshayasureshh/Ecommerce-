@@ -133,7 +133,7 @@
                     <div class="col-md-6 col-sm-12">
                         <!-- ec-breadcrumb-list start -->
                         <ul class="ec-breadcrumb-list">
-                            <li class="ec-breadcrumb-item"><a href="/user/{{ 'home'|encrypt }}/">Home</a></li>
+                            <li class="ec-breadcrumb-item"><a href="{% url 'home_with_encrypted_name' encrypted_name=encoded_encrypted_name %}">Home</a></li>
                             <li class="ec-breadcrumb-item active">Shop</li>
                         </ul>
                         <!-- ec-breadcrumb-list end -->
@@ -187,7 +187,7 @@
                                 <div class="ec-product-inner">
                                     <div class="ec-pro-image-outer">
                                         <div class="ec-pro-image">
-                                            <a href="{% url 'singleproduct' product.id product.slug %}" class="image">
+                                            <a href="{% url 'singleproduct' product.encrypted_pro_id   %}" class="image">
                                                 <img class="main-image" src="{{product.product_image.url}}"
                                                     alt="Product" style="width: 365px; height: 410px;" />
                                                 <img class="hover-image" src="{{product.product_image.url}}"
@@ -209,7 +209,7 @@
                                         </div>
                                     </div>
                                     <div class="ec-pro-content">
-                                        <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.id product.slug %}">{{product.title}}</a></h5>
+                                        <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.encrypted_pro_id  %}">{{product.title}}</a></h5>
                                         <div class="ec-pro-rating">
                                                 
                                             {% if product.avg_rating == 0 %}

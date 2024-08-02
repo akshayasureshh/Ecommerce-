@@ -32,6 +32,9 @@ import os
 import hashlib
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from .utils.encryption import encrypt_data,decrypt_data
+from .utility import encrypt,decrypt
+
 # from .utils.url import get_encrypted_url
 # Create your views here.
 
@@ -78,7 +81,6 @@ from django.utils.html import strip_tags
 #     }
 #     return render(request, 'index2.html', context)
 
-from .utils.encryption import encrypt_data, decrypt_data
 
 
 
@@ -325,6 +327,12 @@ def home_with_encrypted_name(request, encrypted_name):
             product = Product.objects.get(id=product_id)
             product.total_quantity = most_ordered['total_quantity']
 
+        # Encrypt subcategory IDs
+        encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+        for subcategory in data:
+            subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+            print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
         context = {
             'SubCate': data,
             'Category': parent_categories,
@@ -343,7 +351,13 @@ def home_with_encrypted_name(request, encrypted_name):
             'most_ordered_products': most_ordered_products,
             'most_ordered': product,
             'encrypted_subcategories': encrypted_subcategories,
+            'encrypted_id' : subcategory.encrypted_id,
         }
+
+        # for subcategory in data:
+        #     subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        #     print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
         return render(request, 'index2.html', context)
     else:
         return render(request, '404.html', status=404)
@@ -401,9 +415,17 @@ def toggle_wishlist(request, product_id):
 def register(request):
      data = SubCategory.objects.all()
      parent_categories = Category.objects.all()
+     encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+
+     for subcategory in data:
+            subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+            print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
      context ={
           'SubCate':data,
           'Category' : parent_categories,
+          'encrypted_subcategories': encrypted_subcategories,
+
           
     }
      
@@ -432,9 +454,18 @@ def register(request):
 def user_login(request):
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+
+    for subcategory in data:
+            subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+            print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
     context ={
           'SubCate':data,
           'Category' : parent_categories,
+          'encrypted_subcategories': encrypted_subcategories,
+
+
     }
     if request.method == 'POST':
         username = request.POST['username']
@@ -450,47 +481,65 @@ def user_login(request):
     else:
         return render(request, 'login.html',context)
 
-
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('login_user')
+# def productdetail(request, category_id):
+#     print("category_id",category_id)
+#     encrypted_category_id = encrypt_data(category_id)
+#     print("encrycategory_id",encrypted_category_id)
 
+#     # encoded_encrypted_category_id = quote(encrypted_category_id)
+#     # print("encodeecategory_id",encoded_encrypted_category_id)
 
-def productdetail(request, encrypted_category_id):
+#     return redirect(reverse('product-detail-encrypted', args=[encrypted_category_id]))
+
+def product_detail_encrypted(request, encrypted_category_id):
     try:
-        categoryID = decrypt_data(encrypted_category_id)
-        if categoryID is None:
-            raise ValueError("Decryption returned None")
+        print(f"Encrypted Category ID: {encrypted_category_id}")  # Debugging
+
+        # Decrypt the category ID
+        category_id = decrypt(encrypted_category_id)
+        print(f"Decrypted Category ID: {category_id}")  # Debugging
+
+        # Query products by the decrypted category ID
+        products = Product.objects.filter(categories=category_id)
+        print(f"Products: {products}")  # Debugging
+
     except Exception as e:
-        print(f"Decryption error: {e}")
-        return HttpResponse('Error: Invalid encrypted data. Please try again.')
+        print(f"Decryption or query error: {e}")  # Debugging
+        return HttpResponse("Invalid URL", status=400)
 
 
-    data = SubCategory.objects.all()
+    subcategories = SubCategory.objects.all()
+    for subcategory in subcategories:
+        subcategory.encrypted_id = encrypt(str(subcategory.id))
+    print(f"SubCategories: {subcategories}")  # Debugging
+
     parent_categories = Category.objects.all()
-    products = Product.objects.filter(categories=categoryID)
+    print(f"Parent Categories: {parent_categories}")  # Debugging
+
     totalitem = 0
     wishitem = 0
     cart = []
     amount2 = 0
     totalamount = 0
-    
+
     if request.user.is_authenticated:
         totalitem = Cart.objects.filter(user=request.user).count()
         wishitem = WishList.objects.filter(user=request.user).count()
         cart = Cart.objects.filter(user=request.user)
+        print(f"Cart Items: {cart}")  # Debugging
+
         amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
         amount2 = amount
         totalamount = amount + 40
         user = request.user
-        
     else:
         totalitem = 0
         wishitem = 0
         user = None
         cart = []
-    
-
 
     # Sorting logic
     sort = request.GET.get('sort', 'relevance')
@@ -512,47 +561,55 @@ def productdetail(request, encrypted_category_id):
     for product in products:
         avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
         product.avg_rating = round(avg_rating) if avg_rating is not None else 0
-    
-    sizes = []
 
-    # Iterate over each product to extract sizes
+    sizes = []
     for product in products:
         if product.size:
             sizes.extend(product.size)
-    
-    # user=request.user
-    # cart=Cart.objects.filter(user=user)
-    # print("the cart item is",cart)
-    
-    # for p in cart:
-    #     value = p.quantity*p.product.price
-    #     amount= amount + value
-    #     amount2=amount
-        
-    # totalamount=amount+40
-    # print(totalamount)
 
-        # Encrypting product IDs for further use
-    encrypted_products = {product.id: encrypt_data(str(product.id)) for product in products}
-       
+    # Encrypting product IDs for further use
+    # encrypted_products = {}
+    # for product in products:
+    #     encrypted_product_id = encrypt(str(product.id))
+    #     encrypted_products[product.id] = encrypted_product_id
+    #     print(f"Encrypted Product ID for {product.id}: {encrypted_product_id}")  # Debugging
+
+    # print(f"Encrypted Products: {encrypted_products}")  # Debugging
+
+    # for product in products:
+    #    product.encrypted_pro_id = encrypt(str(product.id))
+
+    for product in products:
+        product.encrypted_pro_id = encrypt(str(product.id))
+        print(f"Product ID: {product.id}, Encrypted Product ID: {product.encrypted_pro_id}, Slug: {product.slug}")
+    
+    encrypted_name = encrypt_data('home')
+    encoded_encrypted_name = quote(encrypted_name)
+
 
     context = {
         'products': products,
-        'SubCate': data,
+        'SubCate': subcategories,
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
         'page_obj': page_obj,
         'sizes': sizes,
         'sort': sort,
-        'cart' : cart,
-        'amount2' : amount2,
-        'totalamount2' : totalamount,
-        'encrypted_products': encrypted_products,
-    
+        'cart': cart,
+        'amount2': amount2,
+        'totalamount2': totalamount,
+        'category_id': encrypted_category_id,
+        'encoded_encrypted_name' : encoded_encrypted_name,
+        # 'encrypted_products': encrypted_products,
+        # 'encrypted_pro_id': product.encrypted_pro_id,
     }
 
     return render(request, 'productdetail.html', context)
+    # except Exception as e:
+    #     print(f"View rendering error: {e}")  
+    #     return HttpResponse("Internal Server Error", status=500)
+
 
 @require_POST
 def add_to_cart_productdetail(request):
@@ -609,12 +666,22 @@ def add_to_wishlist_productdetail(request):
 
 
 from django.http import Http404
-def singleproduct(request, id,slug):
+def singleproduct(request, encrypted_product_id):
+
+    
+    print("inside try")
+
+    # Decrypt the product_id
+    product_id = decrypt(encrypted_product_id)
+    print("product id",product_id)
+
+    product = get_object_or_404(Product, id=product_id)
+
     context = {}
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
     relatedproduct = Product.objects.all()
-    product = Product.objects.get(id=id,slug=slug)
+    # product = Product.objects.get(id=id,slug=slug)
     most_ordered_products = OrderPlaced.objects.order_by('-order__ordered_date')
 
     admin_choice = product.admin_choice
@@ -677,7 +744,7 @@ def singleproduct(request, id,slug):
         
     # totalamount=amount+40
     # print(totalamount)
-       
+    
 
 
     # for product in relatedproduct:
@@ -685,7 +752,13 @@ def singleproduct(request, id,slug):
     #     avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
     #     product.avg_rating = round(avg_rating) if avg_rating is not None else 0
     #     print(product.avg_rating)
-       
+
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+            subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+            print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
+    
     context.update({
         'wishlist' : wishlist,
         'product': product,
@@ -702,12 +775,18 @@ def singleproduct(request, id,slug):
         'cart' : cart,
         'amount2' : amount2,
         'totalamount2' : totalamount,
+        'product_id' : encrypted_product_id,
+        'encrypted_id' : subcategory.encrypted_id,
     
 
     })
     
 
     return render(request, 'singleproduct.html', context)
+    # except Exception as e:
+    #     # Handle decryption error or invalid ID
+    #     return HttpResponse("Invalid URL", status=400)
+
 
 def imageupload(request, product_pk):
     user_id = request.user.id
@@ -802,10 +881,17 @@ def show_cart(request):
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
     latest_products = Product.objects.order_by('-id')[:4]
+
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
     
     totalitem = 0
     wishitem = 0
     cart = []
+    gst =0
     amount = 0
     totalamount = 0
     cart_message = ""
@@ -817,7 +903,9 @@ def show_cart(request):
         
         if cart:
             amount = sum(cart_item.quantity * cart_item.product.price for cart_item in cart)
-            totalamount = amount + 40  # Assuming shipping cost or similar
+            gst = amount * 0.10
+        
+            totalamount = amount + gst + 40  # Assuming shipping cost or similar
         else:
             cart_message = "Your cart is empty."
     else:
@@ -835,8 +923,10 @@ def show_cart(request):
         'latest_products': latest_products,
         'cart': cart,
         'totalamount': totalamount,
+        'gst': gst,
         'amount': amount,
         'cart_message': cart_message,
+        'encrypted_subcategories' : encrypted_subcategories,
     }
     return render(request, 'cart2.html', context)
 
@@ -949,20 +1039,33 @@ def show_wishlist(request):
         cart = []
         wishlist_message = "You need to be logged in to view your wishlist."
 
-    product = WishList.objects.filter(user=user) if user else []
+    products = WishList.objects.filter(user=user) if user else []
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+
+    for subcategory in data:
+            subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+            print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  
+            
+    for product in products:
+        product.product.encrypted_pro_id = encrypt(str(product.product.id))
+        print(f"Product ID: {product.product.id}, Encrypted Product ID: {product.product.encrypted_pro_id}")
+
+
 
     context = {
         'SubCate': data,
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
-        'products': product,
+        'products': products,
         'cart': cart,
         'amount2': amount2,
         'totalamount2': totalamount,
         'wishlist_message': wishlist_message,
+        'encrypted_id' : subcategory.encrypted_id,
+        'encrypted_pro_id' : product.product.encrypted_pro_id,
     }
     return render(request, 'wishlist.html', context)
 
@@ -1174,7 +1277,8 @@ class checkout(View):
         for p in cart_items:
             value = p.quantity * p.product.price
             famount += value
-        totalamount = famount + 40
+            gst = famount * 0.10
+        totalamount = famount + gst + 40
 
         txnid = str(uuid.uuid4())
         easebuzz_url = "https://testpay.easebuzz.in/payment/initiateLink" if settings.EASEBUZZ_ENV == 'test' else "https://pay.easebuzz.in/payment/initiateLink"
@@ -1379,6 +1483,16 @@ def search_view(request):
         if not products.exists() and not subcategories.exists() and not categories.exists():
             no_results_message = "No items found matching your search."
 
+
+        for product in products:
+            product.encrypted_pro_id = encrypt(str(product.id))
+            print(f"Product ID: {product.id}, Encrypted Product ID: {product.encrypted_pro_id}, Slug: {product.slug}")
+    
+
+        encrypted_name = encrypt_data('home')
+        encoded_encrypted_name = quote(encrypted_name)
+
+
         context = {
             'SubCate': subcategories,
             'Category': categories,
@@ -1386,6 +1500,7 @@ def search_view(request):
             'wishitem': wishitem,
             'product': products,
             'no_results_message': no_results_message,
+            'encoded_encrypted_name' : encoded_encrypted_name,
         }
 
         return render(request, 'search.html', context)
@@ -1429,22 +1544,6 @@ def subcategory_products_view(request, subcategory_id):
     }
 
     return render(request, 'subcategory_products.html', context)
-
-def products_by_category(request, id, slug):
-    # Retrieve category based on id and slug
-    category = get_object_or_404(Category, id=id, slug=slug)
-    # Retrieve products related to this category
-    products = Product.objects.filter(categories=category)
-    # Render your template or return JSON response as needed
-    return render(request, 'category_products.html', {'products': products, 'category': category})
-
-def products_by_subcategory(request, id, slug):
-    # Retrieve subcategory based on id and slug
-    subcategory = get_object_or_404(SubCategory, id=id, slug=slug)
-    # Retrieve products related to this subcategory
-    products = Product.objects.filter(subcategories=subcategory)
-    # Render your template or return JSON response as needed
-    return render(request, 'subcategory_products.html', {'products': products, 'subcategory': subcategory})
 
 
 
@@ -1639,6 +1738,20 @@ def shopall(request):
         products = paginator.page(paginator.num_pages)
 
 
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
+    for product in products:
+        product.encrypted_pro_id = encrypt(str(product.id))
+        print(f"Product ID: {product.id}, Encrypted Product ID: {product.encrypted_pro_id}, Slug: {product.slug}")
+    
+
+    encrypted_name = encrypt_data('home')
+    encoded_encrypted_name = quote(encrypted_name)
+
+
     context = {
         'products': products,
         'SubCate': data,
@@ -1648,6 +1761,10 @@ def shopall(request):
         'cart': cart,
         'amount2': amount2,
         'totalamount2': totalamount,
+        'encrypted_subcategories' : encrypted_subcategories,
+        'encoded_encrypted_name': encoded_encrypted_name,
+        
+
     }
     return render(request, 'shopall.html', context)
 
@@ -1739,12 +1856,22 @@ def send_otp(request):
     else:
         totalitem = 0
         wishitem = 0
+    
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+
+    for subcategory in data:
+            subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+            print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
 
     context = {
         'SubCate': data,
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
+        'encrypted_subcategories' : encrypted_subcategories,
+        'encrypted_id' : subcategory.encrypted_id,
+
     }
 
     return render(request, 'send_otp.html', context)
@@ -1803,6 +1930,7 @@ def otp_verification(request):
         
         # Check if OTP has expired
         if 'otp_generated_time' in request.session:
+            print('lalalalal')
             otp_generated_time = request.session['otp_generated_time']
             if timezone.now() > otp_generated_time + timedelta(seconds=60):
                 request.session.flush()
@@ -1831,12 +1959,22 @@ def otp_verification(request):
         totalitem = 0
         wishitem = 0
 
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+
+    for subcategory in data:
+            subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+            print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
+
     context = {
         'SubCate': data,
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
-        'remaining_time': remaining_time,  # Pass remaining time to template
+        'remaining_time': remaining_time,  
+        'encrypted_subcategories' : encrypted_subcategories,
+        'encrypted_id' : subcategory.encrypted_id,
+
     }
 
     return render(request, 'otp_verification.html', context)
@@ -1878,7 +2016,7 @@ def PasswordReset(request):
                     del request.session['otp']
                     
                 # messages.success(request, 'Password reset successful. You can now log in with your new password.')
-                return redirect('login')
+                return redirect('login_user')
             else:
                 # If user is not authenticated, get their username or email
                 username_or_email = request.POST.get('username_or_email')
@@ -1898,7 +2036,7 @@ def PasswordReset(request):
                         del request.session['otp']
                     
                     # messages.success(request, 'Password reset successful. You can now log in with your new password.')
-                    return redirect('login')
+                    return redirect('login_user')
                 else:
                     messages.error(request, 'User not found.')
         else:
@@ -1929,31 +2067,158 @@ def autosuggest(request):
     category_queryset = Category.objects.filter(name__icontains=query_original)
     subcategory_queryset = SubCategory.objects.filter(name__icontains=query_original)
     
+    
+    
     # Create a list of suggestions
     suggestions = []
-    suggestions += [{'label': x.title, 'type': 'product', 'id': x.id, 'slug': x.slug} for x in product_queryset]
-    suggestions += [{'label': x.name, 'type': 'category', 'id': x.id, 'slug': x.slug} for x in category_queryset]
-    suggestions += [{'label': x.name, 'type': 'subcategory', 'id': x.id, 'slug': x.slug} for x in subcategory_queryset]
-    
+    suggestions += [{'label': x.title, 'type': 'product', 'id': encrypt(str(x.id))} for x in product_queryset]
+    suggestions += [{'label': x.name, 'type': 'category', 'id': encrypt(str(x.id))} for x in category_queryset]
+    suggestions += [{'label': x.name, 'type': 'subcategory', 'id': encrypt(str(x.id))} for x in subcategory_queryset]
+
     return JsonResponse(suggestions, safe=False)
 
+def products_by_category(request, encrypted_category_id):
+    category_id = decrypt(encrypted_category_id)
+    categories = get_object_or_404(Category, id=category_id)
+    subcategories = SubCategory.objects.filter(parent_category=categories)
+    products = Product.objects.filter(categories__in=subcategories)
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    for product in products:
+        product.encrypted_pro_id = encrypt(str(product.id))
+        print(f"Product ID: {product.id}, Encrypted Product ID: {product.encrypted_pro_id}")
 
-def products_by_category(request, id, slug):
-    # Retrieve category based on id and slug
-    category = get_object_or_404(Category, id=id, slug=slug)
-    # Retrieve products related to this category
-    products = Product.objects.filter(category=category)
-    # Render your template or return JSON response as needed
-    return render(request, 'category_products.html', {'products': products, 'category': category})
+    encrypted_name = encrypt_data('home')
+    encoded_encrypted_name = quote(encrypted_name)
 
-def products_by_subcategory(request, id, slug):
-    # Retrieve subcategory based on id and slug
-    subcategory = get_object_or_404(SubCategory, id=id, slug=slug)
-    # Retrieve products related to this subcategory
-    products = Product.objects.filter(subcategory=subcategory)
-    # Render your template or return JSON response as needed
-    return render(request, 'subcategory_products.html', {'products': products, 'subcategory': subcategory})
+    totalitem = 0
+    wishitem = 0
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
 
+
+    # Sorting logic
+    sort = request.GET.get('sort', 'relevance')
+    if sort == 'name_asc':
+        products = products.order_by('title')
+    elif sort == 'name_desc':
+        products = products.order_by('-title')
+    elif sort == 'price_asc':
+        products = products.order_by('price')
+    elif sort == 'price_desc':
+        products = products.order_by('-price')
+    else:
+        products = products.order_by('id')  # Default sorting by relevance (or any other default logic)
+
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    for product in products:
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+
+    sizes = []
+    for product in products:
+        if product.size:
+            sizes.extend(product.size)
+
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
+
+
+    
+    context = {
+        'SubCate': data,
+        'Category': parent_categories,
+        'page_obj': page_obj,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'products': products,
+        'subcategory': categories,
+        'encoded_encrypted_name' : encoded_encrypted_name,
+        # 'encrypted_pro_id' : product.encrypted_pro_id,
+        'encrypted_subcategories' :encrypted_subcategories,
+        'encrypted_id' : subcategory.encrypted_id,
+
+    }
+    return render(request, 'category_products.html',context)
+
+def products_by_subcategory(request, encrypted_subcategory_id):
+    subcategory_id = decrypt(encrypted_subcategory_id)
+    subcategory = get_object_or_404(SubCategory, id=subcategory_id)
+    products = Product.objects.filter(categories=subcategory)
+    data = SubCategory.objects.all()
+    parent_categories = Category.objects.all()
+    
+    totalitem = 0
+    wishitem = 0
+    if request.user.is_authenticated:
+        totalitem = Cart.objects.filter(user=request.user).count()
+        wishitem = WishList.objects.filter(user=request.user).count()
+
+
+    # Sorting logic
+    sort = request.GET.get('sort', 'relevance')
+    if sort == 'name_asc':
+        products = products.order_by('title')
+    elif sort == 'name_desc':
+        products = products.order_by('-title')
+    elif sort == 'price_asc':
+        products = products.order_by('price')
+    elif sort == 'price_desc':
+        products = products.order_by('-price')
+    else:
+        products = products.order_by('id')  # Default sorting by relevance (or any other default logic)
+
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    for product in products:
+        avg_rating = Rating.objects.filter(product=product).aggregate(Avg('rating'))['rating__avg']
+        product.avg_rating = round(avg_rating) if avg_rating is not None else 0
+
+    sizes = []
+    for product in products:
+        if product.size:
+            sizes.extend(product.size)
+
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")
+        
+
+    for product in products:
+        product.encrypted_pro_id = encrypt(str(product.id))
+        print(f"Product ID: {product.id}, Encrypted Product ID: {product.encrypted_pro_id}")
+
+    encrypted_name = encrypt_data('home')
+    encoded_encrypted_name = quote(encrypted_name)
+
+
+
+    
+    context = {
+        'SubCate': data,
+        'Category': parent_categories,
+        'page_obj': page_obj,
+        'totalitem': totalitem,
+        'wishitem': wishitem,
+        'products': products,
+        'subcategory': subcategory,
+        'encoded_encrypted_name' : encoded_encrypted_name,
+        # 'encrypted_pro_id' : product.encrypted_pro_id,
+        'encrypted_subcategories' :encrypted_subcategories,
+        'encrypted_id' : subcategory.encrypted_id,
+
+    }
+    return render(request, 'subcategory_products.html',context)
 
 
 
@@ -2113,13 +2378,30 @@ def trackorder(request):
     totalitem = Cart.objects.filter(user=request.user).count()
     wishitem = WishList.objects.filter(user=request.user).count()
 
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")
+        
+
+    # for product in products:
+    #     product.encrypted_pro_id = encrypt(str(product.id))
+    #     print(f"Product ID: {product.id}, Encrypted Product ID: {product.encrypted_pro_id}")
+
+    encrypted_name = encrypt_data('home')
+    encoded_encrypted_name = quote(encrypted_name)
+
     context = {
         
         'SubCate': data,
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
-        'orders': orders
+        'orders': orders,
+        'encrypted_subcategories' :encrypted_subcategories,
+        'encrypted_id' : subcategory.encrypted_id,
+        'encoded_encrypted_name' :encoded_encrypted_name,
+
     }
 
     return render(request, 'track_order.html', context)
@@ -2153,6 +2435,12 @@ def invoice(request):
     # Calculate total amount including taxes or other charges
     totalamount = subtotal + 352
 
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
+
     context = {
         'order': order,
         'orders': orders,
@@ -2162,6 +2450,9 @@ def invoice(request):
         'Category': parent_categories,
         'totalitem': totalitem,
         'wishitem': wishitem,
+        'encrypted_subcategories' :encrypted_subcategories,
+        'encrypted_id' : subcategory.encrypted_id,
+
     }
 
     # Check if export request
@@ -2200,6 +2491,12 @@ def userprofile(request):
     registered_user = User.objects.all()
     data = SubCategory.objects.all()
     parent_categories = Category.objects.all()
+
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
     
     # Define default background image URL
     default_background_image = "{% static '/images/banner/8.jpg' %}"
@@ -2292,6 +2589,7 @@ def userprofile(request):
         'totalitem': totalitem,
         'wishitem': wishitem,
         'registered_user' : registered_user,
+        'encrypted_subcategories' : encrypted_subcategories,
         
     }
 
@@ -2300,7 +2598,7 @@ def userprofile(request):
     return render(request, 'userprofile2.html', context)
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_cart_newarrival(request):
     user = request.user
     product_id = request.GET.get('prod_id')
@@ -2329,7 +2627,7 @@ def add_to_cart_newarrival(request):
     return redirect(reverse('home'))
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_cart_tabmen(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -2358,7 +2656,7 @@ def add_to_cart_tabmen(request):
     return JsonResponse({'message': 'Product added to cart successfully'})
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_wishlist_tabmen(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -2385,7 +2683,7 @@ def add_to_wishlist_tabmen(request):
 
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_cart_tabwomen(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -2414,7 +2712,7 @@ def add_to_cart_tabwomen(request):
     return JsonResponse({'message': 'Product added to cart successfully'})
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_wishlist_tabwomen(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -2444,7 +2742,7 @@ def add_to_wishlist_tabwomen(request):
 
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_cart_tabchild(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -2474,7 +2772,7 @@ def add_to_cart_tabchild(request):
 
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_wishlist_tabchild(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -2502,7 +2800,7 @@ def add_to_wishlist_tabchild(request):
 
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_cart_taball(request):
     # Extract product ID and quantity from the POST data
     product_id = request.POST.get('product_id')
@@ -2532,7 +2830,7 @@ def add_to_cart_taball(request):
 
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_wishlist_taball(request):
     # Extract product ID from the POST data
     product_id = request.POST.get('product_id')
@@ -2557,7 +2855,7 @@ def add_to_wishlist_taball(request):
         return JsonResponse({'error': 'Authentication required'}, status=403)
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_wishlist_newarrivals(request):
     product_id = request.POST.get('product_id')
 
@@ -2577,7 +2875,7 @@ def add_to_wishlist_newarrivals(request):
 
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_cart_shopall(request):
     product_id = request.POST.get('product_id')
     quantity = request.POST.get('quantity')
@@ -2602,7 +2900,7 @@ def add_to_cart_shopall(request):
 
 
 
-@login_required(login_url='login') 
+@login_required(login_url='login_user') 
 def add_to_wishlist_shopall(request):
     product_id = request.POST.get('product_id')
 
@@ -2706,6 +3004,13 @@ def orderhis(request):
     totalitem = Cart.objects.filter(user=request.user).count()
     wishitem = WishList.objects.filter(user=request.user).count()
 
+    encrypted_subcategories = {subcategory.id: encrypt(str(subcategory.id)) for subcategory in data}
+    for subcategory in data:
+        subcategory.encrypted_id = encrypted_subcategories[subcategory.id]
+        print(f"Subcategory ID: {subcategory.id}, Encrypted ID: {subcategory.encrypted_id}")  # Debugging
+
+    
+
     context = {
         
         'SubCate': data,
@@ -2714,6 +3019,8 @@ def orderhis(request):
         'wishitem': wishitem,
         'orders': orders,
         'orderplaced' : orderplaced,
+        'encrypted_subcategories' : encrypted_subcategories,
+        'encrypted_id': subcategory.encrypted_id,
     }
     return render(request,'orderhistory.html',context)
 
@@ -2762,3 +3069,9 @@ try:
     print('SMTP connection successful')
 except Exception as e:
     print(f'Error connecting to SMTP server: {e}')
+
+
+
+def about(request):
+    data = StaticPage.objects.filter(page='about').first()
+    return render(request, 'about.html',{'data':data})

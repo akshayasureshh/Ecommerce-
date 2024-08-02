@@ -20,19 +20,22 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from userapp. views import user_login,user_logout
 
 urlpatterns = [
 
     
-    path('auth/', include('djoser.urls')),
-    path('auth/',include('djoser.urls.jwt')), #for token authentication
+    # path('auth/', include('djoser.urls')),
+    # path('auth/',include('djoser.urls.jwt')), #for token authentication
     path('dj-admin/', admin.site.urls),
     path('admin/',include('adminapp.urls')),
-    path('api/',include('apiapp.urls')),
+    # path('api/',include('apiapp.urls')),
     path('',include('userapp.urls')),
-    path('/',include('django.contrib.auth.urls')),
+     path('login/',user_login,name='login_user'),
+    path('logout/', user_logout, name='logout_user'),
+    # path('auth/',include('django.contrib.auth.urls')),
     # path('api-token-auth/',views.obtain_auth_token,name='api_token_auth'),
-    path('api-auth/',include('rest_framework.urls')),
+    # path('api-auth/',include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 

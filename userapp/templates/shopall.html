@@ -136,7 +136,7 @@
                       <div class="col-md-6 col-sm-12">
                           <!-- ec-breadcrumb-list start -->
                           <ul class="ec-breadcrumb-list">
-                              <li class="ec-breadcrumb-item"><a href="/user/{{ 'home'|encrypt }}/">Home</a></li>
+                              <li class="ec-breadcrumb-item"><a href="{% url 'home_with_encrypted_name' encrypted_name=encoded_encrypted_name %}">Home</a></li>
                               <li class="ec-breadcrumb-item active">Shop</li>
                           </ul>
                           <!-- ec-breadcrumb-list end -->
@@ -190,7 +190,7 @@
                                     <div class="ec-product-inner">
                                         <div class="ec-pro-image-outer">
                                             <div class="ec-pro-image">
-                                                <a href="{% url 'singleproduct' pro.id %}" class="image">
+                                                <a href="{% url 'singleproduct' pro.encrypted_pro_id %}" class="image">
                                                     <img class="main-image"
                                                         src="{{pro.product_image.url}}" alt="Product" style="width: 450px; height: 410px;"/>
                                                     <img class="hover-image"
@@ -213,7 +213,7 @@
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
-                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' pro.id %}">{{pro.title}}</a></h5>
+                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' pro.encrypted_pro_id %}">{{pro.title}}</a></h5>
                                             <div class="ec-pro-rating">
                                                 
                                                     {% if pro.avg_rating == 0 %}

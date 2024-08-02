@@ -199,8 +199,8 @@
                                 <ul class="dropdown-menu dropdown-menu-right">
                                     <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                                     <li><a class="dropdown-item" href="{% url 'userprofile' %}">My profile</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Log out</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'login_user' %}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout_user' %}">Log out</a></li>
 
                                 </ul>
                             </div>
@@ -270,8 +270,8 @@
                                     <ul class="dropdown-menu dropdown-menu-right">
                                         <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
                                         <li><a class="dropdown-item" href="{% url 'userprofile' %}">My profile</a></li>
-                                        <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
-                                        <li><a class="dropdown-item" href="{% url 'logout' %}">Log out</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'login_user' %}">Login</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'logout_user' %}">Log out</a></li>
 
                                     </ul>
                                 </div>
@@ -345,7 +345,7 @@
                                                 <li class="menu_title"><a href="javascript:void(0)">{{i.name}}</a></li>
                                                 {% for j in SubCate %}
                                                 {% if j.parent_category.name == i.name %}
-                                                <li><a href="{% url 'product-detail' j.id %}">{{ j.name }}</a></li>                                                
+                                                <li><a href="{% url 'product-detail-encrypted' j.encrypted_id %}">{{ j.name }}</a></li>                                                
                                                 {% endif %}
                                                 {% endfor %}
                                                 <!-- </li> -->
@@ -365,7 +365,7 @@
                                                 {% for j in SubCate %}
                                                 <!-- {% for product in products|slice:"4:8" %} -->
                                                 {% if product.categories.name == j.name %}
-                                                <li><a class="p-0" href="{% url 'product-detail' j.id %}"><img
+                                                <li><a class="p-0" href="{% url 'product-detail-encrypted' j.encrypted_id %}"><img
                                                             class="img-responsive" src="{{product.product_image.url}}"
                                                             alt="" style="width: 300px; height: 130px;"></a></li>                                                                                                
                                                 {% endif %}
@@ -393,7 +393,7 @@
                                     <ul class="sub-menu">
                                     {% for j in SubCate %}
                                     {% if j.parent_category.name == i.name %}
-                                        <li><a href="{% url 'product-detail' j.id %}">{{ j.name }}</a></li>
+                                        <li><a href="{% url 'product-detail-encrypted' j.encrypted_id %}">{{ j.name }}</a></li>
                                     {% endif %}
                                     {% endfor %}
                                     </ul>
@@ -598,9 +598,9 @@
                                 <li><a href="contact-us.html">Contact Us</a></li>
                                 <li><a href="cart.html">Cart</a></li>
                                 <li><a href="{% url 'profile' %}">Checkout</a></li>
-                                <li><a href="compare.html">Compare</a></li>
+                                {% comment %} <li><a href="compare.html">Compare</a></li> {% endcomment %}
                                 <li><a href="faq.html">FAQ</a></li>
-                                <li><a href="{% url 'login' %}">Login</a></li>
+                                <li><a href="{% url 'login_user' %}">Login</a></li>
                                 <li><a href="{% url 'register' %}">Register</a></li>
                                 <li><a href="{% url 'trackorder' %}">Track Order</a></li>
                                          <li><a href="{% url 'orderhistory'  %}">order history</a></li>
@@ -1136,7 +1136,7 @@
                            class="ec-cart-noti">4</span></a>
                </div>
                <div class="ec-nav-panel-icons">
-                   <a href="login.html" class="ec-header-btn"><i class="fi-rr-user"></i></a>
+                   <a href="{% url 'login_user' %}" class="ec-header-btn"><i class="fi-rr-user"></i></a>
                </div>
 
            </div>

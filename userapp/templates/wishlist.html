@@ -202,7 +202,7 @@
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
-                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' pro.product.id pro.product.slug %}">{{pro.product.title}}</a></h5>
+                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' pro.product.encrypted_pro_id %}">{{pro.product.title}}</a></h5>
                                             {% comment %} <div class="ec-pro-rating">
                                                 
                                                 {% if pro.avg_rating == 0 %}
@@ -310,7 +310,7 @@
             },
             success:function(data){
                 //alert(data.message)
-                window.location.href = 'http://localhost:8000/singleproduct/' + id;
+                window.location.href = 'http://localhost:8000/singleproduct/' + encrypted_pro_id;
             }
         })
     })
@@ -326,7 +326,7 @@
             },
             success:function(data){
                 //alert(data.message)
-                window.location.href = 'http://localhost:8000/singleproduct/' + id;
+                window.location.href = 'http://localhost:8000/singleproduct/' + encrypted_pro_id;
             }
         })
     })</script>

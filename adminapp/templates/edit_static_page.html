@@ -65,7 +65,11 @@
     </div> <!-- End Content -->
 </div> <!-- End Content Wrapper -->
 
+<!-- Scripts -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
-    CKEDITOR.replace('content');
+    tinymce.init({
+        selector: '#content'
+    });
 </script>
 {% endblock main-content %}
