@@ -369,7 +369,7 @@
                                             </div> -->
                                             <div class="ec-single-cart ">
                                                 <form action="{% url 'add_to_cart' %}" class="d-inline" style="width: 150px;height: 40px;font-family:Georgia, 'Times New Roman', Times, serif;">
-                                                    <input type="hidden" name="prod_id" value="{{ product.id }}">
+                                                    <input type="hidden" name="prod_id" value="{{ encrypted_product_id }}">
                                                     <button type="submit" class=" gap-2 btn btn-dark p-1 m-1 btn-lg text-decoration-none text-white">Add to Cart</button>
                                                 </form>                                           
                                              </div>
@@ -378,9 +378,28 @@
                                             </div> -->
                                             <div class="wishlist-button" style="margin-top: 4px; margin-left: 16px;">
                                                 {% if wishlist %}
-                                                    <a href="{% url 'minus_wishlist' product.id %}" class="plus-wishlist btn  shadow  " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: red;"></i></a>
+                                                <form action="{% url 'minus_wishlist' %}" style="width: 50px;">
+                                                    <input type="hidden" name="prod_id" value="{{encrypted_product_id}}">
+                                                    <button type="submit" class="plus-wishlist btn shadow">
+                                                        <i class="fas fa-heart fa-lg" style="color: red;"></i>
+                                                        
+                                                    </button>
+                                                    {% comment %} <a href="{% url 'minus_wishlist'  %}" class="plus-wishlist btn shadow" style="width: 50px;">
+                                                        <i class="fas fa-heart fa-lg" style="color: red;"></i>
+                                                    </a> {% endcomment %}
+                                                </form>
                                                 {% else %}
-                                                    <a href="{% url 'plus_wishlist' product.id %}" class="minus-wishlist btn  shadow " style="width: 50px;"><i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i></a>
+                                                    {% comment %} <a href="{% url 'plus_wishlist'  %}" class="minus-wishlist btn shadow" style="width: 50px;">
+                                                        <i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i>
+                                                    </a> {% endcomment %}
+                                                    <form action="{% url 'plus_wishlist' %}" style="width: 50px;">
+                                                        <input type="hidden" name="prod_id" value="{{encrypted_product_id}}">
+                                                        <button type="submit" class="minus-wishlist btn shadow">
+                                                            <i class="fas fa-heart fa-lg" style="color: rgb(0, 0, 0);"></i>
+                                                            
+                                                        </button>
+                                                </form>
+
                                                 {% endif %}
                                             </div>
                                             <!-- <div class="ec-single-quickview">
@@ -511,7 +530,7 @@
 
                                 <div id="ec-spt-nav-review" class="tab-pane fade">
                                     <div class="row">
-                                        {% for review in reviews|slice:":2" %}
+                                        {% for review in reviews %}
                                         <div class="ec-t-review-wrapper">
                                             <div class="ec-t-review-item">
                                                 <div class="ec-t-review-avtar">
@@ -603,7 +622,7 @@
                                         <div class="ec-ratting-content">
                                             <h3>Add a Review</h3>
                                             <div class="ec-ratting-form">
-                                                <form id="review-form" action="{% url 'review' product.id %}" method="post">
+                                                <form id="review-form" action="{% url 'review' encrypted_product_id %}" method="post">
                                                     {% csrf_token %}
                                                     <div class="ec-ratting-star">
                                                         <span>Your rating:</span>

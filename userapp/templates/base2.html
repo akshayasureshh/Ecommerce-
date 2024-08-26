@@ -302,23 +302,23 @@
                     <!-- Header Top social End -->
                     <!-- Header Top Message Start -->
                     <div class="col text-center header-top-center">
-                        <div class="header-top-message text-upper">
+                        <!-- <div class="header-top-message text-upper">
                             <span>Free Shipping</span>This Week Order Over - $75
-                        </div>
+                        </div> -->
                     </div>
                     <!-- Header Top Message End -->
                     <!-- Header Top Language Currency -->
                     <div class="col header-top-right d-none d-lg-block">
                         <div class="header-top-lan-curr d-flex justify-content-end">
                             <!-- Currency Start -->
-                            <div class="header-top-curr dropdown">
+                            <!-- <div class="header-top-curr dropdown">
                                 <button class="dropdown-toggle text-upper" data-bs-toggle="dropdown">Currency <i
                                         class="ecicon eci-caret-down" aria-hidden="true"></i></button>
                                 <ul class="dropdown-menu">
                                     <li class="active"><a class="dropdown-item" href="#">USD $</a></li>
                                     <li><a class="dropdown-item" href="#">EUR €</a></li>
                                 </ul>
-                            </div>
+                            </div> -->
                             <!-- Currency End -->
                             <!-- Language Start -->
                             <div class="header-top-lan dropdown">
@@ -749,15 +749,15 @@
                         <li><a href="javascript:void(0)">Pages</a>
                             <ul class="sub-menu">
                                 <li><a href="about-us.html">About Us</a></li>
-                                <li><a href="contact-us.html">Contact Us</a></li>
+                                <li><a href="{% url 'contact' %}">Contact Us</a></li>
                                 <li><a href="cart.html">Cart</a></li>
                                 <li><a href="{% url 'checkout' %}">Checkout</a></li>
-                                <li><a href="compare.html">Compare</a></li>
+                                <!-- <li><a href="compare.html">Compare</a></li> -->
                                 <li><a href="faq.html">FAQ</a></li>
                                 <li><a href="{% url 'login_user' %}">Login</a></li>
                                 <li><a href="{% url 'register' %}">Register</a></li>
                                 <li><a href="{% url 'trackorder' %}">Track Order</a></li>
-                                <li><a href="terms-condition.html">Terms Condition</a></li>
+                                <li><a href="{% url 'terms-and-conditions' %}">Terms Condition</a></li>
                                 <li><a href="privacy-policy.html">Privacy Policy</a></li>
                             </ul>
                         </li>
@@ -962,7 +962,7 @@
                                         <li class="ec-footer-link"><a href="faq.html">FAQ</a></li>
                                         <li class="ec-footer-link"><a href="{% url 'trackorder' %}">Delivery Information</a>
                                         </li>
-                                        <li class="ec-footer-link"><a href="contact-us.html">Contact us</a></li>
+                                        <li class="ec-footer-link"><a href="{% url 'contact' %}">Contact us</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -972,10 +972,10 @@
                                 <h4 class="ec-footer-heading">Account</h4>
                                 <div class="ec-footer-links">
                                     <ul class="align-items-center">
-                                        <li class="ec-footer-link"><a href="user-profile.html">My Account</a></li>
+                                        <li class="ec-footer-link"><a href="{% url 'userprofile' %}">My Account</a></li>
                                         <li class="ec-footer-link"><a href="{% url 'trackorder' %}">Order History</a></li>
                                         <li class="ec-footer-link"><a href="{% url 'wishlist' %}">Wish List</a></li>
-                                        <li class="ec-footer-link"><a href="offer.html">Specials</a></li>
+                                        <li class="ec-footer-link"><a href="{% url 'shopall' %}">Specials</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -986,11 +986,11 @@
                                 <div class="ec-footer-links">
                                     <ul class="align-items-center">
                                         <li class="ec-footer-link"><a href="{% url 'trackorder' %}">Discount Returns</a></li>
-                                        <li class="ec-footer-link"><a href="privacy-policy.html">Policy & policy </a>
+                                        <li class="ec-footer-link"><a href="{% url 'privacy-policy' %}">Privacy & policy </a>
                                         </li>
-                                        <li class="ec-footer-link"><a href="terms-condition.html">Customer Service</a>
+                                        <li class="ec-footer-link"><a href="{% url 'contact' %}">Customer Service</a>
                                         </li>
-                                        <li class="ec-footer-link"><a href="terms-condition.html">Term & condition</a>
+                                        <li class="ec-footer-link"><a href="{% url 'terms-and-conditions' %}">Term & condition</a>
                                         </li>
                                     </ul>
                                 </div>

@@ -1046,96 +1046,98 @@ $(document).ready(function() {
       }
     });
   }
-  /*======== 14. CURRENT USER BAR CHART ========*/
-  var cUser = document.getElementById("currentUser");
-  if (cUser !== null) {
-    var myUChart = new Chart(cUser, {
-      type: "bar",
-      data: {
-        labels: [
-          "1h",
-          "10 m",
-          "50 m",
-          "30 m",
-          "40 m",
-          "20 m",
-          "30 m",
-          "25 m",
-          "20 m",
-          "5 m",
-          "10 m"
-        ],
-        datasets: [
-          {
-            label: "signup",
-            data: [15, 30, 27, 43, 39, 18, 42, 25, 13, 18, 59],
-            // data: [2, 3.2, 1.8, 2.1, 1.5, 3.5, 4, 2.3, 2.9, 4.5, 1.8, 3.4, 2.8],
-            backgroundColor: "#88aaf3"
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                drawBorder: true,
-                display: false,
-              },
-              ticks: {
-                fontColor: "#8a909d",
-                fontFamily: "Roboto, sans-serif",
-                display: false, // hide main x-axis line
-                beginAtZero: true,
-                callback: function(tick, index, array) {
-                  return index % 2 ? "" : tick;
-                }
-              },
-              barPercentage: 1.8,
-              categoryPercentage: 0.2
-            }
-          ],
-          yAxes: [
-            {
-              gridLines: {
-                drawBorder: true,
-                display: true,
-                color: "#eee",
-                zeroLineColor: "#eee"
-              },
-              ticks: {
-                fontColor: "#8a909d",
-                fontFamily: "Roboto, sans-serif",
-                display: true,
-                beginAtZero: true
-              }
-            }
-          ]
-        },
+  // /*======== 14. CURRENT USER BAR CHART ========*/
+  // var cUser = document.getElementById("currentUser");
+  // if (cUser !== null) {
+  //   var myUChart = new Chart(cUser, {
+  //     type: "bar",
+  //     data: {
+  //       labels: [
+  //         "1h",
+  //         "10 m",
+  //         "50 m",
+  //         "30 m",
+  //         "40 m",
+  //         "20 m",
+  //         "30 m",
+  //         "25 m",
+  //         "20 m",
+  //         "5 m",
+  //         "10 m"
+  //       ],
+  //       datasets: [
+  //         {
+  //           label: "signup",
+  //           data: [15, 30, 27, 43, 39, 18, 42, 25, 13, 18, 59],
+  //           // data: [2, 3.2, 1.8, 2.1, 1.5, 3.5, 4, 2.3, 2.9, 4.5, 1.8, 3.4, 2.8],
+  //           backgroundColor: "#88aaf3"
+  //         }
+  //       ]
+  //     },
+  //     options: {
+  //       responsive: true,
+  //       maintainAspectRatio: false,
+  //       legend: {
+  //         display: false
+  //       },
+  //       scales: {
+  //         xAxes: [
+  //           {
+  //             gridLines: {
+  //               drawBorder: true,
+  //               display: false,
+  //             },
+  //             ticks: {
+  //               fontColor: "#8a909d",
+  //               fontFamily: "Roboto, sans-serif",
+  //               display: false, // hide main x-axis line
+  //               beginAtZero: true,
+  //               callback: function(tick, index, array) {
+  //                 return index % 2 ? "" : tick;
+  //               }
+  //             },
+  //             barPercentage: 1.8,
+  //             categoryPercentage: 0.2
+  //           }
+  //         ],
+  //         yAxes: [
+  //           {
+  //             gridLines: {
+  //               drawBorder: true,
+  //               display: true,
+  //               color: "#eee",
+  //               zeroLineColor: "#eee"
+  //             },
+  //             ticks: {
+  //               fontColor: "#8a909d",
+  //               fontFamily: "Roboto, sans-serif",
+  //               display: true,
+  //               beginAtZero: true
+  //             }
+  //           }
+  //         ]
+  //       },
 
-        tooltips: {
-          mode: "index",
-          titleFontColor: "#888",
-          bodyFontColor: "#555",
-          titleFontSize: 12,
-          bodyFontSize: 15,
-          backgroundColor: "rgba(256,256,256,0.95)",
-          displayColors: true,
-          xPadding: 10,
-          yPadding: 7,
-          borderColor: "rgba(220, 220, 220, 0.9)",
-          borderWidth: 2,
-          caretSize: 6,
-          caretPadding: 5
-        }
-      }
-    });
-  }
+  //       tooltips: {
+  //         mode: "index",
+  //         titleFontColor: "#888",
+  //         bodyFontColor: "#555",
+  //         titleFontSize: 12,
+  //         bodyFontSize: 15,
+  //         backgroundColor: "rgba(256,256,256,0.95)",
+  //         displayColors: true,
+  //         xPadding: 10,
+  //         yPadding: 7,
+  //         borderColor: "rgba(220, 220, 220, 0.9)",
+  //         borderWidth: 2,
+  //         caretSize: 6,
+  //         caretPadding: 5
+  //       }
+  //     }
+  //   });
+  // }
+
+  
   /*======== 15. ANALYTICS - USER ACQUISITION ========*/
   var acquisition = document.getElementById("acquisition");
   if (acquisition !== null) {
@@ -1280,142 +1282,142 @@ $(document).ready(function() {
     });
   }
 
-  /*======== 16. ANALYTICS - ACTIVITY CHART ========*/
-  var activity = document.getElementById("activity");
-  if (activity !== null) {
-    var activityData = [
-      {
-        first: [0, 65, 52, 115, 98, 165, 125],
-        second: [45, 38, 100, 87, 152, 187, 85]
-      },
-      {
-        first: [0, 65, 77, 33, 49, 100, 100],
-        second: [88, 33, 20, 44, 111, 140, 77]
-      },
-      {
-        first: [0, 40, 77, 55, 33, 116, 50],
-        second: [55, 32, 20, 55, 111, 134, 66]
-      },
-      {
-        first: [0, 44, 22, 77, 33, 151, 99],
-        second: [60, 32, 120, 55, 19, 134, 88]
-      }
-    ];
+  // /*======== 16. ANALYTICS - ACTIVITY CHART ========*/
+  // var activity = document.getElementById("activity");
+  // if (activity !== null) {
+  //   var activityData = [
+  //     {
+  //       first: [0, 65, 52, 115, 98, 165, 125],
+  //       second: [45, 38, 100, 87, 152, 187, 85]
+  //     },
+  //     {
+  //       first: [0, 65, 77, 33, 49, 100, 100],
+  //       second: [88, 33, 20, 44, 111, 140, 77]
+  //     },
+  //     {
+  //       first: [0, 40, 77, 55, 33, 116, 50],
+  //       second: [55, 32, 20, 55, 111, 134, 66]
+  //     },
+  //     {
+  //       first: [0, 44, 22, 77, 33, 151, 99],
+  //       second: [60, 32, 120, 55, 19, 134, 88]
+  //     }
+  //   ];
 
-    var config = {
-      // The type of chart we want to create
-      type: "line",
-      // The data for our dataset
-      data: {
-        labels: [
-          "4 Jan",
-          "5 Jan",
-          "6 Jan",
-          "7 Jan",
-          "8 Jan",
-          "9 Jan",
-          "10 Jan"
-        ],
-        datasets: [
-          {
-            label: "Active",
-            backgroundColor: "transparent",
-            borderColor: "rgba(82, 136, 255, .8)",
-            data: activityData[0].first,
-            lineTension: 0,
-            pointRadius: 5,
-            pointBackgroundColor: "rgba(255,255,255,1)",
-            pointHoverBackgroundColor: "rgba(255,255,255,1)",
-            pointBorderWidth: 2,
-            pointHoverRadius: 7,
-            pointHoverBorderWidth: 1
-          },
-          {
-            label: "Inactive",
-            backgroundColor: "transparent",
-            borderColor: "rgba(255, 199, 15, .8)",
-            data: activityData[0].second,
-            lineTension: 0,
-            borderDash: [10, 5],
-            borderWidth: 1,
-            pointRadius: 5,
-            pointBackgroundColor: "rgba(255,255,255,1)",
-            pointHoverBackgroundColor: "rgba(255,255,255,1)",
-            pointBorderWidth: 2,
-            pointHoverRadius: 7,
-            pointHoverBorderWidth: 1
-          }
-        ]
-      },
-      // Configuration options go here
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: false,
-              },
-              ticks: {
-                fontColor: "#8a909d", // this here
-              },
-            }
-          ],
-          yAxes: [
-            {
-              gridLines: {
-                fontColor: "#8a909d",
-                fontFamily: "Roboto, sans-serif",
-                display: true,
-                color: "#eee",
-                zeroLineColor: "#eee"
-              },
-              ticks: {
-                // callback: function(tick, index, array) {
-                //   return (index % 2) ? "" : tick;
-                // }
-                stepSize: 50,
-                fontColor: "#8a909d",
-                fontFamily: "Roboto, sans-serif"
-              }
-            }
-          ]
-        },
-        tooltips: {
-          mode: "index",
-          intersect: false,
-          titleFontColor: "#888",
-          bodyFontColor: "#555",
-          titleFontSize: 12,
-          bodyFontSize: 15,
-          backgroundColor: "rgba(256,256,256,0.95)",
-          displayColors: true,
-          xPadding: 10,
-          yPadding: 7,
-          borderColor: "rgba(220, 220, 220, 0.9)",
-          borderWidth: 2,
-          caretSize: 6,
-          caretPadding: 5
-        }
-      }
-    };
+  //   var config = {
+  //     // The type of chart we want to create
+  //     type: "line",
+  //     // The data for our dataset
+  //     data: {
+  //       labels: [
+  //         "4 Jan",
+  //         "5 Jan",
+  //         "6 Jan",
+  //         "7 Jan",
+  //         "8 Jan",
+  //         "9 Jan",
+  //         "10 Jan"
+  //       ],
+  //       datasets: [
+  //         {
+  //           label: "Active",
+  //           backgroundColor: "transparent",
+  //           borderColor: "rgba(82, 136, 255, .8)",
+  //           data: activityData[0].first,
+  //           lineTension: 0,
+  //           pointRadius: 5,
+  //           pointBackgroundColor: "rgba(255,255,255,1)",
+  //           pointHoverBackgroundColor: "rgba(255,255,255,1)",
+  //           pointBorderWidth: 2,
+  //           pointHoverRadius: 7,
+  //           pointHoverBorderWidth: 1
+  //         },
+  //         {
+  //           label: "Inactive",
+  //           backgroundColor: "transparent",
+  //           borderColor: "rgba(255, 199, 15, .8)",
+  //           data: activityData[0].second,
+  //           lineTension: 0,
+  //           borderDash: [10, 5],
+  //           borderWidth: 1,
+  //           pointRadius: 5,
+  //           pointBackgroundColor: "rgba(255,255,255,1)",
+  //           pointHoverBackgroundColor: "rgba(255,255,255,1)",
+  //           pointBorderWidth: 2,
+  //           pointHoverRadius: 7,
+  //           pointHoverBorderWidth: 1
+  //         }
+  //       ]
+  //     },
+  //     // Configuration options go here
+  //     options: {
+  //       responsive: true,
+  //       maintainAspectRatio: false,
+  //       legend: {
+  //         display: false
+  //       },
+  //       scales: {
+  //         xAxes: [
+  //           {
+  //             gridLines: {
+  //               display: false,
+  //             },
+  //             ticks: {
+  //               fontColor: "#8a909d", // this here
+  //             },
+  //           }
+  //         ],
+  //         yAxes: [
+  //           {
+  //             gridLines: {
+  //               fontColor: "#8a909d",
+  //               fontFamily: "Roboto, sans-serif",
+  //               display: true,
+  //               color: "#eee",
+  //               zeroLineColor: "#eee"
+  //             },
+  //             ticks: {
+  //               // callback: function(tick, index, array) {
+  //               //   return (index % 2) ? "" : tick;
+  //               // }
+  //               stepSize: 50,
+  //               fontColor: "#8a909d",
+  //               fontFamily: "Roboto, sans-serif"
+  //             }
+  //           }
+  //         ]
+  //       },
+  //       tooltips: {
+  //         mode: "index",
+  //         intersect: false,
+  //         titleFontColor: "#888",
+  //         bodyFontColor: "#555",
+  //         titleFontSize: 12,
+  //         bodyFontSize: 15,
+  //         backgroundColor: "rgba(256,256,256,0.95)",
+  //         displayColors: true,
+  //         xPadding: 10,
+  //         yPadding: 7,
+  //         borderColor: "rgba(220, 220, 220, 0.9)",
+  //         borderWidth: 2,
+  //         caretSize: 6,
+  //         caretPadding: 5
+  //       }
+  //     }
+  //   };
 
-    var ctx = document.getElementById("activity").getContext("2d");
-    var myLine = new Chart(ctx, config);
+  //   var ctx = document.getElementById("activity").getContext("2d");
+  //   var myLine = new Chart(ctx, config);
 
-    var items = document.querySelectorAll("#user-activity .nav-tabs .nav-item");
-    items.forEach(function(item, index){
-      item.addEventListener("click", function() {
-        config.data.datasets[0].data = activityData[index].first;
-        config.data.datasets[1].data = activityData[index].second;
-        myLine.update();
-      });
-    });
-  }
+  //   var items = document.querySelectorAll("#user-activity .nav-tabs .nav-item");
+  //   items.forEach(function(item, index){
+  //     item.addEventListener("click", function() {
+  //       config.data.datasets[0].data = activityData[index].first;
+  //       config.data.datasets[1].data = activityData[index].second;
+  //       myLine.update();
+  //     });
+  //   });
+  // }
 
   /*======== 17. HORIZONTAL BAR CHART1 ========*/
   var hbar1 = document.getElementById("hbar1");
@@ -1576,62 +1578,62 @@ $(document).ready(function() {
     });
   }
 
-  /*======== 19. DEVICE - DOUGHNUT CHART ========*/
-  var deviceChart = document.getElementById("deviceChart");
-  if (deviceChart !== null) {
-    var mydeviceChart = new Chart(deviceChart, {
-      type: "doughnut",
-      data: {
-        labels: ["Desktop", "Tablet", "Mobile"],
-        datasets: [
-          {
-            label: ["Desktop", "Tablet", "Mobile"],
-            data: [60000, 15000, 25000],
-            backgroundColor: [
-              "rgba(76, 132, 255, 1)",
-              "rgba(76, 132, 255, 0.85)",
-              "rgba(76, 132, 255, 0.70)",
-            ],
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        cutoutPercentage: 75,
-        tooltips: {
-          callbacks: {
-            title: function(tooltipItem, data) {
-              return data["labels"][tooltipItem[0]["index"]];
-            },
-            label: function(tooltipItem, data) {
-              return (
-                data["datasets"][0]["data"][tooltipItem["index"]] + " Sessions"
-              );
-            }
-          },
+//   /*======== 19. DEVICE - DOUGHNUT CHART ========*/
+//   var deviceChart = document.getElementById("deviceChart");
+//   if (deviceChart !== null) {
+//     var mydeviceChart = new Chart(deviceChart, {
+//       type: "doughnut",
+//       data: {
+//         labels: ["Desktop", "Tablet", "Mobile"],
+//         datasets: [
+//           {
+//             label: ["Desktop", "Tablet", "Mobile"],
+//             data: [60000, 15000, 25000],
+//             backgroundColor: [
+//               "rgba(76, 132, 255, 1)",
+//               "rgba(76, 132, 255, 0.85)",
+//               "rgba(76, 132, 255, 0.70)",
+//             ],
+//             borderWidth: 1
+//           }
+//         ]
+//       },
+//       options: {
+//         responsive: true,
+//         maintainAspectRatio: false,
+//         legend: {
+//           display: false
+//         },
+//         cutoutPercentage: 75,
+//         tooltips: {
+//           callbacks: {
+//             title: function(tooltipItem, data) {
+//               return data["labels"][tooltipItem[0]["index"]];
+//             },
+//             label: function(tooltipItem, data) {
+//               return (
+//                 data["datasets"][0]["data"][tooltipItem["index"]] + " Sessions"
+//               );
+//             }
+//           },
 
-          titleFontColor: "#888",
-          bodyFontColor: "#555",
-          titleFontSize: 12,
-          bodyFontSize: 15,
-          backgroundColor: "rgba(256,256,256,0.95)",
-          displayColors: true,
-          xPadding: 10,
-          yPadding: 7,
-          borderColor: "rgba(220, 220, 220, 0.9)",
-          borderWidth: 2,
-          caretSize: 6,
-          caretPadding: 5
-        }
-      }
-    });
-  }
-});
+//           titleFontColor: "#888",
+//           bodyFontColor: "#555",
+//           titleFontSize: 12,
+//           bodyFontSize: 15,
+//           backgroundColor: "rgba(256,256,256,0.95)",
+//           displayColors: true,
+//           xPadding: 10,
+//           yPadding: 7,
+//           borderColor: "rgba(220, 220, 220, 0.9)",
+//           borderWidth: 2,
+//           caretSize: 6,
+//           caretPadding: 5
+//         }
+//       }
+//     });
+//   }
+// });
 
 /*======== 20. BAR CHART ========*/
 var barX = document.getElementById("barChart");
@@ -1640,24 +1642,12 @@ if (barX !== null) {
     type: "bar",
     data: {
       labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
       ],
       datasets: [
         {
           label: "signup",
           data: [5, 6, 4.5, 5.5, 3, 6, 4.5, 6, 8, 3, 5.5, 4],
-          // data: [2, 3.2, 1.8, 2.1, 1.5, 3.5, 4, 2.3, 2.9, 4.5, 1.8, 3.4, 2.8],
           backgroundColor: "#88aaf3"
         }
       ]

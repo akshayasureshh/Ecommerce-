@@ -3,7 +3,7 @@ from django.urls import path
 from .import  views
 from django.conf import settings
 from django.conf.urls.static import static
-from . views import list_static_pages, edit_static_page,create_static_page
+from . views import list_static_pages, edit_static_page,create_static_page,search_view_admin,admin_inquiries,sales_report
 # from .utils import encrypt_value
 
 
@@ -34,7 +34,7 @@ urlpatterns = [
 
 
     path('orderdetail/',views.order_detail,name='orderdetail'),
-    path('orderdetail2/<int:order_id>/', views.order_detail2, name='orderdetail2'),
+    # path('orderdetail2/<int:order_id>/', views.order_detail2, name='orderdetail2'),
 
     path('orderhistory/',views.orderhistory,name='orderhistory'),
 
@@ -53,6 +53,13 @@ urlpatterns = [
    path('static-pages/', list_static_pages, name='static_page_list'),
    path('static-pages/<page>/', edit_static_page, name='edit_static_page'),
    path('create/', create_static_page, name='create_static_page'),
+
+   path('search/', search_view_admin, name='search_admin'),
+
+   path('logout_admin/',views.user_logout_admin,name='logout_admin'),
+   path('inquiries/', admin_inquiries, name='admin_inquiries'),
+
+   path('sales-report/', sales_report, name='sales_report'),
 
     
 

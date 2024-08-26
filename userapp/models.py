@@ -271,3 +271,15 @@ class ImageUpload(models.Model):
         return uuid.uuid4().hex[:10]
 
     
+
+class Contact(models.Model):
+
+   First_name = models.CharField(max_length=100)
+   Last_name = models.CharField(max_length=100)
+   Email = models.EmailField()
+   phn = models.IntegerField(default=0)
+   comments = models.TextField(max_length=1000)
+   created_at = models.DateTimeField(auto_now_add=True,null=True)
+
+   def __str__(self):
+    return self.name

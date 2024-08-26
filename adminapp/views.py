@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import *
 from django.views import View
 from django.http import JsonResponse
-from userapp . models import Rating,User,OrderPlaced,Order,ImageUpload
+from userapp . models import Rating,User,OrderPlaced,Order,ImageUpload,Contact
 from django.shortcuts import render, get_object_or_404
 from django.utils.datastructures import MultiValueDictKeyError
 from .forms import ImageUploadForm
@@ -24,39 +24,198 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
 from django.db import IntegrityError
+from django.db.models import Sum
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Sum
+import datetime
+import calendar
+
+
 
 
 
 # from .utils import encode_url, decode_url 
 
 # Create your views here.
-
 def adminlogin(request):
+    print("inside function")
     if request.method == 'POST':
+        print("inside POST request")
+
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
-        # Authenticate the user
-        user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            if user.is_superuser:
-                # Log in the user
-                login(request, user)
+        try:
+            admin_user = AdminUser.objects.get(username=username,password=password)
+            
+            # Check if the provided password matches the hashed password
+            if admin_user is not None:
+                
                 return redirect('adminhome')
             else:
-                # User is not a superuser
+                messages.error(request, "Authentication failed.")
                 return redirect('login_admin')
-        else:
-            # Authentication failed
+
+        except AdminUser.DoesNotExist:
+            messages.error(request, "Authentication failed.")
             return redirect('login_admin')
     
     return render(request, 'login_admin.html')
 
+@login_required(login_url='login_admin')
 def home(request):
     orders = Order.objects.all()
-    return render(request,'home.html',{'orders':orders})
+    today = timezone.now().date()
+    daily_order_count = Order.objects.filter(ordered_date__date=today).count()
+    daily_visitors_count = User.objects.filter(last_login__date=today).count()
+    daily_signups_count = User.objects.filter(date_joined__date=today).count()
+    daily_revenue = Order.objects.filter(ordered_date__date=today).aggregate(total=Sum('amount'))['total'] or 0
+    order_placed = OrderPlaced.objects.all()
+    now = timezone.now()
+    current_month_start = now.replace(day=1)
+    previous_month_end = current_month_start - timedelta(days=1)
+    previous_month_start = previous_month_end.replace(day=1)
 
+
+
+    last_six_customers = User.objects.annotate(
+        order_count=Count('order'),
+        total_spent=Sum('order__amount')
+    ).order_by('-date_joined')[:6]
+
+    top_three_products = Product.objects.annotate(
+        order_count=Count('orderitems')
+    ).order_by('-order_count')[:3]
+
+    admin_user = None
+    if request.user.is_authenticated and request.user.is_superuser:
+        admin_user = request.user
+        print(admin_user)  
+    
+    for i in orders:
+      print(f"Order ID from orders: {i.id} ({type(i.id)})")
+
+    for j in order_placed:
+        print(f"Order ID from order_placed: {j.order_id} ({type(j.order_id)})")
+
+    sold_items = (
+        OrderPlaced.objects
+        .values('product__title')  
+        .annotate(total_quantity=Sum('quantity'))
+        .order_by('-total_quantity')[:10]  
+    )
+    
+    now = timezone.now()
+    current_month_start = now.replace(day=1)
+
+    # Get the start of the previous month
+    previous_month_end = current_month_start - timedelta(days=1)
+    previous_month_start = previous_month_end.replace(day=1)
+
+    # Get the top 10 sold items in the current month
+    sold_items = (
+        OrderPlaced.objects
+        .filter(order__ordered_date__gte=current_month_start)
+        .values('product__title')
+        .annotate(total_quantity=Sum('quantity'))
+        .order_by('-total_quantity')[:10]
+    )
+
+    # Get the sales for the same products in the previous month
+    previous_sold_items = (
+        OrderPlaced.objects
+        .filter(order__ordered_date__range=(previous_month_start, previous_month_end))
+        .values('product__title')
+        .annotate(previous_quantity=Sum('quantity'))
+    )
+
+    # Convert previous_sold_items to a dictionary for easy lookup
+    previous_sales_dict = {item['product__title']: item['previous_quantity'] for item in previous_sold_items}
+
+    # Calculate the percentage change
+    for item in sold_items:
+        product_title = item['product__title']
+        current_sales = item['total_quantity']
+        previous_sales = previous_sales_dict.get(product_title, 0)  # Default to 0 if not found
+
+        if previous_sales:
+            item['percentage_change'] = ((current_sales - previous_sales) / previous_sales) * 100
+        else:
+            item['percentage_change'] = 0
+
+    today = datetime.date.today()
+    current_month = today.month
+    current_year = today.year
+
+    # Get the number of days in the current month
+    days_in_month = calendar.monthrange(current_year, current_month)[1]
+
+    # Prepare a list to hold daily signup counts for the current month
+    signup_counts = [0] * days_in_month
+
+    # Get all users who signed up this month
+    signups = User.objects.filter(date_joined__year=current_year, date_joined__month=current_month)
+
+    # Count signups for each day
+    for signup in signups:
+        day = signup.date_joined.day
+        if 1 <= day <= days_in_month:  # Ensure day is within the correct range
+            signup_counts[day - 1] += 1  # Subtract 1 because list indices start at 0
+
+    
+    today = datetime.date.today()
+     
+    # Prepare labels and empty lists for active and inactive users
+    last_7_days = [today - timedelta(days=i) for i in range(6, -1, -1)]
+    active_users = []
+    inactive_users = []
+
+    for day in last_7_days:
+        # Calculate active users: Assume users who have logged in during the day are active
+        active_count = User.objects.filter(last_login__date=day).count()
+        active_users.append(active_count)
+
+        # Calculate inactive users: Users who have not logged in that day
+        inactive_count = User.objects.filter(last_login__date__lt=day).count()
+        inactive_users.append(inactive_count)
+
+    
+    completed_orders = Order.objects.filter(status='Delivered').count()
+    unpaid_orders = Order.objects.filter(status='Processing').count()
+    returned_orders = Order.objects.filter(status='Shipped').count()
+    pending_orders = Order.objects.filter(status='Pending').count()
+    canceled_orders = Order.objects.filter(status='Order Placed').count()
+    # broken_orders = Order.objects.filter(status='broken').count()
+    
+
+    
+
+    context = {
+        'orders': orders,
+        'order_placed' : order_placed,
+        'daily_order_count': daily_order_count,
+        'daily_visitors_count': daily_visitors_count,
+        'daily_signups_count': daily_signups_count,
+        'daily_revenue': daily_revenue,
+        'admin_user': admin_user,  
+        'last_six_customers': last_six_customers,
+        'top_three_products': top_three_products,
+        'sold_items': sold_items,
+        'signup_data': signup_counts,
+        'labels': [day.strftime('%d %b') for day in last_7_days],
+        'active_users': active_users,
+        'inactive_users': inactive_users,
+        'completed_orders': completed_orders,
+        'unpaid_orders': unpaid_orders,
+        'returned_orders': returned_orders,
+        'pending_orders': pending_orders,
+        'canceled_orders': canceled_orders,
+        # 'broken_orders': broken_orders,
+       
+        
+    }
+    return render(request, 'home.html', context)
 
 def categorypage(request):
     if request.method == 'POST':
@@ -416,16 +575,6 @@ def order_detail(request):
     }
     return render(request, 'order_detail.html',context)
 
-
-def order_detail2(request, order_id):
-    detail = get_object_or_404(Order, id=order_id)
-    details = OrderPlaced.objects.filter(order=detail)
-
-    context = {
-        'detail': detail,
-        'details': details,
-    }
-    return render(request, 'orderdetail2.html', context)
 
 
 def orderhistory(request):
@@ -797,3 +946,84 @@ def create_static_page(request):
             return render(request, 'create_static_page.html', {'error_message': error_message, 'page_type': page_type, 'content': content})
 
     return render(request, 'create_static_page.html')
+
+
+def search_view_admin(request):
+    if request.method == 'GET':
+        query = request.GET.get('query', '')
+
+        if query:
+            try:
+                order = get_object_or_404(Order, order_id=query)
+                order_placed = OrderPlaced.objects.filter(order=order)
+                
+                context = {
+                    'detail': order,
+                    'details': order_placed,
+                }
+                return render(request, 'orderdetail2.html', context)
+            
+            except Order.DoesNotExist:
+                context = {
+                    'error_message': 'Order not found.',
+                }
+                return render(request, 'order_detail.html', context)
+
+    return render(request, 'order_detail.html')
+
+
+def user_logout_admin(request):
+    logout(request)
+    return redirect('login_admin')
+
+
+
+
+def admin_inquiries(request):
+    inquiries = Contact.objects.all().order_by('-created_at')
+    context = {
+        'inquiries': inquiries,
+    }
+    return render(request, 'admin_inquiries.html', context)
+
+import plotly.express as px
+
+def sales_report(request):
+    today = timezone.now().date()
+    start_of_month = today.replace(day=1)
+    start_of_year = today.replace(month=1, day=1)
+
+    # Aggregate sales data
+    daily_sales = Order.objects.filter(ordered_date__date=today).values('ordered_date__hour').annotate(total=Sum('amount')).order_by('ordered_date__hour')
+    monthly_sales = Order.objects.filter(ordered_date__date__gte=start_of_month).values('ordered_date__day').annotate(total=Sum('amount')).order_by('ordered_date__day')
+    yearly_sales = Order.objects.filter(ordered_date__date__gte=start_of_year).values('ordered_date__month').annotate(total=Sum('amount')).order_by('ordered_date__month')
+
+    # Preparing Plotly graphs
+    daily_fig = px.bar(
+        x=[f"{hour['ordered_date__hour']}:00" for hour in daily_sales],
+        y=[hour['total'] for hour in daily_sales],
+        labels={'x': 'Hour of the Day', 'y': 'Total Sales'},
+        title='Daily Sales'
+    )
+    
+    monthly_fig = px.bar(
+        x=[f"Day {day['ordered_date__day']}" for day in monthly_sales],
+        y=[day['total'] for day in monthly_sales],
+        labels={'x': 'Day of the Month', 'y': 'Total Sales'},
+        title='Monthly Sales'
+    )
+    
+    yearly_fig = px.bar(
+        x=[f"Month {month['ordered_date__month']}" for month in yearly_sales],
+        y=[month['total'] for month in yearly_sales],
+        labels={'x': 'Month of the Year', 'y': 'Total Sales'},
+        title='Yearly Sales'
+    )
+
+    context = {
+        'daily_plot': daily_fig.to_html(),
+        'monthly_plot': monthly_fig.to_html(),
+        'yearly_plot': yearly_fig.to_html(),
+    }
+
+    return render(request, 'home.html', context)

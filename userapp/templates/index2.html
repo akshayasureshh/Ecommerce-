@@ -175,10 +175,10 @@
                 {% for i in most_ordered_products %}
                 <div>
                     <div class="ec-sb-pro-sl-item">
-                        <a href="product-left-sidebar.html" class="sidekka_pro_img"><img
+                        <a href="{% url 'singleproduct' i.product.encrypted_pro_id  %}" class="sidekka_pro_img"><img
                                 src="{{i.product.product_image.url}}" alt="product" /></a>
                         <div class="ec-pro-content">
-                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' i.product.id  %}">{{i.product.title}}</a></h5>
+                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' i.product.encrypted_pro_id  %}">{{i.product.title}}</a></h5>
                             <div class="ec-pro-rating">
                                 {% if i.product.avg_rating2 == 0 %}
                                     <i class="ecicon eci-star-o"></i>
@@ -288,7 +288,7 @@
                     </div>
                     <div class="ec-category-desc">
                         <h3>{{sliders.title}} <span title="Category Items"></span></h3>
-                        <a href="{% url 'singleproduct' sliders.id  %}" class="cat-show-all">Show All <i class="ecicon eci-angle-double-right"
+                        <a href="{% url 'singleproduct' sliders.encrypted_pro_id  %}" class="cat-show-all">Show All <i class="ecicon eci-angle-double-right"
                                 aria-hidden="true"></i></a>
                     </div>
                 </div>
@@ -346,7 +346,7 @@
                                     <div class="ec-product-inner">
                                         <div class="ec-pro-image-outer">
                                             <div class="ec-pro-image">
-                                                <a href="{% url 'singleproduct' product.id  %}" class="image">
+                                                <a href="{% url 'singleproduct' product.encrypted_pro_id  %}" class="image">
                                                     <img class="main-image" src="{{product.product_image.url}}"
                                                          alt="Product"  style="width: 365px; height: 410px;"/>
                                                     <img class="hover-image" src="{{product.product_image.url}}"
@@ -368,7 +368,7 @@
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
-                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.id  %}">{{product.title}}</a></h5>
+                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.encrypted_pro_id  %}">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
                                                 
                                                 {% if product.avg_rating == 0 %}
@@ -468,7 +468,7 @@
                                     <div class="ec-product-inner">
                                         <div class="ec-pro-image-outer">
                                             <div class="ec-pro-image">
-                                                <a href="product-left-sidebar.html" class="image">
+                                                <a href="{% url 'singleproduct' product.encrypted_pro_id %}" class="image">
                                                     <img class="main-image" src="{{product.product_image.url}}"
                                                          alt="Product"  style="width: 365px; height: 410px;"/>
                                                     <img class="hover-image" src="{{product.product_image.url}}"
@@ -491,7 +491,7 @@
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
-                                            <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{product.title}}</a></h5>
+                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.encrypted_pro_id %}">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
                                                 
                                                 {% if product.avg_rating == 0 %}
@@ -592,7 +592,7 @@
                                     <div class="ec-product-inner">
                                         <div class="ec-pro-image-outer">
                                             <div class="ec-pro-image">
-                                                <a href="product-left-sidebar.html" class="image">
+                                                <a href="{% url 'singleproduct' product.encrypted_pro_id %}" class="image">
                                                     <img class="main-image" src="{{product.product_image.url}}"
                                                          alt="Product" style="width: 365px; height: 410px;"/>
                                                     <img class="hover-image" src="{{product.product_image.url}}"
@@ -618,7 +618,7 @@
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
-                                            <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{product.title}}</a></h5>
+                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.encrypted_pro_id %}">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
                                                 
                                                 {% if product.avg_rating == 0 %}
@@ -721,7 +721,7 @@
                                     <div class="ec-product-inner">
                                         <div class="ec-pro-image-outer">
                                             <div class="ec-pro-image">
-                                                <a href="product-left-sidebar.html" class="image">
+                                                <a href="{% url 'singleproduct' product.encrypted_pro_id %}" class="image">
                                                     <img class="main-image" src="{{product.product_image.url}}"
                                                          alt="Product" style="width: 365px; height: 410px;"/>
                                                     <img class="hover-image" src="{{product.product_image.url}}"
@@ -745,7 +745,7 @@
                                             </div>
                                         </div>
                                         <div class="ec-pro-content">
-                                            <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{product.title}}</a></h5>
+                                            <h5 class="ec-pro-title"><a href="{% url 'singleproduct' product.encrypted_pro_id %}">{{product.title}}</a></h5>
                                             <div class="ec-pro-rating">
                                                 
                                                 {% if product.avg_rating == 0 %}
@@ -888,27 +888,29 @@
                                 <span class="ec-banner-discount">30% Discount</span>
                             </div>
                             <div class="banner-content">
-                                <span class="ec-banner-btn"><a href="{% url 'singleproduct' newarrival.id  %}">Order Now</a></span>
+                                <span class="ec-banner-btn"><a href="{% url 'singleproduct' newarrival.encrypted_pro_id  %}">Order Now</a></span>
                             </div>
                         </div>
                         
                     </div>
-                    {% if most_ordered %}
-                    <div class="banner-block col-lg-6 col-md-12" data-animation="slideInLeft">
-                        <div class="bnr-overlay">
-                            <img src="{{most_ordered.product_image.url}}" alt="" style="height: 400px;width: 800px;"/>
-                            <div class="banner-text">
-                                <span class="ec-banner-stitle">New Trending</span>
-                                <span class="ec-banner-title">{{ most_ordered.title }}</span>
-                                <span class="ec-banner-discount">Buy any 3 Items & get <br>20% Discount</span>
-                            </div>
-                            <div class="banner-content">
-                                <span class="ec-banner-btn"><a href="{% url 'singleproduct' most_ordered.id  %}">Order Now</a></span>
+                    {% for most_ordered in most_ordered_products|slice:":1" %}
+                        <div class="banner-block col-lg-6 col-md-12" data-animation="slideInLeft">
+                            <div class="bnr-overlay">
+                                <img src="{{ most_ordered.product.product_image.url }}" alt="" style="height: 400px;width: 800px;"/>
+                                <div class="banner-text">
+                                    <span class="ec-banner-stitle">New Trending</span>
+                                    <span class="ec-banner-title">{{ most_ordered.product.title }}</span>
+                                    <span class="ec-banner-discount">Buy any 3 Items & get <br>20% Discount</span>
+                                </div>
+                                <div class="banner-content">
+                                    
+                                        <span class="ec-banner-btn"><a href="{% url 'singleproduct' most_ordered.product.encrypted_pro_id %}">Order Now</a></span>
+                                    
+                                    
+                                </div>
                             </div>
                         </div>
-                    </div>
-                   
-                    {% endif %}
+                    {% endfor %}   
                 </div>
                 <!-- ec Banner End -->
               
@@ -1078,14 +1080,14 @@
                         <div class="ec-fs-pro-inner">
                             <div class="ec-fs-pro-image-outer col-lg-6 col-md-6 col-sm-6">
                                 <div class="ec-fs-pro-image">
-                                    <a href="product-left-sidebar.html" class="image"><img class="main-image"
+                                    <a href="{% url 'singleproduct' pro.encrypted_pro_id %}" class="image"><img class="main-image"
                                             src="{{pro.product_image.url}}" alt="Product" style="width: 289px; height: 411px;"/></a>
                                     <!-- <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
                                         data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a> -->
                                 </div>
                             </div>
                             <div class="ec-fs-pro-content col-lg-6 col-md-6 col-sm-6">
-                                <h5 class="ec-fs-pro-title"><a href="{% url 'singleproduct' pro.id  %}">{{pro.title}}</a>
+                                <h5 class="ec-fs-pro-title"><a href="{% url 'singleproduct' pro.encrypted_pro_id  %}">{{pro.title}}</a>
                                 </h5>
                                 <div class="ec-pro-rating">
                                                 
@@ -1142,7 +1144,7 @@
                                 <!-- <div class="ec-fs-pro-book">Total Booking: <span>25</span></div> -->
                                 <div class="ec-fs-pro-btn">
                                     <!-- <a href="#" class="btn btn-lg btn-secondary">Remind Me</a> -->
-                                    <a href="{% url 'singleproduct' pro.id  %}" class="btn btn-lg btn-primary">Book Now</a>
+                                    <a href="{% url 'singleproduct' pro.encrypted_pro_id  %}" class="btn btn-lg btn-primary">Book Now</a>
                                 </div>
                             </div>
                         </div>
@@ -1168,14 +1170,14 @@
                         <div class="ec-fs-pro-inner">
                             <div class="ec-fs-pro-image-outer col-lg-6 col-md-6 col-sm-6">
                                 <div class="ec-fs-pro-image">
-                                    <a href="product-left-sidebar.html" class="image"><img class="main-image"
+                                    <a href="{% url 'singleproduct' pro.encrypted_pro_id  %}" class="image"><img class="main-image"
                                             src="{{pro.product_image.url}}" alt="Product" style="width: 289px; height: 411px;"/></a>
                                     <!-- <a href="#" class="quickview" data-link-action="quickview" title="Quick view"
                                         data-bs-toggle="modal" data-bs-target="#ec_quickview_modal"><i class="fi-rr-eye"></i></a> -->
                                 </div>
                             </div>
                             <div class="ec-fs-pro-content col-lg-6 col-md-6 col-sm-6">
-                                <h5 class="ec-fs-pro-title"><a href="{% url 'singleproduct' pro.id  %}">{{pro.title}}</a>
+                                <h5 class="ec-fs-pro-title"><a href="{% url 'singleproduct' pro.encrypted_pro_id  %}">{{pro.title}}</a>
                                 </h5>
                                 <div class="ec-pro-rating">
                                                 
@@ -1231,7 +1233,7 @@
                                 <!-- <div class="ec-fs-pro-book">Total Booking: <span>25</span></div> -->
                                 <div class="ec-fs-pro-btn">
                                     <!-- <a href="#" class="btn btn-lg btn-secondary">Remind Me</a> -->
-                                    <a href="{% url 'singleproduct' pro.id  %}" class="btn btn-lg btn-primary">Book Now</a>
+                                    <a href="{% url 'singleproduct' pro.encrypted_pro_id  %}" class="btn btn-lg btn-primary">Book Now</a>
                                 </div>
                             </div>
                         </div>
@@ -1379,7 +1381,7 @@
                 <div class="ec-product-inner">
                     <div class="ec-pro-image-outer">
                         <div class="ec-pro-image">
-                            <a href="{% url 'singleproduct' pro.id  %}" class="image">
+                            <a href="{% url 'singleproduct' pro.encrypted_pro_id  %}" class="image">
                                 <img class="main-image" src="{{pro.product_image.url}}" alt="Product" style="height: 400px; width: 318px;"/>
                                 <img class="hover-image" src="{{pro.product_image.url}}" alt="Product" style="height: 430px; width: 330px;"/>
                             </a>
@@ -1416,7 +1418,7 @@
                         </div>
                     </div>
                     <div class="ec-pro-content">
-                        <h5 class="ec-pro-title"><a href="product-left-sidebar.html">{{pro.title}}</a>
+                        <h5 class="ec-pro-title"><a href="{% url 'singleproduct' pro.encrypted_pro_id  %}">{{pro.title}}</a>
                         </h5>
                         <div class="ec-pro-rating">
                                                 

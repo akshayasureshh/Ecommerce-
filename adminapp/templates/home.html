@@ -20,6 +20,10 @@
 <!-- FAVICON -->
 <link href="{% static 'img/favicon.png' %}" rel="shortcut icon" />
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
 {% endblock %}
 
 
@@ -35,7 +39,7 @@
 						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-1">
 								<div class="card-body">
-									<h2 class="mb-1">1,503</h2>
+									<h2 class="mb-1">{{ daily_signups_count }}</h2>
 									<p>Daily Signups</p>
 									<span class="mdi mdi-account-arrow-left"></span>
 								</div>
@@ -44,7 +48,7 @@
 						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-2">
 								<div class="card-body">
-									<h2 class="mb-1">79,503</h2>
+									<h2 class="mb-1">{{ daily_visitors_count }}</h2>
 									<p>Daily Visitors</p>
 									<span class="mdi mdi-account-clock"></span>
 								</div>
@@ -53,7 +57,7 @@
 						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-3">
 								<div class="card-body">
-									<h2 class="mb-1">15,503</h2>
+									<h2 class="mb-1">{{ daily_order_count }}</h2>
 									<p>Daily Order</p>
 									<span class="mdi mdi-package-variant"></span>
 								</div>
@@ -62,7 +66,7 @@
 						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-4">
 								<div class="card-body">
-									<h2 class="mb-1">$98,503</h2>
+									<h2 class="mb-1">Rs.{{ daily_revenue|floatformat:2 }}</h2>
 									<p>Daily Revenue</p>
 									<span class="mdi mdi-currency-usd"></span>
 								</div>
@@ -104,7 +108,7 @@
 								</div>
 							</div>
 						</div>
-
+						
 						<div class="col-xl-4 col-md-12 p-b-15">
 							<!-- Doughnut Chart -->
 							<div class="card card-default">
@@ -114,36 +118,29 @@
 								<div class="card-body">
 									<canvas id="doChart"></canvas>
 								</div>
-								<a href="#" class="pb-5 d-block text-center text-muted"><i
-										class="mdi mdi-download mr-2"></i> Download overall report</a>
+								<a href="#" class="pb-5 d-block text-center text-muted"><i class="mdi mdi-download mr-2"></i> Download overall report</a>
 								<div class="card-footer d-flex flex-wrap bg-white p-0">
 									<div class="col-6">
 										<div class="p-20">
 											<ul class="d-flex flex-column justify-content-between">
-												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2"
-														style="color: #4c84ff"></i>Order Completed</li>
-												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2"
-														style="color: #80e1c1 "></i>Order Unpaid</li>
-												<li><i class="mdi mdi-checkbox-blank-circle-outline mr-2"
-														style="color: #ff7b7b "></i>Order returned</li>
+												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2" style="color: #4c84ff"></i>Delivered</li>
+												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2" style="color: #80e1c1 "></i>Processing</li>
+												<li><i class="mdi mdi-checkbox-blank-circle-outline mr-2" style="color: #ff7b7b "></i>Shipped</li>
 											</ul>
 										</div>
 									</div>
 									<div class="col-6 border-left">
 										<div class="p-20">
 											<ul class="d-flex flex-column justify-content-between">
-												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2"
-														style="color: #8061ef"></i>Order Pending</li>
-												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2"
-														style="color: #ffa128"></i>Order Canceled</li>
-												<li><i class="mdi mdi-checkbox-blank-circle-outline mr-2"
-														style="color: #7be6ff"></i>Order Broken</li>
+												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2" style="color: #8061ef"></i>Pending</li>
+												<li class="mb-2"><i class="mdi mdi-checkbox-blank-circle-outline mr-2" style="color: #ffa128"></i>Order Placed</li>
 											</ul>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
+						
 					</div>
 
 					<div class="row">
@@ -225,12 +222,9 @@
 								<div class="card-header justify-content-between">
 									<h2>Sold by Items</h2>
 									<div class="tools">
-										<button class="text-black-50 mr-2 font-size-20"><i
-												class="mdi mdi-cached"></i></button>
+										<button class="text-black-50 mr-2 font-size-20"><i class="mdi mdi-cached"></i></button>
 										<div class="dropdown show d-inline-block widget-dropdown">
-											<a class="dropdown-toggle icon-burger-mini" href="#" role="button"
-												id="dropdown-units" data-bs-toggle="dropdown" aria-haspopup="true"
-												aria-expanded="false" data-display="static"></a>
+											<a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdown-units" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static"></a>
 											<ul class="dropdown-menu dropdown-menu-right">
 												<li class="dropdown-item"><a href="#">Action</a></li>
 												<li class="dropdown-item"><a href="#">Another action</a></li>
@@ -242,85 +236,25 @@
 								<div class="card-body py-0 compact-units" data-simplebar style="height: 534px;">
 									<table class="table ">
 										<tbody>
+											{% for item in sold_items %}
 											<tr>
-												<td class="text-dark">Backpack</td>
-												<td class="text-center">9</td>
-												<td class="text-right">33% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
+												<td class="text-dark">{{ item.product__title }}</td>
+												<td class="text-center">{{ item.total_quantity }}</td>
+												<td class="text-right">
+													<!-- Assuming you calculate the percentage change -->
+													{{ item.percentage_change }}% <i class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
 												</td>
 											</tr>
-											<tr>
-												<td class="text-dark">T-Shirt</td>
-												<td class="text-center">6</td>
-												<td class="text-right">150% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">Coat</td>
-												<td class="text-center">3</td>
-												<td class="text-right">50% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">Necklace</td>
-												<td class="text-center">7</td>
-												<td class="text-right">150% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">Jeans Pant</td>
-												<td class="text-center">10</td>
-												<td class="text-right">300% <i
-														class="mdi mdi-arrow-down-bold text-danger pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">Shoes</td>
-												<td class="text-center">5</td>
-												<td class="text-right">100% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">T-Shirt</td>
-												<td class="text-center">6</td>
-												<td class="text-right">150% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">Watches</td>
-												<td class="text-center">18</td>
-												<td class="text-right">160% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">Inner</td>
-												<td class="text-center">156</td>
-												<td class="text-right">120% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
-											<tr>
-												<td class="text-dark">T-Shirt</td>
-												<td class="text-center">6</td>
-												<td class="text-right">150% <i
-														class="mdi mdi-arrow-up-bold text-success pl-1 font-size-12"></i>
-												</td>
-											</tr>
+											{% endfor %}
 										</tbody>
 									</table>
-
 								</div>
 								<div class="card-footer d-flex flex-wrap bg-white">
 									<a href="#" class="text-uppercase py-3">View Report</a>
 								</div>
 							</div>
 						</div>
+						
 					</div>
 
 					<div class="row">
@@ -348,147 +282,43 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
-												<td>24541</td>
-												<td>
-													<a class="text-dark" href=""> Coach Swagger</a>
-												</td>
-												<td class="d-none d-lg-table-cell">1 Unit</td>
-												<td class="d-none d-lg-table-cell">Oct 20, 2018</td>
-												<td class="d-none d-lg-table-cell">$230</td>
-												<td>
-													<span class="badge badge-success">Completed</span>
-												</td>
-												<td class="text-right">
-													<div class="dropdown show d-inline-block widget-dropdown">
-														<a class="dropdown-toggle icon-burger-mini" href=""
-															role="button" id="dropdown-recent-order1"
-															data-bs-toggle="dropdown" aria-haspopup="true"
-															aria-expanded="false" data-display="static"></a>
-														<ul class="dropdown-menu dropdown-menu-right">
-															<li class="dropdown-item">
-																<a href="#">View</a>
-															</li>
-															<li class="dropdown-item">
-																<a href="#">Remove</a>
-															</li>
-														</ul>
-													</div>
-												</td>
-											</tr>
-											<tr>
-												<td>24541</td>
-												<td>
-													<a class="text-dark" href=""> Toddler Shoes, Gucci Watch</a>
-												</td>
-												<td class="d-none d-lg-table-cell">2 Units</td>
-												<td class="d-none d-lg-table-cell">Nov 15, 2018</td>
-												<td class="d-none d-lg-table-cell">$550</td>
-												<td>
-													<span class="badge badge-primary">Delayed</span>
-												</td>
-												<td class="text-right">
-													<div class="dropdown show d-inline-block widget-dropdown">
-														<a class="dropdown-toggle icon-burger-mini" href="#"
-															role="button" id="dropdown-recent-order2"
-															data-bs-toggle="dropdown" aria-haspopup="true"
-															aria-expanded="false" data-display="static"></a>
-														<ul class="dropdown-menu dropdown-menu-right">
-															<li class="dropdown-item">
-																<a href="#">View</a>
-															</li>
-															<li class="dropdown-item">
-																<a href="#">Remove</a>
-															</li>
-														</ul>
-													</div>
-												</td>
-											</tr>
-											<tr>
-												<td>24541</td>
-												<td>
-													<a class="text-dark" href=""> Hat Black Suits</a>
-												</td>
-												<td class="d-none d-lg-table-cell">1 Unit</td>
-												<td class="d-none d-lg-table-cell">Nov 18, 2018</td>
-												<td class="d-none d-lg-table-cell">$325</td>
-												<td>
-													<span class="badge badge-warning">On Hold</span>
-												</td>
-												<td class="text-right">
-													<div class="dropdown show d-inline-block widget-dropdown">
-														<a class="dropdown-toggle icon-burger-mini" href="#"
-															role="button" id="dropdown-recent-order3"
-															data-bs-toggle="dropdown" aria-haspopup="true"
-															aria-expanded="false" data-display="static"></a>
-														<ul class="dropdown-menu dropdown-menu-right">
-															<li class="dropdown-item">
-																<a href="#">View</a>
-															</li>
-															<li class="dropdown-item">
-																<a href="#">Remove</a>
-															</li>
-														</ul>
-													</div>
-												</td>
-											</tr>
-											<tr>
-												<td>24541</td>
-												<td>
-													<a class="text-dark" href=""> Backpack Gents, Swimming Cap Slin</a>
-												</td>
-												<td class="d-none d-lg-table-cell">5 Units</td>
-												<td class="d-none d-lg-table-cell">Dec 13, 2018</td>
-												<td class="d-none d-lg-table-cell">$200</td>
-												<td>
-													<span class="badge badge-success">Completed</span>
-												</td>
-												<td class="text-right">
-													<div class="dropdown show d-inline-block widget-dropdown">
-														<a class="dropdown-toggle icon-burger-mini" href="#"
-															role="button" id="dropdown-recent-order4"
-															data-bs-toggle="dropdown" aria-haspopup="true"
-															aria-expanded="false" data-display="static"></a>
-														<ul class="dropdown-menu dropdown-menu-right">
-															<li class="dropdown-item">
-																<a href="#">View</a>
-															</li>
-															<li class="dropdown-item">
-																<a href="#">Remove</a>
-															</li>
-														</ul>
-													</div>
-												</td>
-											</tr>
-											<tr>
-												<td>24541</td>
-												<td>
-													<a class="text-dark" href=""> Speed 500 Ignite</a>
-												</td>
-												<td class="d-none d-lg-table-cell">1 Unit</td>
-												<td class="d-none d-lg-table-cell">Dec 23, 2018</td>
-												<td class="d-none d-lg-table-cell">$150</td>
-												<td>
-													<span class="badge badge-danger">Cancelled</span>
-												</td>
-												<td class="text-right">
-													<div class="dropdown show d-inline-block widget-dropdown">
-														<a class="dropdown-toggle icon-burger-mini" href="#"
-															role="button" id="dropdown-recent-order5"
-															data-bs-toggle="dropdown" aria-haspopup="true"
-															aria-expanded="false" data-display="static"></a>
-														<ul class="dropdown-menu dropdown-menu-right">
-															<li class="dropdown-item">
-																<a href="#">View</a>
-															</li>
-															<li class="dropdown-item">
-																<a href="#">Remove</a>
-															</li>
-														</ul>
-													</div>
-												</td>
-											</tr>
+											{% for i in orders|slice:":4" %}
+												{% for j in order_placed %}
+												{% if j.order.order_id == i.order_id %}
+														<tr>
+															<td>{{ i.order_id }}</td>
+															<td>
+																<a class="text-dark" href="">{{ j.product.title }}</a>
+															</td>
+															<td class="d-none d-lg-table-cell">{{ j.quantity }}</td>
+															<td class="d-none d-lg-table-cell">{{ i.ordered_date }}</td>
+															<td class="d-none d-lg-table-cell">{{ i.amount }}</td>
+															<td>
+																<span class="badge badge-success">{{ i.status }}</span>
+															</td>
+															<td class="text-right">
+																<div class="dropdown show d-inline-block widget-dropdown">
+																	<a class="dropdown-toggle icon-burger-mini" href=""
+																	   role="button" id="dropdown-recent-order1"
+																	   data-bs-toggle="dropdown" aria-haspopup="true"
+																	   aria-expanded="false" data-display="static"></a>
+																	<ul class="dropdown-menu dropdown-menu-right">
+																		<li class="dropdown-item">
+																			<a href="#">View</a>
+																		</li>
+																		<li class="dropdown-item">
+																			<a href="#">Remove</a>
+																		</li>
+																	</ul>
+																</div>
+															</td>
+														</tr>
+													{% endif %}
+												{% endfor %}
+											{% endfor %}
 										</tbody>
+										
+										
 									</table>
 								</div>
 							</div>
@@ -521,132 +351,26 @@
 								<div class="card-body pt-0 pb-15px">
 									<table class="table ">
 										<tbody>
+											{% for customer in last_six_customers %}
 											<tr>
 												<td>
 													<div class="media">
 														<div class="media-image mr-3 rounded-circle">
-															<a href="profile.html"><img
-																	class="profile-img rounded-circle w-45"
-																	src="{% static 'img/user/u1.jpg' %}"
-																	alt="customer image"></a>
+															<i class="ri-user-line"></i>
 														</div>
 														<div class="media-body align-self-center">
 															<a href="profile.html">
-																<h6 class="mt-0 text-dark font-weight-medium">Selena
-																	Wagner</h6>
+																<h6 class="mt-0 text-dark font-weight-medium">{{customer.username}}</h6>
 															</a>
-															<small>@selena.oi</small>
+															<small>{{customer.email}}</small>
 														</div>
 													</div>
 												</td>
-												<td>2 Orders</td>
-												<td class="text-dark d-none d-md-block">$150</td>
+												<td>{{ customer.order_count }} Orders</td>
+												<td class="text-dark d-none d-md-block">Rs.{{ customer.total_spent }}</td>
 											</tr>
-											<tr>
-												<td>
-													<div class="media">
-														<div class="media-image mr-3 rounded-circle">
-															<a href="profile.html"><img
-																	class="profile-img rounded-circle w-45"
-																	src="{% static 'img/user/u2.jpg' %}"
-																	alt="customer image"></a>
-														</div>
-														<div class="media-body align-self-center">
-															<a href="profile.html">
-																<h6 class="mt-0 text-dark font-weight-medium">Walter
-																	Reuter</h6>
-															</a>
-															<small>@walter.me</small>
-														</div>
-													</div>
-												</td>
-												<td>5 Orders</td>
-												<td class="text-dark d-none d-md-block">$200</td>
-											</tr>
-											<tr>
-												<td>
-													<div class="media">
-														<div class="media-image mr-3 rounded-circle">
-															<a href="profile.html"><img
-																	class="profile-img rounded-circle w-45"
-																	src="{% static 'img/user/u3.jpg' %}"
-																	alt="customer image"></a>
-														</div>
-														<div class="media-body align-self-center">
-															<a href="profile.html">
-																<h6 class="mt-0 text-dark font-weight-medium">Larissa
-																	Gebhardt</h6>
-															</a>
-															<small>@larissa.gb</small>
-														</div>
-													</div>
-												</td>
-												<td>1 Order</td>
-												<td class="text-dark d-none d-md-block">$50</td>
-											</tr>
-											<tr>
-												<td>
-													<div class="media">
-														<div class="media-image mr-3 rounded-circle">
-															<a href="profile.html"><img
-																	class="profile-img rounded-circle w-45"
-																	src="{% static 'img/user/u4.jpg' %}"
-																	alt="customer image"></a>
-														</div>
-														<div class="media-body align-self-center">
-															<a href="profile.html">
-																<h6 class="mt-0 text-dark font-weight-medium">Albrecht
-																	Straub</h6>
-															</a>
-															<small>@albrech.as</small>
-														</div>
-													</div>
-												</td>
-												<td>2 Orders</td>
-												<td class="text-dark d-none d-md-block">$100</td>
-											</tr>
-											<tr>
-												<td>
-													<div class="media">
-														<div class="media-image mr-3 rounded-circle">
-															<a href="profile.html"><img
-																	class="profile-img rounded-circle w-45"
-																	src="{% static 'img/user/u5.jpg' %}"
-																	alt="customer image"></a>
-														</div>
-														<div class="media-body align-self-center">
-															<a href="profile.html">
-																<h6 class="mt-0 text-dark font-weight-medium">Leopold
-																	Ebert</h6>
-															</a>
-															<small>@leopold.et</small>
-														</div>
-													</div>
-												</td>
-												<td>1 Order</td>
-												<td class="text-dark d-none d-md-block">$60</td>
-											</tr>
-											<tr>
-												<td>
-													<div class="media">
-														<div class="media-image mr-3 rounded-circle">
-															<a href="profile.html"><img
-																	class="profile-img rounded-circle w-45"
-																	src="{% static 'img/user/u3.jpg' %}"
-																	alt="customer image"></a>
-														</div>
-														<div class="media-body align-self-center">
-															<a href="profile.html">
-																<h6 class="mt-0 text-dark font-weight-medium">Larissa
-																	Gebhardt</h6>
-															</a>
-															<small>@larissa.gb</small>
-														</div>
-													</div>
-												</td>
-												<td>1 Order</td>
-												<td class="text-dark d-none d-md-block">$50</td>
-											</tr>
+											{% endfor %}
+											
 										</tbody>
 									</table>
 								</div>
@@ -676,66 +400,290 @@
 									</div>
 								</div>
 								<div class="card-body mt-10px mb-10px py-0">
+									{% for product in top_three_products %}
 									<div class="row media d-flex pt-15px pb-15px">
 										<div
 											class="col-lg-3 col-md-3 col-2 media-image align-self-center rounded">
-											<a href="#"><img src="{% static 'img/products/p1.jpg' %}" alt="customer image"></a>
+											<a href="#"><img src="{{product.product_image.url}}" alt="customer image" style="height:120px;width:120px;"></a>
 										</div>
 										<div class="col-lg-9 col-md-9 col-10 media-body align-self-center ec-pos">
 											<a href="#">
-												<h6 class="mb-10px text-dark font-weight-medium">Baby cotton shoes</h6>
+												<h6 class="mb-10px text-dark font-weight-medium">{{product.title}}</h6>
 											</a>
-											<p class="float-md-right sale"><span class="mr-2">58</span>Sales</p>
-											<p class="d-none d-md-block">Statement belting with double-turnlock hardware
-												adds “swagger” to a simple.</p>
+											<p class="float-md-right sale"><span class="mr-2">{{product.quantity}}</span>To Sale</p>
+											<p class="d-none d-md-block">{{product.description}}</p>
 											<p class="mb-0 ec-price">
-												<span class="text-dark">$520</span>
-												<del>$580</del>
+												<span class="text-dark">{{product.price}}</span>
+												{% comment %} <del>$580</del> {% endcomment %}
 											</p>
 										</div>
 									</div>
-									<div class="row media d-flex pt-15px pb-15px">
-										<div
-											class="col-lg-3 col-md-3 col-2 media-image align-self-center rounded">
-											<a href="#"><img src="{% static 'img/products/p2.jpg' %}" alt="customer image"></a>
-										</div>
-										<div class="col-lg-9 col-md-9 col-10 media-body align-self-center ec-pos">
-											<a href="#">
-												<h6 class="mb-10px text-dark font-weight-medium">Hoodies for men</h6>
-											</a>
-											<p class="float-md-right sale"><span class="mr-2">20</span>Sales</p>
-											<p class="d-none d-md-block">Statement belting with double-turnlock hardware
-												adds “swagger” to a simple.</p>
-											<p class="mb-0 ec-price">
-												<span class="text-dark">$250</span>
-												<del>$300</del>
-											</p>
-										</div>
-									</div>
-									<div class="row media d-flex pt-15px pb-15px">
-										<div
-											class="col-lg-3 col-md-3 col-2 media-image align-self-center rounded">
-											<a href="#"><img src="{% static 'img/products/p3.jpg' %}" alt="customer image"></a>
-										</div>
-										<div class="col-lg-9 col-md-9 col-10 media-body align-self-center ec-pos">
-											<a href="#">
-												<h6 class="mb-10px text-dark font-weight-medium">Long slive t-shirt</h6>
-											</a>
-											<p class="float-md-right sale"><span class="mr-2">10</span>Sales</p>
-											<p class="d-none d-md-block">Statement belting with double-turnlock hardware
-												adds “swagger” to a simple.</p>
-											<p class="mb-0 ec-price">
-												<span class="text-dark">$480</span>
-												<del>$654</del>
-											</p>
-										</div>
-									</div>
+									{% endfor %}
+									
+									
 								</div>
 							</div>
 						</div>
 					</div>
 				</div> <!-- End Content -->
 			</div> <!-- End Content Wrapper -->
+
+		<!-- Include Chart.js -->
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		var cUser = document.getElementById("currentUser");
+		if (cUser !== null) {
+			var signupData = {{ signup_data|safe }};  // Injecting dynamic data
+			
+			// Debugging: Print the data to the console to ensure it's correct
+			console.log(signupData);
+	
+			var myUChart = new Chart(cUser, {
+				type: "bar",
+				data: {
+					labels: Array.from({length: signupData.length}, (v, i) => (i + 1) + "d"),  // Labels for days of the month
+					datasets: [
+						{
+							label: "Signup",
+							data: signupData,
+							backgroundColor: "#88aaf3"
+						}
+					]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						xAxes: [
+							{
+								gridLines: {
+									drawBorder: true,
+									display: false,
+								},
+								ticks: {
+									fontColor: "#8a909d",
+									fontFamily: "Roboto, sans-serif",
+									display: false,
+									beginAtZero: true,
+									callback: function(tick, index, array) {
+										return index % 2 ? "" : tick;
+									}
+								},
+								barPercentage: 1.8,
+								categoryPercentage: 0.2
+							}
+						],
+						yAxes: [
+							{
+								gridLines: {
+									drawBorder: true,
+									display: true,
+									color: "#eee",
+									zeroLineColor: "#eee"
+								},
+								ticks: {
+									fontColor: "#8a909d",
+									fontFamily: "Roboto, sans-serif",
+									display: true,
+									beginAtZero: true
+								}
+							}
+						]
+					},
+					tooltips: {
+						mode: "index",
+						titleFontColor: "#888",
+						bodyFontColor: "#555",
+						titleFontSize: 12,
+						bodyFontSize: 15,
+						backgroundColor: "rgba(256,256,256,0.95)",
+						displayColors: true,
+						xPadding: 10,
+						yPadding: 7,
+						borderColor: "rgba(220, 220, 220, 0.9)",
+						borderWidth: 2,
+						caretSize: 6,
+						caretPadding: 5
+					}
+				}
+			});
+		}
+	});
+	</script>
+	
+	
+
+
+			<script>
+				var activityLabels = {{ labels|safe }};
+				var activeUserData = {{ active_users|safe }};
+				var inactiveUserData = {{ inactive_users|safe }};
+			  </script>
+			  
+			  <script>
+				var ctx = document.getElementById("activity").getContext("2d");
+				var myLine = new Chart(ctx, {
+				  type: "line",
+				  data: {
+					labels: activityLabels,
+					datasets: [
+					  {
+						label: "Active",
+						backgroundColor: "transparent",
+						borderColor: "rgba(82, 136, 255, .8)",
+						data: activeUserData,
+						lineTension: 0,
+						pointRadius: 5,
+						pointBackgroundColor: "rgba(255,255,255,1)",
+						pointHoverBackgroundColor: "rgba(255,255,255,1)",
+						pointBorderWidth: 2,
+						pointHoverRadius: 7,
+						pointHoverBorderWidth: 1
+					  },
+					  {
+						label: "Inactive",
+						backgroundColor: "transparent",
+						borderColor: "rgba(255, 199, 15, .8)",
+						data: inactiveUserData,
+						lineTension: 0,
+						borderDash: [10, 5],
+						borderWidth: 1,
+						pointRadius: 5,
+						pointBackgroundColor: "rgba(255,255,255,1)",
+						pointHoverBackgroundColor: "rgba(255,255,255,1)",
+						pointBorderWidth: 2,
+						pointHoverRadius: 7,
+						pointHoverBorderWidth: 1
+					  }
+					]
+				  },
+				  options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					legend: {
+					  display: false
+					},
+					scales: {
+					  xAxes: [
+						{
+						  gridLines: {
+							display: false,
+						  },
+						  ticks: {
+							fontColor: "#8a909d",
+						  },
+						}
+					  ],
+					  yAxes: [
+						{
+						  gridLines: {
+							display: true,
+							color: "#eee",
+							zeroLineColor: "#eee"
+						  },
+						  ticks: {
+							stepSize: 50,
+							fontColor: "#8a909d",
+							fontFamily: "Roboto, sans-serif"
+						  }
+						}
+					  ]
+					},
+					tooltips: {
+					  mode: "index",
+					  intersect: false,
+					  titleFontColor: "#888",
+					  bodyFontColor: "#555",
+					  titleFontSize: 12,
+					  bodyFontSize: 15,
+					  backgroundColor: "rgba(256,256,256,0.95)",
+					  displayColors: true,
+					  xPadding: 10,
+					  yPadding: 7,
+					  borderColor: "rgba(220, 220, 220, 0.9)",
+					  borderWidth: 2,
+					  caretSize: 6,
+					  caretPadding: 5
+					}
+				  }
+				});
+			  </script>
+
+			  <script>
+				var completedOrders = {{ completed_orders }};
+				var unpaidOrders = {{ unpaid_orders }};
+				var returnedOrders = {{ returned_orders }};
+				var pendingOrders = {{ pending_orders }};
+				var canceledOrders = {{ canceled_orders }};
+			  
+				var doChart = document.getElementById("doChart");
+				if (doChart !== null) {
+				  var myOrderChart = new Chart(doChart, {
+					type: "doughnut",
+					data: {
+					  labels: [
+						"Delivered",
+						"Processing",
+						"Shipped",
+						"Pending",
+						"Order Placed"
+					  ],
+					  datasets: [
+						{
+						  label: "Orders Overview",
+						  data: [completedOrders, unpaidOrders, returnedOrders, pendingOrders, canceledOrders],
+						  backgroundColor: [
+							"rgba(76, 132, 255, 1)",  // Delivered
+							"rgba(128, 225, 193, 1)",  // Processing
+							"rgba(255, 123, 123, 1)",  // Shipped
+							"rgba(128, 97, 239, 1)",   // Pending
+							"rgba(255, 161, 40, 1)"    // Order Placed
+						  ],
+						  borderWidth: 1
+						}
+					  ]
+					},
+					options: {
+					  responsive: true,
+					  maintainAspectRatio: false,
+					  legend: {
+						display: false
+					  },
+					  cutoutPercentage: 75,
+					  tooltips: {
+						callbacks: {
+						  title: function(tooltipItem, data) {
+							return data["labels"][tooltipItem[0]["index"]];
+						  },
+						  label: function(tooltipItem, data) {
+							return (
+							  data["datasets"][0]["data"][tooltipItem["index"]] + " Orders"
+							);
+						  }
+						},
+						titleFontColor: "#888",
+						bodyFontColor: "#555",
+						titleFontSize: 12,
+						bodyFontSize: 15,
+						backgroundColor: "rgba(256,256,256,0.95)",
+						displayColors: true,
+						xPadding: 10,
+						yPadding: 7,
+						borderColor: "rgba(220, 220, 220, 0.9)",
+						borderWidth: 2,
+						caretSize: 6,
+						caretPadding: 5
+					  }
+					}
+				  });
+				}
+			  </script>
+			  
 
 
  {% endblock main-content %}

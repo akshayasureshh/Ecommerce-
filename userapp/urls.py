@@ -26,11 +26,11 @@ urlpatterns = [
     path('removecart/',views.remove_cart,name="remove_cart"),
 
     path('wishlist/',views.show_wishlist,name='wishlist'),
-    path('pluswishlist/<int:id>',views.plus_wishlist,name="plus_wishlist"),
-    path('minuswishlist/<int:id>/',views.minus_wishlist,name="minus_wishlist"),
+    path('pluswishlist/',views.plus_wishlist,name="plus_wishlist"),
+    path('minuswishlist/',views.minus_wishlist,name="minus_wishlist"),
     # path('update_wishlist/<int:product_id>/', views.update_wishlist, name='update_wishlist'),
 
-    path('review/<int:product_pk>/',views.review,name='review'),
+    path('review/<str:encrypted_product_id>/',views.review,name='review'),
 
     path('imageupload/<int:product_pk>/', views.imageupload, name='imageupload'),
 
@@ -112,7 +112,7 @@ urlpatterns = [
 
     path('checkoutimage/',views.checkoutimage.as_view(),name='checkoutimage'),
 
-    path('orderhistory/',views.orderhis,name='orderhistory'),
+    path('orderhistory/',views.orderhis,name='orderhistoryuser'),
 
     path('category/<int:category_id>/', views.category_products_view, name='category_products'),
     path('subcategory/<int:subcategory_id>/', views.subcategory_products_view, name='subcategory_products'),
@@ -124,6 +124,9 @@ urlpatterns = [
     path('subcategory/<encrypted_subcategory_id>/', products_by_subcategory, name='subcategory_products'),
 
     path('about/',views.about,name='about'),
+    path('contact/',views.contact,name='contact'),
+    path('terms-and-conditions/',views.terms_condition,name='terms-and-conditions'),
+    path('privacy-policy/',views.privacypage,name='privacy-policy'),
 
 
 

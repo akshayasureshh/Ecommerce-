@@ -35,6 +35,20 @@
 
 {% block main-content %}
 
+ <div class="search-form d-lg-inline-block ml-6 mt-6"  style="max-width: 500px;">
+						<form action="{% url 'search_admin' %}" method="get">
+							<div class="input-group">
+								<input type="text" name="query" id="search-input" class="form-control"
+									   placeholder="search.." autofocus autocomplete="off" />
+								<button type="submit" class="btn btn-flat">
+									<i class="mdi mdi-magnify"></i>
+								</button>
+							</div>
+						</form>
+						<div id="search-results-container">
+							<ul id="search-results"></ul>
+						</div>
+					</div> 
 
 
 	<!-- CONTENT WRAPPER -->
@@ -42,7 +56,7 @@
         <div class="content">
             <div class="breadcrumb-wrapper breadcrumb-wrapper-2">
                 <h1>Order Detail</h1>
-                <p class="breadcrumbs"><span><a href="index.html">Home</a></span>
+                <p class="breadcrumbs"><span><a href="{% url 'adminhome' %}">Home</a></span>
                     <span><i class="mdi mdi-chevron-right"></i></span>Orders
                 </p>
             </div>

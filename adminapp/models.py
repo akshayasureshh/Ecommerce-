@@ -234,6 +234,11 @@ class StaticPage(models.Model):
         ('faq', 'FAQ'),
         ('about', 'About'),
         ('contact', 'Contact'),
+        ('terms and conditions', 'terms and conditions'),
+        ('privacy policy', 'Privacy and Policy'),
+
+
+
     ]
 
     page = models.CharField(max_length=20, choices=PAGE_CHOICES, unique=True)
@@ -241,3 +246,18 @@ class StaticPage(models.Model):
 
     def __str__(self):
         return self.page.capitalize()
+    
+
+
+class AdminUser(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)  
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+
+    def __str__(self):
+        return self.username

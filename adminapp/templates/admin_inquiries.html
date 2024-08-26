@@ -1,8 +1,8 @@
+	
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Home{% endblock %}
 {% block extra_head %}
-
 
 <!-- GOOGLE FONTS -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,30 +21,18 @@
 <!-- FAVICON -->
 <link href="{% static 'img/favicon.png' %}" rel="shortcut icon" />
 
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-
-<!-- Bootstrap JS and Popper.js (required for Bootstrap) -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<link rel="stylesheet" href="{% static 'css/vendor/ecicons.min.css' %}" />
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
 
 {% endblock %}
 
 
 {% block main-content %}
 
-
 	<!-- CONTENT WRAPPER -->
     <div class="ec-content-wrapper">
         <div class="content">
             <div class="breadcrumb-wrapper breadcrumb-contacts">
                 <div>
-                    <h1>User List</h1>
+                    <h1>Public Inquiries</h1>
                     <p class="breadcrumbs"><span><a href="{% url 'adminhome' %}">Home</a></span>
                         <span><i class="mdi mdi-chevron-right"></i></span>User
                     </p>
@@ -64,44 +52,32 @@
                                     <thead>
                                         <tr>
                                             {% comment %} <th>Profile</th> {% endcomment %}
-                                            <th>Name</th>
+                                            <th>First name</th>
+                                            <th>Last name</th>
+
                                             <th>Email</th>
                                         
-                                            <th>Total Buy</th>
-                                            <th>Status</th>
-                                            <th>Join On</th>
+                                            <th>Phone number</th>
+                                            <th>Message</th>
+                                            <th>Date</th>
                                             
                                             {% comment %} <th>Action</th> {% endcomment %}
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        {% for i in data %}
+                                        {% for i in inquiries %}
                                         <tr>
                                             {% comment %} <td><i class="fi-rr-user"></i></td> {% endcomment %}
-                                            <td>{{i.username}}</td>
-                                            <td>{{i.email}}</td>
-                                           
-                                            <td>2161</td>
-                                            <td>{% if i.is_active %}Active{% endif %}</td>
-                                            <td>{{i.date_joined}}</td>
-                                            {% comment %} <td>
-                                                <div class="btn-group mb-1">
-                                                    <button type="button"
-                                                        class="btn btn-outline-success">Info</button>
-                                                    <button type="button"
-                                                        class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-                                                        data-bs-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false" data-display="static">
-                                                        <span class="sr-only">Info</span>
-                                                    </button>
+                                            <td>{{i.First_name}}</td>
+                                            <td>{{i.Last_name}}</td>
 
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#">Edit</a>
-                                                        <a class="dropdown-item" href="#">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </td> {% endcomment %}
+                                            <td>{{i.Email}}</td>
+                                           
+                                            <td>{{i.phn}}</td>
+                                            <td>{{i.comments}}</td>
+                                            <td>{{i.created_at}}</td>
+                                            
                                         </tr>
                                         {% endfor %}
                                        
@@ -118,4 +94,5 @@
 
 
 
- {% endblock main-content %}
+
+{% endblock main-content %}
